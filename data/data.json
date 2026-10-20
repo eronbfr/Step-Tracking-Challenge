@@ -8,10 +8,18 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-20T18:45:14.093Z",
+  "updatedAt": "2026-10-20T19:59:48.969Z",
   "cursor": {
-    "time": 0,
-    "seen": {}
+    "time": 1792526315,
+    "seen": {
+      "WcUoKA0kJbXz": 1792523469,
+      "lmMylOCon8lW": 1792523479,
+      "3pwlErBUXxQ4": 1792526314,
+      "FzSCI4FIHnrd": 1792526314,
+      "rG4S1HR04dUG": 1792526315,
+      "4VkOTEaEQ1ta": 1792526315,
+      "xEeyN9ohxRdz": 1792526315
+    }
   },
   "members": [
     {
@@ -73,15 +81,29 @@
       "name": "Eron Netto",
       "country": "BR",
       "tz": "America/Sao_Paulo",
-      "avatar": "",
-      "avatarTs": 0,
-      "keys": [],
-      "requests": [],
+      "avatar": "m3",
+      "avatarTs": 1792523479614,
+      "keys": [
+        {
+          "kid": "5758bf8ba04e30f9",
+          "pub": "BBhn2UtaYSD_-ayTI-HIGT8lZRbDPsqxp-PTlyYmDEBU7HVEZ1Ib7XD5k_yNIgW5Qg8KCUyKRWfuOBDB8erfxzo",
+          "l": "Android · Chrome (app)",
+          "at": "2026-10-20T19:11:09.000Z"
+        }
+      ],
+      "requests": [
+        {
+          "kid": "7699b09d575be68d",
+          "pub": "BAlufXLq0yqUTcwtwhUNTZBifyZ7sBuN4LAYoa5M0ekNgBC-vvhde0m6lhVBydT6O3t70-OzQ1EGVHi4TTbBrwk",
+          "l": "Windows · Chrome",
+          "at": "2026-10-20T19:58:34.000Z"
+        }
+      ],
       "syncHash": "",
       "syncTs": 0,
       "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
+      "joinedAt": "2026-10-20T19:11:09.000Z",
       "lastSyncAt": "",
       "lastSource": "",
       "autoSyncs": 0
