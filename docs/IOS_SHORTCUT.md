@@ -1,15 +1,17 @@
 # iPhone auto-sync with Apple Shortcuts
 
-A Shortcut reads today's step count from **Apple Health** and sends it to the team sheet, automatically,
+A Shortcut reads today's step count from **Apple Health** and sends it to the team, automatically,
 several times a day. Once it's set up nobody needs to type anything.
 
-Each member's **personal sync link** is in the app → **Auto-sync** tab → *Copy my link*. It looks like:
+Each member's **personal sync link** is in the app → **Auto-sync** tab → *Create my link* / *Copy my link*. It looks like:
 
 ```
-https://script.google.com/macros/s/…/exec?action=sync&m=eron&t=<sync-key>&steps=
+https://ntfy.sh/t8steps-2026-o58d4zb7pyzw/publish?message=sync%20eron%20<sync-key>%20
 ```
 
-The step count is appended at the end. The server answers in plain text, e.g. `✅ 8,432 steps saved for Tue, Oct 20`.
+The step count is appended at the end. The message lands on the team relay, every open app shows it within a
+second, and the Ledger Action stores it in the repository and the spreadsheet a few minutes later. Automatic
+syncs only ever **raise** a day's value, so running the Shortcut several times a day is safe.
 
 ## Option A — members build it themselves (in-app guide, ~2 min)
 
@@ -18,7 +20,7 @@ The step count is appended at the end. The server answers in plain text, e.g. `�
 3. **Round Number** — *Ones Place*
 4. **Text** — paste the personal link, then insert the *Rounded Number* variable at the very end
 5. **Get Contents of URL** — URL = *Text*
-6. *(optional)* **Show Notification** — *Contents of URL*
+6. *(optional)* **Show Notification** — “✅ Team 8 synced”
 
 Name it **Team 8 Sync**, run it once (allow Health access), then:
 **Automation → + → Time of Day → 12:00 · Daily → Run Immediately → Team 8 Sync**. Repeat for 18:00 and 23:30.
@@ -39,11 +41,17 @@ Build it once with an **Import Question**, share the iCloud link, and members on
 
 Instead of *Start Date is today*, use *Start Date is in the last 2 days* (Group by *Day*), then
 **Repeat with Each** sample: **Format Date** (custom `yyyy-MM-dd`) of the sample's *Start Date*, and call
-`<link><steps>&date=<formatted date>`. Because automatic syncs keep the highest value per day, re-sending
+`<link><steps>%20<formatted date>`. Because automatic syncs keep the highest value per day, re-sending
 yesterday is always safe.
+
+## The link is personal
+
+It can only raise the steps of the person it belongs to. If it leaks, open the app → Auto-sync → **New link**
+and paste the new one in the Shortcut (the old link stops working right away). The link lives on the device that
+created it; creating one on another device replaces it.
 
 ## Android power users
 
-Tasker, MacroDroid or HTTP Shortcuts can call the same link (`…&steps=8432`, optional `&date=2026-10-21`).
+Tasker, MacroDroid or HTTP Shortcuts can call the same link (`…%208432`, optional `%202026-10-21` after the steps).
 For everyone else the app's **screenshot import** (share a screenshot of any health app to *Team 8 Steps*)
 is the fastest route.

@@ -1,7 +1,7 @@
 // Small UI toolkit: formatting, icons, avatars, sheets, toasts, confetti.
 import { parseISO } from './metrics.js';
 import { t, locale } from './i18n.js';
-import { avatarSvg } from './avatars.js';
+import { avatarImg } from './avatars.js';
 
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -84,8 +84,8 @@ export function flagsSupported() {
 /** A member's picture: their chosen illustrated avatar, or coloured initials. */
 export function avatar(m, size = 40, { flagged = true } = {}) {
   const badge = !flagged || !m.country ? '' : flagsSupported() ? `<span class="av-flag">${flag(m.country)}</span>` : `<span class="av-cc">${esc(m.country)}</span>`;
-  const pic = avatarSvg(m.avatar);
-  if (pic) return `<span class="avatar pic" style="--s:${size}px" aria-hidden="true">${pic}${badge}</span>`;
+  const pic = avatarImg(m.avatar);
+  if (pic) return `<span class="avatar pic" style="--av:${avColor(m)};--s:${size}px" aria-hidden="true">${pic}${badge}</span>`;
   return `<span class="avatar" style="--av:${avColor(m)};--s:${size}px" aria-hidden="true">${esc(initials(m.name))}${badge}</span>`;
 }
 

@@ -1,0 +1,12 @@
+{
+  "name": "team8-step-challenge",
+  "private": true,
+  "type": "module",
+  "description": "Team 8 Step Challenge PWA — no build step; the backend is the GitHub repository (see docs/SETUP.md).",
+  "scripts": {
+    "test": "node --test backend/ledger.test.mjs",
+    "fold": "node backend/fold.mjs",
+    "dev": "python tools/dev_server.py 8765",
+    "relay": "python tools/mock_relay.py 8766"
+  }
+}

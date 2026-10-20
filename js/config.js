@@ -1,17 +1,30 @@
-// Team 8 · Step Challenge — app configuration.
-// After deploying backend/Code.gs (see docs/SETUP.md) paste the Web App URL below.
+// Team 8 · Step Challenge — app configuration (shared by the app and the GitHub Action in backend/).
+//
+// Backend = this GitHub repository:
+//   • the app publishes signed messages to a public relay topic (ntfy.sh) and every open app sees them live;
+//   • the "Ledger" GitHub Action folds them into data/data.json + step-tracking_Team8.xlsx every few minutes.
+// See docs/SETUP.md for the full picture.
 
 export const CONFIG = {
-  // Google Apps Script Web App URL (ends with /exec). Empty = demo mode with sample data.
-  API_URL: '',
+  // Relay (ntfy-compatible pub/sub). The topic name is public: anything sent here is signed and validated.
+  RELAY_URL: 'https://ntfy.sh',
+  RELAY_TOPIC: 't8steps-2026-o58d4zb7pyzw',
+
+  // Persisted snapshot written by the Action. raw.githubusercontent.com sees a commit within minutes,
+  // GitHub Pages (same origin) a bit later — the app reads both and keeps the newest.
+  REPO: 'eronbfr/Step-Tracking-Challenge',
+  DATA_URL: 'https://raw.githubusercontent.com/eronbfr/Step-Tracking-Challenge/main/data/data.json',
+  SHEET_URL: 'https://github.com/eronbfr/Step-Tracking-Challenge/raw/main/step-tracking_Team8.xlsx',
+
+  // Members whose devices can approve sign-ins and reset anyone's devices (team captain).
+  ADMINS: ['eron'],
 
   // Optional: iCloud link of a shared "Team 8 Sync" iPhone Shortcut (see docs/IOS_SHORTCUT.md).
   IOS_SHORTCUT_URL: '',
 
   APP_URL: 'https://eronbfr.github.io/Step-Tracking-Challenge/',
-  VERSION: '1.1.0',
+  VERSION: '2.0.0',
 
-  // Fallback values used before the first server response (the server's values win).
   CHALLENGE: { team: 'Team 8', name: 'Step Challenge', start: '2026-10-20', end: '2026-11-15', dailyGoal: 10000 },
 
   ROSTER: [

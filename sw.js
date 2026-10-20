@@ -1,11 +1,11 @@
 // Team 8 · Step Challenge — service worker.
 // Bump VERSION on every release so installed apps pick up the new files.
-const VERSION = 'v1.1.0';
+const VERSION = 'v2.0.0';
 const SHELL = `t8-shell-${VERSION}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/views.js', './js/api.js', './js/config.js', './js/metrics.js', './js/charts.js', './js/ui.js', './js/ocr.js',
-  './js/i18n.js', './js/strings.js', './js/avatars.js',
+  './js/i18n.js', './js/strings.js', './js/avatars.js', './js/ledger.js', './js/device.js',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png',
   './assets/reminder.ics',
 ];
@@ -42,7 +42,9 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (req.method !== 'GET' || url.origin !== self.location.origin) return; // API & CDNs go straight to the network
+  if (req.method !== 'GET' || url.origin !== self.location.origin) return; // relay, GitHub & CDNs go straight to the network
+  // Ledger snapshot and spreadsheet change every few minutes: never serve them from the cache.
+  if (url.pathname.includes('/data/') || url.pathname.endsWith('.xlsx')) return;
 
   // Pages: network first (fresh deploys), cached shell when offline.
   if (req.mode === 'navigate') {
@@ -59,7 +61,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Static files: cache first, then network (and remember it).
+  // Static files (shell, avatars): cache first, then network (and remember it).
   event.respondWith((async () => {
     const hit = await caches.match(req, { ignoreSearch: true });
     if (hit) return hit;

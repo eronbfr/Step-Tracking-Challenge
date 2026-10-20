@@ -16,7 +16,7 @@ automatic step sync from your phone, friendly rankings, badges and health insigh
 - **iPhone**: open the link in **Safari** → Share → **Add to Home Screen**
 - **Android**: open the link in **Chrome** → ⋮ → **Install app**
 
-Then pick your language, your name, a 4-digit PIN and your avatar — and turn on **Auto-sync**.
+Then pick your language and your name (no password: your phone is your key), choose your avatar and turn on **Auto-sync**.
 
 ## Features
 
@@ -34,8 +34,9 @@ Then pick your language, your name, a 4-digit PIN and your avatar — and turn o
 - 🌐 Three languages — **English** (default), **Português (Brasil)** and **Español**. Picked on the first screen,
   changeable any time in ⚙️ **Settings** (gear icon at the top of every page and in *Me*). Numbers and dates follow
   the language (10,000 · 10.000), and the backend answers errors and the iPhone Shortcut reply in it too.
-- 🧑‍🎨 Avatar library — 5 female + 5 male illustrated avatars. The one you pick is saved on the server and shown to the
-  whole team: today board, ranking, podium, heatmap, member cards, sign-in.
+- 🧑‍🎨 Avatar library — the 36 illustrated avatars of the Sintonia app (15 female, 21 male). The one you pick is
+  shown to the whole team: today board, ranking, podium, heatmap, member cards, sign-in.
+- ⚡ Live — when anyone logs steps, every open app updates within a second.
 
 **Me**: today's ring, streaks, best day, consistency, projection, your daily steps vs the team average, weekday rhythm.
 Also 17 badges and health metrics: distance, active calories, walking time, fat-energy, CO₂, BMI, WHO weekly activity,
@@ -46,7 +47,7 @@ Details in [docs/METRICS.md](docs/METRICS.md).
 
 | Phone | How | Effort |
 |---|---|---|
-| **iPhone** | An Apple **Shortcuts** automation reads Apple Health and calls your personal sync link at 12:00, 18:00 and 23:30 | Set up once (~2 min), then fully automatic |
+| **iPhone** | An Apple **Shortcuts** automation reads Apple Health and opens your personal sync link at 12:00, 18:00 and 23:30 | Set up once (~2 min), then fully automatic |
 | **Android** | **Share a screenshot** of any health app (Samsung Health, Google Fit, Fitbit, Garmin…) to *Team 8 Steps*. The app reads the number with on-device OCR | 2 taps |
 | Android power users | Tasker / MacroDroid / HTTP Shortcuts call the same sync link | Set up once |
 | Everyone | Quick manual entry (+500/+1K chips), backfill past days, works offline (queued), daily 9 PM calendar reminder | Seconds |
@@ -55,51 +56,63 @@ Automatic syncs never lower a day's value, so running them several times a day i
 
 ## For the organizer
 
-1. Deploy the backend (Google Sheet + Apps Script, ~5 minutes): **[docs/SETUP.md](docs/SETUP.md)**
-2. Paste the Web App URL into [`js/config.js`](js/config.js) → `API_URL` and commit
-3. Share the message in [docs/ANNOUNCEMENT.md](docs/ANNOUNCEMENT.md) 🎉
+Nothing to deploy — the backend is this repository (details in **[docs/SETUP.md](docs/SETUP.md)**):
 
-Until `API_URL` is set, the app runs in **demo mode** with sample data. You can preview any day with
-`?demo=1&asOf=2026-11-04`.
+1. Open the app and **sign in as yourself first** — `eron` is the team captain (`ADMINS` in [`js/config.js`](js/config.js)),
+   whose devices can approve sign-ins and reset anyone.
+2. Share the message in [docs/ANNOUNCEMENT.md](docs/ANNOUNCEMENT.md) 🎉
+3. The team spreadsheet [`step-tracking_Team8.xlsx`](step-tracking_Team8.xlsx) updates itself a few minutes after
+   every change (also downloadable from ⚙️ → Team captain).
+
+`?demo` shows sample data; `?demo&asOf=2026-11-04` previews another day.
 
 ## Architecture
 
 ```
-Phone (PWA, GitHub Pages)  ──GET ?action=data──────────▶  Google Apps Script  ──▶  Google Sheet
-   │  log / claim (POST)  ─────────────────────────────▶   (backend/Code.gs)        Steps · Members · Log
-iPhone Shortcut  ──GET ?action=sync&m=…&t=…&steps=N──▶
+ PWA (GitHub Pages) ──signed message──▶ relay topic (ntfy.sh) ──live──▶ every open app
+        ▲                                     │ every ~5 min
+        │                                     ▼
+        └──── data/data.json ◀── GitHub Action "Ledger": backend/fold.mjs + backend/sheet.py ──▶ step-tracking_Team8.xlsx
 ```
 
 - **Frontend**: vanilla JavaScript modules, no build step, hand-made SVG charts, system font, light/dark themes,
   service worker (offline shell, update prompt, Android share target), Web App Manifest with shortcuts.
-- **Backend**: one Apps Script file. PINs are stored as salted hashes, each member gets a sync key, script lock
-  for concurrent writes, 20 s cache, audit log, PIN lockout.
-- **Data**: a normal Google Sheet with the same layout as the original Excel (one row per member, one column per day).
+- **Backend**: an event-sourced ledger ([`js/ledger.js`](js/ledger.js)) shared by the app and a scheduled GitHub
+  Action. Each device signs its messages with its own ECDSA key (WebCrypto); public keys live in `data/data.json`.
+  Device approval with a 4-digit code, captain reset, sync keys for the iPhone Shortcut, offline queue and resend.
+- **Data**: `data/data.json` (snapshot), `data/log.csv` (every change) and the original Excel file, kept up to date.
 
 ```
-index.html · manifest.webmanifest · sw.js
+index.html · manifest.webmanifest · sw.js · package.json
 css/app.css
-js/  app.js (shell & flows) · views.js (pages) · charts.js (SVG) · metrics.js (health & stats) · api.js · ui.js · ocr.js · config.js
-     i18n.js + strings.js (en / pt / es) · avatars.js (SVG avatar library)
-backend/  Code.gs · test-harness.js
-tools/  dev_server.py · make_icons.py · make_invites.py
+avatars/  36 WebP avatars (imported from Sintonia by tools/import_avatars.py)
+js/  app.js (shell & flows) · views.js (pages) · charts.js (SVG) · metrics.js (health & stats) · ui.js · ocr.js · config.js
+     api.js (snapshot + relay + outbox) · ledger.js (rules, shared with the Action) · device.js (signing key)
+     i18n.js + strings.js (en / pt / es) · avatars.js (avatar library)
+data/  data.json · log.csv                    ← written by the Action
+backend/  fold.mjs · sheet.py · publish.sh · ledger.test.mjs
+.github/workflows/ledger.yml
+tools/  dev_server.py · mock_relay.py · import_avatars.py · make_icons.py · make_invites.py
 docs/  SETUP.md · IOS_SHORTCUT.md · METRICS.md · ANNOUNCEMENT.md
 ```
 
 ## Development
 
 ```bash
-python tools/dev_server.py          # http://localhost:8765/?demo=1  (no-cache; service worker off on localhost, add &sw to test it)
-node backend/test-harness.js        # backend tests with mocked Google services
-python tools/make_icons.py          # regenerate icons
+python tools/dev_server.py 8765       # app (no-cache; service worker off on localhost, add ?sw to test it)
+python tools/mock_relay.py 8766       # local relay → http://localhost:8765/?relay=http://localhost:8766
+node --test backend/ledger.test.mjs   # ledger rules
+python tools/make_icons.py            # regenerate icons
 ```
 
-When you release, bump `VERSION` in `sw.js` so installed apps pick up the new files.
+When you release, bump `VERSION` in `sw.js` so installed apps pick up the new files. The Action commits to `main`
+every few minutes while people log steps, so `git pull --rebase` before you push.
 
 ## Privacy
 
-Names, avatars and daily step counts are visible to the team. PINs are hashed. Height and weight entered in the app never
-leave your phone. The original spreadsheet (with phone numbers) is not part of this repository.
+Names, avatars and daily step counts are visible to the team and stored in this public repository, together with the
+team spreadsheet. Sign-in uses a key that never leaves your device. Height and weight entered in the app never
+leave your phone.
 
 ---
 *Made with 💙 for Team 8. Health numbers are estimates, not medical advice.*

@@ -4,17 +4,22 @@ import * as api from './api.js';
 import * as M from './metrics.js';
 import * as V from './views.js';
 import { t, tn, lang, setLang, langChosen, locale } from './i18n.js';
-import { AVATARS, avatarSvg } from './avatars.js';
-import { $, $$, esc, fmt, dec, compact, dateLabel, ago, avatar, icon, toast, openSheet, closeSheet, countUp, confetti, copyText } from './ui.js';
+import { AVATARS, avatarImg, avatarLabel } from './avatars.js';
+import { codeOf } from './ledger.js';
+import { $, $$, esc, fmt, dec, compact, dateLabel, ago, avatar, avColor, icon, toast, openSheet, closeSheet, sheetBody, countUp, confetti, copyText } from './ui.js';
 
 const { store } = api;
-const LS = { me: 't8:me', profile: 't8:profile', theme: 't8:theme', welcomed: 't8:welcomed', installHidden: 't8:install-hidden' };
+const LS = { me: 't8:me', waiting: 't8:waiting', profile: 't8:profile', theme: 't8:theme', welcomed: 't8:welcomed', installHidden: 't8:install-hidden' };
 const ROUTES = ['team', 'ranking', 'me', 'sync', 'settings'];
 
 const state = {
   data: null, model: null, sig: '',
   route: 'team',
-  me: store.get(LS.me),                       // { id, token }
+  me: store.get(LS.me),                       // { id } — valid while this device's key is one of the member's keys
+  kid: '',                                    // this device's key id
+  waiting: store.get(LS.waiting),             // { id } — sign-in request waiting for approval
+  approvals: [],                              // [{ m, r }] requests this device may approve
+  syncBusy: false,
   profile: store.get(LS.profile, { units: 'metric' }),
   theme: store.get(LS.theme, 'auto'),
   installHidden: store.get(LS.installHidden, false),
@@ -71,13 +76,64 @@ function rebuild() {
 }
 
 function setData(data, { force = false } = {}) {
-  const sig = api.today() + JSON.stringify(data.members.map(m => [m.id, m.daily, m.joined, m.autoSyncs, m.lastSyncAt, m.avatar]));
+  const sig = api.today() + JSON.stringify(data.members.map(m => [m.id, m.daily, m.joined, m.autoSyncs, m.lastSyncAt, m.avatar,
+    (m.keys || []).map(k => k.kid), (m.requests || []).map(r => r.kid), m.syncHash]));
   state.data = data;
   state.pending = api.pendingCount();
+  checkIdentity();
   if (!force && sig === state.sig && state.model) return renderChrome();
   state.sig = sig;
   rebuild();
   render();
+}
+
+/* ═════════════ Identity: this device's key in the ledger ═════════════ */
+const later = fn => setTimeout(fn, 0);
+const firstName = m => String((m && m.name) || '').split(/\s+/)[0];
+const memberOf = id => state.data && state.data.members.find(m => m.id === id);
+const hasKey = (m, list = 'keys') => !!(m && state.kid && (m[list] || []).some(k => k.kid === state.kid));
+const openSheetKind = () => { const b = sheetBody(); return b && b.firstElementChild ? b.firstElementChild.dataset.sheet : ''; };
+const captainName = () => firstName(memberOf(((state.data && state.data.admins) || CONFIG.ADMINS)[0])) || 'Eron';
+const errText = e => (e && e.network ? t('err.offline') : t('err.requestFailed'));
+const prompted = new Set(); // request ids already shown in the approvals sheet this session
+
+function setMe(id) { state.me = id ? { id } : null; if (id) store.set(LS.me, state.me); else store.del(LS.me); }
+function setWaiting(id) { state.waiting = id ? { id } : null; if (id) store.set(LS.waiting, state.waiting); else store.del(LS.waiting); }
+
+/** Reacts to ledger changes that concern this device: approvals, remote sign-outs, requests to review. */
+function checkIdentity() {
+  const d = state.data;
+  if (!d || !state.kid || !d.members.length || !('keys' in d.members[0])) return; // fallback roster has no keys yet
+  if (state.waiting) {
+    const m = memberOf(state.waiting.id);
+    if (hasKey(m)) {
+      setMe(m.id); setWaiting(null);
+      later(() => { if (openSheetKind() === 'wait') closeSheet(); toast(t('toast.welcomeBack', { name: firstName(m) }), { type: 'good' }); confetti({ count: 60 }); });
+    } else if (d.live && !hasKey(m, 'requests')) {
+      setWaiting(null);
+      later(() => { if (openSheetKind() === 'wait') closeSheet(); toast(t('wait.denied'), { type: 'warn', duration: 5000 }); });
+    }
+  }
+  if (state.me && d.live && !d.demo && !hasKey(memberOf(state.me.id))) {
+    setMe(null);
+    later(() => toast(t('toast.signedOutRemote'), { type: 'warn', duration: 5000 }));
+  }
+  const mine = state.me && memberOf(state.me.id);
+  const captain = !!mine && (d.admins || []).includes(mine.id);
+  state.approvals = !mine ? [] : d.members.filter(m => captain || m.id === mine.id).flatMap(m => (m.requests || []).map(r => ({ m, r })));
+  const fresh = state.approvals.filter(a => !prompted.has(a.r.kid));
+  if (fresh.length) {
+    fresh.forEach(a => prompted.add(a.r.kid));
+    later(() => { if (!sheetBody()) openApprovals(); });
+  }
+  if (openSheetKind() === 'approvals') later(refreshApprovals); // answered elsewhere, cancelled, or a new one
+}
+
+function refreshApprovals() {
+  const host = sheetBody();
+  if (!host || openSheetKind() !== 'approvals') return;
+  if (!state.approvals.length) closeSheet();
+  else host.querySelector('.req-list').outerHTML = V.requestList(state.approvals);
 }
 
 async function refresh({ silent = true } = {}) {
@@ -96,8 +152,6 @@ async function refresh({ silent = true } = {}) {
     renderChrome();
   }
 }
-
-const needsSignin = err => err.code === 'invalidKey' || err.code === 'missingKey' || /sync key|sign in/i.test(err.message);
 
 /* ═════════════ Routing ═════════════ */
 function routeFromHash() {
@@ -118,9 +172,35 @@ const actions = {
   log: el => openLog({ date: el.dataset.date }),
   member: el => openMember(el.dataset.id),
   signin: () => openSignin(),
-  signout: () => {
-    store.del(LS.me); state.me = null; rebuild(); render();
+  signout: async () => {
+    const id = state.me && state.me.id;
+    setMe(null); rebuild(); render();
     toast(t('toast.signedOut'));
+    if (!id) return;
+    await api.signOut(id); // removes this device from the ledger and forgets its key
+    state.kid = await api.deviceKid();
+    setData(await api.current(), { force: true });
+  },
+  wait: () => state.waiting && openWaiting(memberOf(state.waiting.id)),
+  approvals: () => openApprovals(),
+  approve: el => answerRequest(el, true),
+  deny: el => answerRequest(el, false),
+  'revoke-device': async el => {
+    if (!state.me) return;
+    try {
+      await api.revoke(state.me.id, el.dataset.k);
+      setData(await api.current(), { force: true });
+      toast(t('toast.revoked'), { type: 'good' });
+    } catch (e) { toast(errText(e), { type: 'warn' }); }
+  },
+  'reset-member': async el => {
+    const m = memberOf(el.dataset.id);
+    if (!m || !confirm(t('admin.resetConfirm', { name: m.name }))) return;
+    try {
+      await api.resetMember(m.id);
+      setData(await api.current(), { force: true });
+      toast(t('toast.reset', { name: firstName(m) }), { type: 'good' });
+    } catch (e) { toast(errText(e), { type: 'warn' }); }
   },
   'rank-by': el => { state.rankBy = el.dataset.k; render(); },
   'team-chart': el => { state.teamChart = el.dataset.k; render(); },
@@ -143,11 +223,16 @@ const actions = {
   refresh: () => refresh({ silent: false }),
   'dismiss-install': () => { state.installHidden = true; store.set(LS.installHidden, true); render(); },
   install: () => promptInstall(),
-  'copy-sync': async () => {
+  'copy-sync': () => {
     if (!state.me) return openSignin();
-    const ok = await copyText(api.syncUrl(state.me.id, state.me.token));
-    toast(ok ? t('toast.linkCopied') : t('toast.copyFail'), { type: ok ? 'good' : 'warn' });
+    const link = api.storedSyncLink(state.me.id);
+    if (!link) return createSyncLink(false);
+    // Copy first, inside the tap (iOS drops clipboard access after an await), then re-register if needed.
+    copyText(link).then(ok => toast(ok ? t('toast.linkCopied') : t('toast.copyFail'), { type: ok ? 'good' : 'warn' }));
+    api.syncLink(state.me.id, memberOf(state.me.id)).catch(() => {});
   },
+  'sync-create': () => createSyncLink(false),
+  'sync-new': () => { if (confirm(t('sync.newLinkConfirm'))) createSyncLink(true); },
   'share-app': async () => {
     const ctx = state.model.ctx;
     const data = { title: 'Team 8 Step Challenge', text: t('share.text', { start: dateLabel(ctx.start, 'short'), end: dateLabel(ctx.end, 'short') }), url: CONFIG.APP_URL };
@@ -275,8 +360,8 @@ function openLog({ date, steps, pickScreenshot = false, file = null } = {}) {
     const before = me.daily[i];
     const badgesBefore = new Set(me.badges.filter(b => b.earned).map(b => b.id));
     try {
-      const res = await api.logSteps({ id: state.me.id, token: state.me.token, date: sel, steps: n });
-      applyLocal(state.me.id, sel, n);
+      const res = await api.logSteps({ id: state.me.id, date: sel, steps: n });
+      setData(await api.current(), { force: true }); // already live for the whole team
       closeSheet();
       const meNow = state.model.me;
       const newBadges = meNow.badges.filter(b => b.earned && !badgesBefore.has(b.id));
@@ -285,97 +370,151 @@ function openLog({ date, steps, pickScreenshot = false, file = null } = {}) {
       newBadges.slice(0, 2).forEach((b, k) => setTimeout(() => toast(t('toast.newBadge', { emoji: b.emoji, name: V.badgeName(b) }), { type: 'badge', duration: 4200 }), 900 + k * 1200));
       if (newBadges.length && !(n >= ctx.goal && (before || 0) < ctx.goal)) setTimeout(() => confetti({ count: 80 }), 900);
       if (res.queued) state.pending = api.pendingCount();
-      else setTimeout(() => refresh(), 1500);
     } catch (err) {
       btn.disabled = false;
       btn.classList.remove('busy');
-      if (needsSignin(err)) { store.del(LS.me); state.me = null; closeSheet(); toast(t('toast.signinAgain'), { type: 'warn' }); return openSignin(); }
-      toast(err.message, { type: 'warn' });
+      toast(errText(err), { type: 'warn' });
     }
   }
 }
 
-function applyLocal(id, date, steps) {
-  const dates = M.datesBetween(state.data.challenge.start, state.data.challenge.end);
-  const i = dates.indexOf(date);
-  state.data = {
-    ...state.data,
-    members: state.data.members.map(m => m.id !== id ? m : { ...m, daily: Object.assign((m.daily || []).slice(), { [i]: steps }), lastSyncAt: new Date().toISOString(), lastSource: 'app' }),
-  };
-  setData(state.data, { force: true });
-}
-
-/* ═════════════ Sign-in flow (name → PIN) ═════════════ */
+/* ═════════════ Sign-in flow: name → this device (or a request another device approves) ═════════════ */
 function openSignin({ then } = {}) {
   if (!state.model) return;
+  if (!state.kid) return toast(t('toast.noCrypto'), { type: 'warn', duration: 5000 });
+  if (state.waiting) return openWaiting(memberOf(state.waiting.id));
   const members = state.model.members.slice().sort((a, b) => a.name.localeCompare(b.name));
   const body = openSheet(`
     <div class="signin">
       <h2>${t('signin.title')}</h2>
       <p class="muted">${t('signin.text')}</p>
-      <div class="who-grid">${members.map(m => `<button class="who" data-id="${esc(m.id)}">${avatar(m, 52)}<b>${esc(m.first)}</b><small>${t(m.joined ? 'signin.joined' : 'signin.new')}</small></button>`).join('')}</div>
+      <div class="who-grid">${members.map(m => `<button class="who" data-id="${esc(m.id)}">${avatar(m, 52)}<b>${esc(m.first)}</b><small>${hasKey(m) ? t('common.you') : t(m.joined ? 'signin.joined' : 'signin.new')}</small></button>`).join('')}</div>
       <p class="muted sm center">${t('signin.justLooking')}</p>
     </div>`, { label: t('common.signin') });
   body.addEventListener('click', e => {
     const b = e.target.closest('.who');
-    if (b) openPin(state.model.byId[b.dataset.id], then);
+    if (!b) return;
+    const m = state.model.byId[b.dataset.id];
+    if (hasKey(m)) { setMe(m.id); rebuild(); render(); closeSheet(); toast(t('toast.welcomeBack', { name: m.first }), { type: 'good' }); return then && then(); }
+    if (m.joined) openTaken(m); else openClaim(m, then);
   });
 }
 
-function openPin(m, then) {
-  const creating = !m.joined;
-  let first = '', pin = '';
+/** Free name: one tap links this device to it. */
+function openClaim(m, then) {
+  const iosBrowser = V.isIOS() && !V.isStandalone();
   const body = openSheet(`
-    <div class="pin">
-      ${avatar(m, 64)}
-      <h2>${creating ? t('pin.createTitle', { name: esc(m.first) }) : t('pin.welcomeBack', { name: esc(m.first) })}</h2>
-      <p class="muted pin-msg">${t(creating ? 'pin.choose' : 'pin.enter')}</p>
-      <div class="pin-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-      <p class="pin-err" role="alert"></p>
-      <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-k="${n}">${n}</button>`).join('')}
-        <button data-k="back" aria-label="${esc(t('pin.delete'))}">⌫</button><button data-k="0">0</button><button data-k="ok" aria-label="${esc(t('pin.confirm'))}">${icon('check', 22)}</button></div>
-      <p class="muted sm center">${t(creating ? 'pin.notYou' : 'pin.forgot')}</p>
-    </div>`, { label: 'PIN' });
-
-  const dots = $$('.pin-dots i', body);
-  const err = $('.pin-err', body);
-  const msg = $('.pin-msg', body);
-  const paint = () => dots.forEach((d, k) => d.classList.toggle('on', k < pin.length));
-  const shake = text => { err.textContent = text; body.querySelector('.pin-dots').classList.add('shake'); setTimeout(() => body.querySelector('.pin-dots') && body.querySelector('.pin-dots').classList.remove('shake'), 400); pin = ''; paint(); };
-  const press = k => {
-    if (k === 'back') { pin = pin.slice(0, -1); paint(); return; }
-    if (k === 'ok') return pin.length === 4 && submit();
-    if (pin.length >= 4) return;
-    pin += k; err.textContent = ''; paint();
-    if (pin.length === 4) setTimeout(submit, 120);
-  };
-  async function submit() {
-    if (creating && !first) { first = pin; pin = ''; paint(); msg.textContent = t('pin.repeat'); return; }
-    if (creating && first !== pin) { first = ''; msg.textContent = t('pin.choose4'); return shake(t('pin.mismatch')); }
-    body.classList.add('busy');
+    <div class="claim center-card" data-sheet="claim">
+      ${avatar(m, 72)}
+      <h2>${t('claim.title', { name: esc(m.first) })}</h2>
+      <p class="muted">${t('claim.text')}</p>
+      ${iosBrowser ? `<p class="claim-tip">${t('claim.iosTip')}</p>` : ''}
+      <button class="btn lg full" data-claim>${icon('check', 18)} ${t('claim.yes')}</button>
+      <p class="muted sm">${t('claim.notYou')}</p>
+    </div>`, { label: t('common.signin') });
+  $('[data-claim]', body).addEventListener('click', async e => {
+    const btn = e.currentTarget;
+    btn.disabled = true; btn.classList.add('busy');
     try {
-      const r = await api.claim(m.id, pin);
-      state.me = { id: m.id, token: r.token };
-      store.set(LS.me, state.me);
-      if (state.data) state.data = { ...state.data, members: state.data.members.map(x => x.id === m.id ? { ...x, joined: true } : x) };
-      rebuild(); render();
+      const r = await api.claim(m.id);
+      setData(r.view, { force: true });
+      if (r.status !== 'joined') { setWaiting(m.id); return openWaiting(memberOf(m.id)); } // someone was faster
+      setMe(m.id); rebuild(); render();
       closeSheet(true);
-      toast(t(r.created ? 'toast.welcome' : 'toast.welcomeBack', { name: m.first }), { type: 'good' });
-      if (then) then(); else if (r.created) openNextSteps();
-    } catch (e) {
-      body.classList.remove('busy');
-      shake(e.message);
-      if (creating) { first = ''; msg.textContent = t('pin.choose4'); }
+      toast(t('toast.welcome', { name: m.first }), { type: 'good' });
+      if (then) then(); else openNextSteps();
+    } catch (err) {
+      btn.disabled = false; btn.classList.remove('busy');
+      toast(errText(err), { type: 'warn' });
     }
+  });
+}
+
+/** Name already linked to another device: ask that device (or the captain) to approve this one. */
+function openTaken(m) {
+  const body = openSheet(`
+    <div class="claim center-card" data-sheet="taken">
+      ${avatar(m, 72)}
+      <h2>${t('claim.taken', { name: esc(m.first) })}</h2>
+      <p class="muted">${t('claim.takenText')}</p>
+      <button class="btn lg full" data-request>${icon('phone', 18)} ${t('claim.request')}</button>
+      <p class="muted sm">${t('claim.lost', { captain: esc(captainName()) })}</p>
+    </div>`, { label: t('common.signin') });
+  $('[data-request]', body).addEventListener('click', async e => {
+    const btn = e.currentTarget;
+    btn.disabled = true; btn.classList.add('busy');
+    try {
+      const r = await api.claim(m.id);
+      setWaiting(m.id);
+      setData(r.view, { force: true });
+      if (state.waiting) { openWaiting(memberOf(m.id)); toast(t('toast.requested'), { type: 'good' }); }
+      else closeSheet(); // the name was freed meanwhile: this device got it straight away
+    } catch (err) {
+      btn.disabled = false; btn.classList.remove('busy');
+      toast(errText(err), { type: 'warn' });
+    }
+  });
+}
+
+/** Shown on the new device until one of the member's devices (or the captain) approves it. */
+function openWaiting(m) {
+  if (!m) return;
+  const code = codeOf(state.kid);
+  const body = openSheet(`
+    <div class="claim center-card" data-sheet="wait">
+      ${avatar(m, 72)}
+      <h2>${t('wait.title')}</h2>
+      <p class="muted">${t('wait.text', { captain: esc(captainName()) })}</p>
+      <div class="code" aria-label="${esc(t('req.code'))} ${code}">${[...code].map(c => `<span>${c}</span>`).join('')}</div>
+      <p class="muted sm"><span class="live-dot" aria-hidden="true"></span> ${t('wait.live')}</p>
+      <button class="btn ghost full" data-cancel>${t('wait.cancel')}</button>
+    </div>`, { label: t('wait.title') });
+  $('[data-cancel]', body).addEventListener('click', async () => {
+    setWaiting(null);
+    closeSheet();
+    try { await api.deny(m.id, state.kid); setData(await api.current(), { force: true }); } catch { /* the request just expires */ }
+  });
+}
+
+/** Requests this device may answer (its member's own, or everyone's for the captain). */
+function openApprovals() {
+  if (!state.approvals.length) return;
+  openSheet(`<div class="approvals" data-sheet="approvals">
+      <h2>${t('req.title')}</h2>
+      <p class="muted">${t('req.text')}</p>
+      ${V.requestList(state.approvals)}
+    </div>`, { label: t('req.title') });
+}
+
+async function answerRequest(el, yes) {
+  const m = memberOf(el.dataset.m);
+  if (!m || el.disabled) return;
+  el.disabled = true;
+  try {
+    await (yes ? api.approve(m.id, el.dataset.k) : api.deny(m.id, el.dataset.k));
+    setData(await api.current(), { force: true }); // also refreshes / closes the approvals sheet
+    toast(t(yes ? 'toast.approved' : 'toast.denied'), { type: 'good' });
+  } catch (err) {
+    el.disabled = false;
+    toast(errText(err), { type: 'warn' });
   }
-  body.addEventListener('click', e => { const b = e.target.closest('.keypad button'); if (b) press(b.dataset.k); });
-  const onKey = e => {
-    if (!body.isConnected) return document.removeEventListener('keydown', onKey);
-    if (/^\d$/.test(e.key)) press(e.key);
-    else if (e.key === 'Backspace') press('back');
-    else if (e.key === 'Enter') press('ok');
-  };
-  document.addEventListener('keydown', onKey);
+}
+
+/* ═════════════ Auto-sync link ═════════════ */
+async function createSyncLink(rotate) {
+  if (!state.me || state.syncBusy) return;
+  state.syncBusy = true;
+  render();
+  try {
+    await api.syncLink(state.me.id, memberOf(state.me.id), { rotate });
+    setData(await api.current(), { force: true });
+    toast(t('toast.newLink'), { type: 'good' });
+  } catch (err) {
+    toast(errText(err), { type: 'warn' });
+  } finally {
+    state.syncBusy = false;
+    render();
+  }
 }
 
 function openNextSteps() {
@@ -398,18 +537,28 @@ function openAvatarPicker() {
   const me = state.model.me;
   if (!me) return;
   const cur = me.avatar || '';
-  const grid = g => AVATARS.filter(a => a.g === g).map((a, k) => `
-    <button class="av-opt ${a.id === cur ? 'on' : ''}" data-av="${a.id}" aria-pressed="${a.id === cur}" aria-label="${esc(t('avatar.option', { n: `${g === 'f' ? '♀' : '♂'} ${k + 1}` }))}">${avatarSvg(a.id)}</button>`).join('');
+  let group = cur ? cur[0] : 'f';
+  const grid = () => AVATARS.filter(a => a.g === group).map(a => {
+    const label = avatarLabel(a.id, lang());
+    return `<button class="av-opt ${a.id === cur ? 'on' : ''}" data-av="${a.id}" aria-pressed="${a.id === cur}" aria-label="${esc(label)}" title="${esc(label)}" style="--av:${avColor(me)}">${avatarImg(a.id)}</button>`;
+  }).join('');
+  const tabs = () => ['f', 'm'].map(g => `<button class="chip ${g === group ? 'on' : ''}" role="tab" aria-selected="${g === group}" data-group="${g}">${t(g === 'f' ? 'avatar.female' : 'avatar.male')}</button>`).join('');
   const body = openSheet(`
-    <div class="av-pick">
-      <h2>${t('avatar.title')}</h2>
-      <p class="muted">${t('avatar.sub')}</p>
-      <p class="mini-h">${t('avatar.female')}</p><div class="av-grid">${grid('f')}</div>
-      <p class="mini-h">${t('avatar.male')}</p><div class="av-grid">${grid('m')}</div>
+    <div class="av-pick" data-sheet="avatar">
+      <div class="av-pick-h">${avatar(me, 56, { flagged: false })}<div><h2>${t('avatar.title')}</h2><p class="muted">${t('avatar.sub')}</p></div></div>
+      <div class="av-tabs" role="tablist" aria-label="${esc(t('avatar.title'))}">${tabs()}</div>
+      <div class="av-grid">${grid()}</div>
       <button class="btn ghost full av-none ${cur ? '' : 'on'}" data-av="">${avatar({ ...me, avatar: '' }, 28, { flagged: false })} ${t('avatar.initials')}</button>
     </div>`, { label: t('avatar.title') });
 
   body.addEventListener('click', async e => {
+    const tab = e.target.closest('[data-group]');
+    if (tab) {
+      group = tab.dataset.group;
+      $('.av-tabs', body).innerHTML = tabs();
+      $('.av-grid', body).innerHTML = grid();
+      return;
+    }
     const b = e.target.closest('[data-av]');
     if (!b || body.classList.contains('busy')) return;
     const choice = b.dataset.av;
@@ -417,16 +566,15 @@ function openAvatarPicker() {
     body.classList.add('busy');
     b.classList.add('saving');
     try {
-      await api.setAvatar({ id: state.me.id, token: state.me.token, avatar: choice });
-      setData({ ...state.data, members: state.data.members.map(x => (x.id === state.me.id ? { ...x, avatar: choice } : x)) }, { force: true });
+      await api.setAvatar({ id: state.me.id, avatar: choice });
+      setData(await api.current(), { force: true });
       closeSheet();
       toast(t(choice ? 'toast.avatarSaved' : 'toast.avatarCleared'), { type: 'good' });
       if (choice && !cur) confetti({ count: 60 });
     } catch (err) {
       body.classList.remove('busy');
       b.classList.remove('saving');
-      if (needsSignin(err)) { store.del(LS.me); state.me = null; closeSheet(); toast(t('toast.signinAgain'), { type: 'warn' }); return openSignin({ then: openAvatarPicker }); }
-      toast(err.message, { type: 'warn' });
+      toast(errText(err), { type: 'warn' });
     }
   });
 }
@@ -539,7 +687,7 @@ function registerSW() {
   const dev = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !new URLSearchParams(location.search).has('sw');
   if (dev) return; // local development: always serve fresh files (add ?sw to test offline mode)
   // Reload only when the user accepts an update — the first install also fires controllerchange (clients.claim)
-  // and reloading then would close the welcome / PIN sheet.
+  // and reloading then would close the welcome / sign-in sheet.
   let updating = false;
   navigator.serviceWorker.register('./sw.js').then(reg => {
     const offer = w => toast(t('toast.update'), { duration: 0, action: { label: t('toast.updateBtn'), run: () => { updating = true; w.postMessage('SKIP_WAITING'); } } });
@@ -570,6 +718,7 @@ async function boot() {
   applyLang();
   state.route = routeFromHash();
   $('#refresh-btn').addEventListener('click', () => refresh({ silent: false }));
+  state.kid = await api.deviceKid();
 
   const cached = api.cachedData();
   if (cached) setData(cached);
@@ -577,6 +726,7 @@ async function boot() {
   document.body.classList.remove('booting');
 
   await refresh({ silent: !!cached });
+  api.live(view => setData(view)); // other people's steps appear within a second
 
   const params = new URLSearchParams(location.search);
   if (params.has('shared')) {

@@ -2,7 +2,8 @@
 import { CONFIG } from './config.js';
 import * as M from './metrics.js';
 import * as C from './charts.js';
-import { DEMO, syncUrl } from './api.js';
+import { DEMO, storedSyncLink } from './api.js';
+import { codeOf } from './ledger.js';
 import { t, tn, lang, LANGS } from './i18n.js';
 import { esc, fmt, dec, compact, pct, dist, duration, dateLabel, weekdays, ago, avatar, avColor, flag, icon, ring } from './ui.js';
 
@@ -125,11 +126,17 @@ export function viewTeam(st) {
 
 function banners(st) {
   let out = '';
-  if (DEMO) out += `<div class="banner demo">🧪 <span>${t('banner.demo')}${CONFIG.API_URL ? t('banner.demoRemove') : t('banner.demoUntil')}</span></div>`;
+  if (DEMO) out += `<div class="banner demo">🧪 <span>${t('banner.demo')}${t('banner.demoRemove')}</span></div>`;
+  if (st.approvals.length) {
+    const a = st.approvals[0];
+    out += `<button class="banner approve" data-action="approvals"><span class="banner-emoji">🔐</span><span>${st.approvals.length === 1
+      ? t('banner.approve.one', { name: esc(a.m.name), device: esc(a.r.l || '?') }) : t('banner.approve.other', { n: st.approvals.length })}</span>${icon('chevron', 20)}</button>`;
+  }
+  if (st.waiting) out += `<button class="banner approve" data-action="wait"><span class="banner-emoji">⏳</span><span>${t('banner.waiting', { code: codeOf(st.kid) })}</span>${icon('chevron', 20)}</button>`;
   if (st.pending) out += `<div class="banner warn">${icon('wifi', 18)} <span>${tn('banner.pending', st.pending)}</span></div>`;
   if (!isStandalone() && !st.installHidden) out += `<div class="banner install"><span class="banner-emoji">📲</span><span>${t('banner.install')}</span>
     <button class="btn sm" data-action="install">${t('common.install')}</button><button class="icon-btn" data-action="dismiss-install" aria-label="${esc(t('common.dismiss'))}">${icon('close', 18)}</button></div>`;
-  if (!st.me && st.model.ctx.status !== 'finished') out += `<button class="banner join" data-action="signin"><span class="banner-emoji">👋</span><span>${t('banner.join')}</span>${icon('chevron', 20)}</button>`;
+  if (!st.me && !st.waiting && st.model.ctx.status !== 'finished') out += `<button class="banner join" data-action="signin"><span class="banner-emoji">👋</span><span>${t('banner.join')}</span>${icon('chevron', 20)}</button>`;
   return out;
 }
 
@@ -345,6 +352,7 @@ const settingsLink = () => `<a class="card settings-link" href="#/settings"><spa
 export function viewSettings(st) {
   const p = st.profile;
   const me = st.model.me;
+  const captain = !!me && (st.data.admins || []).includes(me.id);
   const row = (first, label, control) => `<div class="setting-row ${first ? 'first' : ''}"><span>${label}</span>${control}</div>`;
   const invite = row(false, `${icon('share', 18)} ${t('settings.invite')}`, `<button class="btn sm ghost" data-action="share-app">${t('settings.share')}</button>`);
   return `
@@ -356,6 +364,9 @@ export function viewSettings(st) {
     <div class="av-current">${avatar(me, 72, { flagged: false })}<div><b>${esc(me.name)}</b><small>${t(me.avatar ? 'settings.avatarSet' : 'settings.avatarNone')}</small></div></div>
     <button class="btn full" data-action="avatar">${icon('user', 18)} ${t(me.avatar ? 'avatar.change' : 'avatar.title')}</button>`
     : `<p class="muted">${t('settings.avatarSignin')}</p><button class="btn av-signin" data-action="signin">${t('common.signin')}</button>`)}
+
+  ${me ? devicesSection(st, me, captain) : ''}
+  ${captain ? captainSection(st) : ''}
 
   ${section(t('settings.appearance'), '', row(true, `${icon('moon', 18)} ${t('settings.theme')}`,
     seg('theme', [['auto', t('theme.auto')], ['light', t('theme.light')], ['dark', t('theme.dark')]], st.theme, t('settings.theme'))))}
@@ -375,14 +386,57 @@ export function viewSettings(st) {
   <p class="foot-note">Team 8 Step Challenge · v${CONFIG.VERSION}${DEMO ? ` · ${t('common.demoMode')}` : ''}</p>`;
 }
 
+/** Pending sign-in requests with the code to compare (approvals sheet, settings). */
+export function requestList(list) {
+  return `<ul class="req-list">${list.map(({ m, r }) => `
+    <li class="req">
+      <span class="req-who">${avatar(m, 40, { flagged: false })}<span><b>${esc(m.name)}</b><small>${esc(r.l || '?')} · ${ago(r.at)}</small></span></span>
+      <span class="req-code" aria-label="${esc(t('req.code'))} ${codeOf(r.kid)}"><small>${t('req.code')}</small>${codeOf(r.kid)}</span>
+      <span class="req-btns">
+        <button class="btn sm ghost" data-action="deny" data-m="${esc(m.id)}" data-k="${esc(r.kid)}">${t('req.deny')}</button>
+        <button class="btn sm" data-action="approve" data-m="${esc(m.id)}" data-k="${esc(r.kid)}">${icon('check', 16)} ${t('req.approve')}</button>
+      </span>
+    </li>`).join('')}</ul>`;
+}
+
+function devicesSection(st, me, captain) {
+  const mine = captain ? [] : st.approvals.filter(a => a.m.id === me.id); // the captain sees them all below
+  return section(t('settings.devices'), t('settings.devicesSub'), `
+    <ul class="device-list">${(me.keys || []).map(k => {
+      const here = k.kid === st.kid;
+      return `<li><span class="device-ic">${icon('phone', 18)}</span><span class="device-name"><b>${esc(k.l || '?')}${here ? ` <em>${t('settings.thisDevice')}</em>` : ''}</b>
+        <small>${t('settings.since', { date: k.at ? dateLabel(k.at.slice(0, 10)) : '—' })}</small></span>
+        ${here ? '' : `<button class="btn sm ghost" data-action="revoke-device" data-k="${esc(k.kid)}">${t('settings.remove')}</button>`}</li>`;
+    }).join('')}</ul>
+    ${mine.length ? requestList(mine) : ''}`);
+}
+
+function captainSection(st) {
+  const { members } = st.model;
+  return section(t('admin.title'), t('admin.sub'), `
+    ${st.approvals.length ? requestList(st.approvals) : `<p class="muted sm">${t('req.none')}</p>`}
+    <ul class="captain-list">${members.map(m => `
+      <li>${avatar(m, 34, { flagged: false })}<span class="device-name"><b>${esc(m.name)}</b>
+        <small>${m.joined ? tn('admin.devices', (m.keys || []).length) : t('admin.notJoined')}${m.lastSyncAt ? ` · ${ago(m.lastSyncAt)}` : ''}</small></span>
+        ${m.joined && m.id !== st.me.id ? `<button class="btn sm ghost" data-action="reset-member" data-id="${esc(m.id)}">${t('admin.reset')}</button>` : ''}</li>`).join('')}</ul>
+    <div class="setting-row"><span>${icon('table', 18)} <span><b>${t('admin.sheet')}</b><br><small class="muted">${t('admin.sheetSub')}</small></span></span>
+      <a class="btn sm ghost" href="${esc(CONFIG.SHEET_URL)}" target="_blank" rel="noopener">${icon('install', 16)} ${t('admin.download')}</a></div>`);
+}
+
 /* ════════════════════════════════ SYNC ════════════════════════════════ */
 export function viewSync(st) {
   const me = st.model.me;
   const plat = st.platform;
-  const link = st.me ? syncUrl(st.me.id, st.me.token) : '';
+  const link = st.me ? storedSyncLink(st.me.id) : '';
   const autoOn = me && me.autoSyncs > 0;
-  const copyBtn = st.me ? `<button class="btn sm" data-action="copy-sync">${icon('copy', 16)} ${t('sync.copy')}</button>` : `<button class="btn sm" data-action="signin">${t('sync.signinLink')}</button>`;
-  const linkBox = st.me ? `<div class="linkbox"><code>${esc(link)}</code>${copyBtn}</div><p class="muted sm">${t('sync.private')}</p>` : copyBtn;
+  const busy = st.syncBusy ? 'disabled' : '';
+  const copyBtn = !st.me ? `<button class="btn sm" data-action="signin">${t('sync.signinLink')}</button>`
+    : link ? `<button class="btn sm" data-action="copy-sync">${icon('copy', 16)} ${t('sync.copy')}</button>`
+    : `<button class="btn sm ${st.syncBusy ? 'busy' : ''}" data-action="sync-create" ${busy}>${icon('bolt', 16)} ${t('sync.create')}</button>`;
+  const linkBox = !st.me ? copyBtn : `
+    ${link ? `<div class="linkbox"><code>${esc(link)}</code>${copyBtn}</div>` : `<div class="linkbox empty">${copyBtn}</div>`}
+    ${!link && me && me.syncHash ? `<p class="muted sm">${t('sync.otherDevice')}</p>` : ''}
+    <p class="muted sm">${t('sync.private')}${link ? ` <button class="link-btn inline" data-action="sync-new" ${busy}>${t('sync.newLink')}</button>` : ''}</p>`;
   const flowStep = (emoji, k, opt = false) => `<div class="flow-step ${opt ? 'opt' : ''}"><span>${emoji}</span><div><b>${t(`ios.${k}`)}</b>${opt ? ` <em>${t('common.optional')}</em>` : ''}<small>${t(`ios.${k}s`)}</small></div></div>`;
 
   const ios = `

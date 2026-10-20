@@ -1,0 +1,43 @@
+name: Ledger
+
+# The app's backend. Every few minutes this folds the new step messages from the relay into
+# data/data.json (read by every app) and step-tracking_Team8.xlsx, and commits them to main.
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'js/ledger.js'
+      - 'js/config.js'
+      - 'js/avatars.js'
+      - 'backend/**'
+      - '.github/workflows/ledger.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ledger
+  cancel-in-progress: false
+
+jobs:
+  fold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test the ledger
+        if: github.event_name == 'push'
+        run: node --test backend/ledger.test.mjs
+      - name: Fold, update the spreadsheet and commit
+        run: bash backend/publish.sh

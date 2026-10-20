@@ -3,7 +3,7 @@
 // keyboard navigation (← →) and a table twin rendered by the views.
 import { esc, compact, fmt, initials } from './ui.js';
 import { t } from './i18n.js';
-import { avatarInner } from './avatars.js';
+import { avatarSrc } from './avatars.js';
 
 /* ── Tooltip (one for the whole app) ── */
 const tipEl = () => document.getElementById('tip');
@@ -224,11 +224,13 @@ export function heatmap(host, o) {
     members.forEach((m, k) => {
       const x0 = lw + k * (cw + gap);
       const r = Math.min(13, cw / 2 - 1);
-      const face = avatarInner(m.avatar);
+      const face = avatarSrc(m.avatar);
+      const cx = x0 + cw / 2;
       if (m.id === meId) s += `<rect class="me-band" x="${x0 - 2}" y="2" width="${cw + 4}" height="${H - 2}" rx="8"/>`;
       s += `<g class="hm-member" data-id="${esc(m.id)}" role="button" aria-label="${esc(m.name)}">${face
-        ? `<svg x="${x0 + cw / 2 - r}" y="${17 - r}" width="${2 * r}" height="${2 * r}" viewBox="0 0 64 64">${face}</svg>`
-        : `<circle cx="${x0 + cw / 2}" cy="17" r="${r}" style="fill:${o.colorOf(m)}"/>
+        ? `<clipPath id="hm-av-${esc(m.id)}"><circle cx="${cx}" cy="17" r="${r}"/></clipPath><circle cx="${cx}" cy="17" r="${r}" style="fill:${o.colorOf(m)}" opacity="0.22"/>
+        <image href="${face}" x="${cx - r}" y="${17 - r}" width="${2 * r}" height="${2 * r}" clip-path="url(#hm-av-${esc(m.id)})" preserveAspectRatio="xMidYMid slice"/>`
+        : `<circle cx="${cx}" cy="17" r="${r}" style="fill:${o.colorOf(m)}"/>
         <text class="hm-ini" x="${x0 + cw / 2}" y="17" dy=".35em" text-anchor="middle">${esc(initials(m.name))}</text>`}</g>`;
     });
     dates.forEach((d, i) => {

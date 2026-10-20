@@ -1,2 +1,7 @@
 # Calendar files must keep CRLF line endings (RFC 5545)
 *.ics -text
+# Run on the Linux GitHub runner
+*.sh text eol=lf
+# Binary assets
+*.xlsx binary
+*.webp binary

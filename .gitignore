@@ -1,7 +1,4 @@
-# Contains colleagues' phone numbers — never publish
-*.xlsx
-*.xls
-*.csv
+# Local WhatsApp invites built from the spreadsheet (tools/make_invites.py)
 invites.html
 
 # Old multi-team generator (kept locally only)

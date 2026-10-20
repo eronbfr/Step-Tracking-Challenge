@@ -8,10 +8,10 @@
 
 📲 Get our app (installs like a native app):
 https://eronbfr.github.io/Step-Tracking-Challenge/
-• iPhone: open in Safari → Share → Add to Home Screen
+• iPhone: open in Safari → Share → Add to Home Screen, then open it from the home screen
 • Android: open in Chrome → ⋮ → Install app
 
-1️⃣ Pick your name and create a 4-digit PIN
+1️⃣ Pick your name (no password — your phone is your key) and choose your avatar 🧑‍🎨
 2️⃣ Turn on Auto-sync (⚡ tab) — iPhones sync from Apple Health by themselves; on Android just share a screenshot of your health app to the app
 3️⃣ Walk! Live team dashboard, friendly ranking, badges, streaks and your health stats 💪
 
@@ -25,4 +25,4 @@ Let's go, Team 8! 🚀
 ```
 
 Personal WhatsApp invites (one tap per colleague) can be generated locally with
-`python tools/make_invites.py` — the output `invites.html` contains phone numbers and is **never committed**.
+`python tools/make_invites.py` (output: `invites.html`, kept out of the repository).

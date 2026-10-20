@@ -1,79 +1,89 @@
-# Backend setup (organizer · ~5 minutes)
+# Backend — how it works and how to run the team
 
-The app is a static PWA on GitHub Pages. Steps are stored in a **Google Sheet** that you own, through a tiny
-**Google Apps Script** web app. Nothing to install, no server, free.
+There is **nothing to deploy**. The backend is this GitHub repository:
 
-## 1. Create the Google Sheet
-
-1. Open <https://sheets.new> (signed in with the Google account that should own the data).
-2. Name it **Team 8 Step Challenge**.
-
-## 2. Add the script
-
-1. In the sheet: **Extensions → Apps Script**.
-2. Delete everything in `Code.gs` and paste the full content of [`backend/Code.gs`](../backend/Code.gs).
-3. Click **Save** (💾).
-
-## 3. Run the one-time setup
-
-1. In the toolbar, pick the function **`setup`** and click **Run**.
-2. Google asks for permission → **Review permissions** → choose your account →
-   **Advanced** → **Go to Team 8 Step Challenge (unsafe)** → **Allow**.
-   *(“Unsafe” only means the script isn't published by Google — it's your own code, and it only touches this sheet.)*
-3. Go back to the sheet: you now have the tabs **Steps**, **Members** and **Log**.
-
-## 4. Deploy it as a web app
-
-1. **Deploy → New deployment** → click the ⚙️ next to “Select type” → **Web app**.
-2. Description: `Team 8 API` · **Execute as: Me** · **Who has access: Anyone**.
-3. **Deploy** and copy the **Web app URL** (it ends with `/exec`).
-4. Quick test: open `YOUR_URL?action=data` in the browser — you should see JSON with the 9 members.
-
-## 5. Connect the app
-
-Edit [`js/config.js`](../js/config.js) and paste the URL:
-
-```js
-API_URL: 'https://script.google.com/macros/s/AKfy.../exec',
+```
+ Phone / laptop (PWA on GitHub Pages)
+   │  signed message ──POST──▶  relay topic (ntfy.sh)  ──live (SSE)──▶  every open app, within a second
+   │                                   │
+   │                                   ▼ every ~5 min
+   │                         GitHub Action "Ledger" (.github/workflows/ledger.yml)
+   │                           backend/fold.mjs  → data/data.json + data/log.csv
+   │                           backend/sheet.py  → step-tracking_Team8.xlsx
+   │                           commit to main
+   ▼
+ reads data/data.json (raw.githubusercontent.com + Pages) and replays the newer relay messages on top
 ```
 
-Commit (on GitHub you can edit the file directly with the ✏️ button). GitHub Pages republishes in ~1 minute
-and the app leaves demo mode. Also bump `VERSION` in [`sw.js`](../sw.js) on every release so installed apps update.
+- **One rulebook.** [`js/ledger.js`](../js/ledger.js) is the state machine. The app runs it to show live data,
+  the Action runs the very same file to write the snapshot, so the dashboard and the spreadsheet always agree.
+- **Signed writes.** On sign-in each device creates an ECDSA P-256 key (WebCrypto, non-extractable, stored in
+  IndexedDB). Every message is signed; the public key is stored in `data/data.json`. Nobody can log steps for
+  someone else, and there is no password to forget.
+- **Live for everyone.** Messages go to a public relay topic (`RELAY_TOPIC` in [`js/config.js`](../js/config.js)).
+  Every open app is subscribed, so a teammate's steps appear right away. The relay keeps messages for 12 h;
+  the Action folds them into the repository every few minutes, so nothing depends on the relay for long.
+- **The spreadsheet is the repository's `step-tracking_Team8.xlsx`.** Same layout as before (one row per member,
+  one column per day, TOTAL formulas); the Action rewrites the day cells after every change and adds a **Log**
+  sheet with the full history. Download it from GitHub or from the app (⚙️ → Team captain).
+- **Offline-safe.** Entries made offline are queued and sent when the phone is back online; if a message ever goes
+  missing before the Action stored it, the app that wrote it sends it again.
 
----
+## Signing in
 
-## Day-to-day admin (all in the Google Sheet)
+| Situation | What happens |
+|---|---|
+| First time on a name | Tap the name → *Yes, that's me*. This device is linked immediately |
+| A second device (laptop, new phone, iPhone Safari vs installed app) | Tap the name → *Request access* → a 4-digit code appears. Approve the request with the same code on the other device (it pops up there) or ask the captain |
+| Lost phone / someone took the wrong name | Captain → ⚙️ **Team captain** → **Reset** next to the name. Steps are kept; the person picks their name again |
+| Sign out | ⚙️ → Account → Sign out (removes this device from the ledger) |
+
+On iPhone, Safari and the installed home-screen app keep separate storage, so they count as two devices: install
+first, then sign in from the home-screen app (the app says so on the sign-in screen).
+
+## Team captain (`ADMINS` in `js/config.js`, today: `eron`)
+
+The captain's devices can approve any sign-in request and reset anyone. **The captain should sign in first**
+(the first device to claim a free name gets it). Everything is in the app: ⚙️ Settings → **Team captain**.
 
 | Task | How |
 |---|---|
-| Fix someone's steps | Edit the cell in **Steps** (the app refreshes within ~20 s) |
-| Reset a forgotten PIN | In **Members**, clear that person's `pinHash` **and** `token` cells. They create a new PIN in the app and must update their Shortcut link |
-| See who synced when | **Members** → `lastSyncAt`, `lastSource`, `autoSyncs` · full history in **Log** |
-| Change someone's avatar | **Members** → `avatar` (`f1`–`f5`, `m1`–`m5`, empty = initials) |
-| Add a member | Add them to `ROSTER` in `Code.gs` and run `setup` again (data, PINs and keys are preserved) |
-| Export to Excel | **File → Download → Microsoft Excel** |
+| Approve a new device | Pops up automatically; also listed in ⚙️ → Team captain |
+| Reset someone's sign-in | ⚙️ → Team captain → **Reset** |
+| See who synced when | ⚙️ → Team captain (devices · last update) · full history in `data/log.csv` / the **Log** sheet |
+| Download the spreadsheet | ⚙️ → Team captain → **Download**, or `step-tracking_Team8.xlsx` on GitHub |
+| Fix a wrong number | The person edits that day in the app (latest edit wins). Automatic syncs only ever raise a day |
+| Add a member | Add them to `ROSTER` in `js/config.js` and a row (same name) in the spreadsheet; commit. The Action picks it up |
 
-## Updating the script later
+## Watching the backend
 
-After editing `Code.gs`: **Deploy → Manage deployments → ✏️ Edit → Version: New version → Deploy**.
-The URL stays the same.
-
-**Upgrading from v1.0 → v1.1** (languages + avatars): paste the new `Code.gs` and deploy a new version as above.
-The `avatar` column in **Members** is created automatically the first time someone picks an avatar
-(or run `setup` once to add it right away — steps, PINs and keys are preserved).
-
-## Testing the backend locally
-
-```bash
-node backend/test-harness.js
-```
-
-Runs the backend against mocked Google services (setup, PINs, logging, sync, validation, lockout, avatars, languages).
+- **Actions** tab on GitHub → *Ledger*: one run every ~5 minutes. Each run lists the messages it applied
+  (`✓ … log eron steps 2026-10-21 → 8432`) or rejected (`✗ … badSignature`), and commits only when something changed
+  (`data: 3 step updates (eron, gonza)`).
+- Run it by hand: Actions → Ledger → **Run workflow**.
+- GitHub runs scheduled jobs on a best-effort basis (sometimes 10–20 min apart); the app doesn't wait for it —
+  everyone already sees new steps live — the delay only affects the committed snapshot and spreadsheet.
 
 ## Security notes
 
-- Public read (`action=data`) only returns names, avatars and step counts.
-- Writes need a per-member **sync key** (random, 32 hex chars) obtained by entering the member's PIN.
-- PINs are stored as salted SHA-256 hashes; 8 wrong PINs lock that member for 15 minutes.
-- Automatic syncs use “max” semantics — they can never lower a day's value. Manual edits in the app can.
-- Keep the **Members** tab private (don't share the sheet publicly).
+- Everything in the relay and in `data/data.json` is public by design: names, avatars, step counts, device labels
+  and **public** keys. No secrets are stored anywhere.
+- Messages without a valid signature from one of the member's keys are ignored by both the app and the Action.
+- The iPhone Shortcut can't sign, so it uses a personal **sync key**: the ledger stores only its SHA-256 hash, and a
+  Shortcut message can only *raise* that member's steps for today (or a given day). A new link (Auto-sync tab →
+  *New link*) invalidates the old one.
+- Health profile (height, weight) never leaves the phone.
+
+## Development
+
+```bash
+python tools/dev_server.py 8765       # the app, no caching
+python tools/mock_relay.py 8766       # a local ntfy-compatible relay
+# open http://localhost:8765/?relay=http://localhost:8766   (two origins, e.g. localhost and 127.0.0.1, = two devices)
+node backend/fold.mjs --relay http://localhost:8766 --dir <copy of the repo>   # what the Action does
+python backend/sheet.py <copy of the repo>
+node --test backend/ledger.test.mjs   # ledger rules
+```
+
+`?demo` shows sample data without touching the relay (`?demo&asOf=2026-11-04` previews another day).
+Bump `VERSION` in [`sw.js`](../sw.js) on every release so installed apps update.
