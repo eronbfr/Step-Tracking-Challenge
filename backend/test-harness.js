@@ -195,4 +195,42 @@ test('audit log records changes only', () => {
   assert.deepStrictEqual(log.getRange(1, 1, 1, 6).getValues()[0], ['timestamp', 'id', 'date', 'steps', 'previous', 'source']);
 });
 
+test('profile saves an avatar everyone can see', () => {
+  const r = post({ action: 'profile', m: 'eron', t: token, avatar: 'm2' });
+  assert.strictEqual(r.ok, true, r.error);
+  const d = get({ action: 'data' });
+  assert.strictEqual(d.members.find(m => m.id === 'eron').avatar, 'm2');
+  assert.strictEqual(d.members.find(m => m.id === 'luis').avatar, '');
+  assert.strictEqual(post({ action: 'profile', m: 'eron', t: token, avatar: '' }).avatar, '', 'empty = back to initials');
+  assert.strictEqual(get({ action: 'data' }).members.find(m => m.id === 'eron').avatar, '');
+});
+
+test('profile validates the key and the avatar id', () => {
+  assert.strictEqual(post({ action: 'profile', m: 'eron', t: 'nope', avatar: 'f1' }).code, 'invalidKey');
+  assert.strictEqual(post({ action: 'profile', m: 'eron', t: token, avatar: '<script>' }).code, 'badAvatar');
+  assert.strictEqual(post({ action: 'profile', m: 'luis', t: '', avatar: 'f1' }).code, 'missingKey');
+});
+
+test('profile works on a Members sheet created before v1.1 (no avatar column)', () => {
+  const sh = ss.getSheetByName('Members');
+  for (let r = 1; r <= sh.getLastRow(); r++) sh.put(r, 11, '');
+  assert.strictEqual(post({ action: 'profile', m: 'eron', t: token, avatar: 'f3' }).ok, true);
+  assert.strictEqual(sh.cell(1, 11), 'avatar', 'header added');
+  assert.strictEqual(get({ action: 'data' }).members.find(m => m.id === 'eron').avatar, 'f3');
+  run('setup()');
+  assert.strictEqual(get({ action: 'data' }).members.find(m => m.id === 'eron').avatar, 'f3', 'setup keeps avatars');
+});
+
+test('messages follow lang=pt|es (errors and the Shortcut reply)', () => {
+  assert.match(get({ action: 'sync', m: 'eron', t: token, date: '2026-10-21', steps: '12345', lang: 'pt' }), /^✅ 12\.345 passos salvos \(qua, 21\/10\)\. Continue assim, Team 8!$/);
+  assert.match(get({ action: 'sync', m: 'eron', t: token, date: '2026-10-21', steps: '12345', lang: 'es' }), /^✅ 12,345 pasos guardados \(mié, 21\/10\)\. ¡Sigue así, Team 8!$/);
+  assert.match(get({ action: 'sync', m: 'eron', t: 'bad', steps: 10, lang: 'pt' }), /^⚠️ Chave de sincronização inválida/);
+  const e = post({ action: 'log', m: 'eron', t: token, date: '2026-10-19', steps: 1, lang: 'es' });
+  assert.strictEqual(e.code, 'startsOn');
+  assert.strictEqual(e.error, 'El reto empieza el mar, 20/10.');
+  assert.strictEqual(post({ action: 'claim', m: 'eron', pin: '9', lang: 'pt' }).error, 'O PIN precisa ter 4 dígitos.');
+  assert.match(post({ action: 'log', m: 'eron', t: token, date: '2026-10-20', steps: 250000, lang: 'pt' }).error, /máx\. 100\.000 passos/);
+  assert.strictEqual(post({ action: 'claim', m: 'eron', pin: '1234', lang: 'xx' }).ok, true, 'unknown lang falls back to English');
+});
+
 console.log(`\n${passed} tests passed`);

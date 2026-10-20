@@ -1,4 +1,5 @@
-// Challenge & health metrics — pure functions, no DOM.
+// Challenge & health metrics — pure functions, no DOM, no wording.
+// Levels, badges, foods, milestones and hall-of-fame entries carry ids; the views translate them (strings.js).
 // All health numbers are estimates derived from step counts; the formulas are documented in docs/METRICS.md.
 
 export const DEFAULTS = { strideM: 0.762, weightKg: 70 };
@@ -30,30 +31,30 @@ export const toCo2Kg = km => km * CO2_KG_PER_KM;
 export const bmiOf = p => (p && p.heightCm && p.weightKg ? p.weightKg / (p.heightCm / 100) ** 2 : null);
 export function bmiClass(b) {
   if (b == null) return null;
-  if (b < 18.5) return 'Underweight';
-  if (b < 25) return 'Healthy range';
-  if (b < 30) return 'Overweight';
-  return 'Obesity range';
+  if (b < 18.5) return 'under';
+  if (b < 25) return 'healthy';
+  if (b < 30) return 'over';
+  return 'obese';
 }
 
 // Tudor-Locke & Bassett (2004) pedometer-based activity classification
 export const LEVELS = [
-  { min: 0,     name: 'Sedentary',       emoji: '🛋️', tip: 'Short walks after meals add up fast.' },
-  { min: 5000,  name: 'Low active',      emoji: '🚶', tip: 'A 15-minute walk at lunch adds ~1,500 steps.' },
-  { min: 7500,  name: 'Somewhat active', emoji: '🙂', tip: 'You are close — 10K is within reach!' },
-  { min: 10000, name: 'Active',          emoji: '💪', tip: 'This is the classic 10K target. Keep it up!' },
-  { min: 12500, name: 'Highly active',   emoji: '🚀', tip: 'Elite territory. Remember to recover well.' },
+  { min: 0,     id: 'sedentary', emoji: '🛋️' },
+  { min: 5000,  id: 'low',       emoji: '🚶' },
+  { min: 7500,  id: 'somewhat',  emoji: '🙂' },
+  { min: 10000, id: 'active',    emoji: '💪' },
+  { min: 12500, id: 'high',      emoji: '🚀' },
 ];
 export const levelOf = avg => LEVELS.slice().reverse().find(l => avg >= l.min);
 
 // Approximate energy of regional favourites (kcal per unit)
 export const FOODS = [
-  { emoji: '🌮', name: 'tacos', one: 'taco', kcal: 170 },
-  { emoji: '🫓', name: 'arepas', one: 'arepa', kcal: 220 },
-  { emoji: '🥟', name: 'empanadas', one: 'empanada', kcal: 280 },
-  { emoji: '🍫', name: 'brigadeiros', one: 'brigadeiro', kcal: 100 },
-  { emoji: '🍪', name: 'alfajores', one: 'alfajor', kcal: 220 },
-  { emoji: '🍕', name: 'pizza slices', one: 'pizza slice', kcal: 285 },
+  { id: 'taco',       emoji: '🌮', kcal: 170 },
+  { id: 'arepa',      emoji: '🫓', kcal: 220 },
+  { id: 'empanada',   emoji: '🥟', kcal: 280 },
+  { id: 'brigadeiro', emoji: '🍫', kcal: 100 },
+  { id: 'alfajor',    emoji: '🍪', kcal: 220 },
+  { id: 'pizza',      emoji: '🍕', kcal: 285 },
 ];
 
 /* ── Team expedition: straight-line distances between team home cities ── */
@@ -68,14 +69,14 @@ function haversine([la1, lo1], [la2, lo2]) {
 }
 const hv = (a, b) => Math.round(haversine(CITY[a], CITY[b]));
 export const MILESTONES = [
-  { km: 42.2, emoji: '🏃', name: 'Marathon', note: 'The classic 42.2 km' },
-  { km: hv('mvd', 'pde'), emoji: '🏖️', name: 'Montevideo → Punta del Este', note: 'Uruguay 🇺🇾' },
-  { km: hv('bog', 'med'), emoji: '☕', name: 'Bogotá → Medellín', note: 'Colombia 🇨🇴' },
-  { km: hv('cdmx', 'aca'), emoji: '🌴', name: 'Mexico City → Acapulco', note: 'Mexico 🇲🇽' },
-  { km: hv('rio', 'sp'), emoji: '🎶', name: 'Rio de Janeiro → São Paulo', note: 'Brazil 🇧🇷' },
-  { km: 780, emoji: '🐚', name: 'Camino de Santiago', note: 'The French Way, Spain' },
-  { km: hv('sp', 'mvd'), emoji: '🧉', name: 'São Paulo → Montevideo', note: 'Brazil 🇧🇷 to Uruguay 🇺🇾' },
-  { km: hv('bog', 'cdmx'), emoji: '🌋', name: 'Bogotá → Mexico City', note: 'Legendary · Colombia 🇨🇴 to Mexico 🇲🇽' },
+  { id: 'marathon', km: 42.2, emoji: '🏃' },
+  { id: 'mvd-pde',  km: hv('mvd', 'pde'), emoji: '🏖️' },
+  { id: 'bog-med',  km: hv('bog', 'med'), emoji: '☕' },
+  { id: 'cdmx-aca', km: hv('cdmx', 'aca'), emoji: '🌴' },
+  { id: 'rio-sp',   km: hv('rio', 'sp'), emoji: '🎶' },
+  { id: 'camino',   km: 780, emoji: '🐚' },  // Camino de Santiago, French Way
+  { id: 'sp-mvd',   km: hv('sp', 'mvd'), emoji: '🧉' },
+  { id: 'bog-cdmx', km: hv('bog', 'cdmx'), emoji: '🌋' },
 ].sort((a, b) => a.km - b.km);
 
 /* ── Challenge context ── */
@@ -188,28 +189,28 @@ export function memberStats(daily, ctx, profile) {
 const MARATHON_STEPS = Math.round(42195 / DEFAULTS.strideM);
 const CENTURY_STEPS = Math.round(100000 / DEFAULTS.strideM);
 export const BADGES = [
-  { id: 'first',    emoji: '👟', name: 'First Steps',     desc: 'Log your first day',                    test: s => s.logged / 1 },
-  { id: '10k',      emoji: '🔟', name: '10K Club',        desc: 'Walk 10,000 steps in one day',          test: s => s.best / 10000 },
-  { id: '15k',      emoji: '🚀', name: 'Rocket',          desc: 'Walk 15,000 steps in one day',          test: s => s.best / 15000 },
-  { id: '20k',      emoji: '🦁', name: 'Beast Mode',      desc: 'Walk 20,000 steps in one day',          test: s => s.best / 20000 },
-  { id: '30k',      emoji: '🏔️', name: 'Summit',          desc: 'Walk 30,000 steps in one day',          test: s => s.best / 30000 },
-  { id: 'streak3',  emoji: '🔥', name: 'On Fire',         desc: 'Hit the goal 3 days in a row',          test: s => s.longest / 3 },
-  { id: 'streak7',  emoji: '⚡', name: 'Unstoppable',     desc: 'Hit the goal 7 days in a row',          test: s => s.longest / 7 },
-  { id: 'streak14', emoji: '👑', name: 'Legend',          desc: 'Hit the goal 14 days in a row',         test: s => s.longest / 14 },
-  { id: 'week',     emoji: '🗓️', name: 'Perfect Week',    desc: 'Goal every day from Monday to Sunday',  test: s => (s.perfectWeek ? 1 : s.bestWeekGoalDays / 7) },
-  { id: 'weekend',  emoji: '🏖️', name: 'Weekend Warrior', desc: 'Goal on Saturday and Sunday',           test: s => (s.weekendGoal ? 1 : 0) },
-  { id: 'comeback', emoji: '💪', name: 'Comeback',        desc: 'Hit the goal right after a day under 5K', test: s => (s.comeback ? 1 : 0) },
-  { id: 'loyal',    emoji: '📅', name: 'Never Miss',      desc: 'Log 7 days in a row',                   test: s => s.longestLogged / 7 },
-  { id: 'marathon', emoji: '🏅', name: 'Marathoner',      desc: 'Walk 42.2 km in total',                 test: s => s.total / MARATHON_STEPS },
-  { id: 'century',  emoji: '💯', name: 'Centurion',       desc: 'Walk 100 km in total',                  test: s => s.total / CENTURY_STEPS },
-  { id: 'quarter',  emoji: '🎯', name: 'Quarter Million', desc: 'Reach 250,000 steps',                   test: s => s.total / 250000 },
-  { id: 'champion', emoji: '🏆', name: 'Champion',        desc: '10K × every challenge day',             test: (s, m, ctx) => s.total / ctx.target },
-  { id: 'auto',     emoji: '🤖', name: 'Autopilot',       desc: 'Sync steps automatically',              test: (s, m) => (m.autoSyncs > 0 ? 1 : 0) },
+  { id: 'first',    emoji: '👟', test: s => s.logged / 1 },                         // log your first day
+  { id: '10k',      emoji: '🔟', test: s => s.best / 10000 },                       // 10,000 steps in one day
+  { id: '15k',      emoji: '🚀', test: s => s.best / 15000 },
+  { id: '20k',      emoji: '🦁', test: s => s.best / 20000 },
+  { id: '30k',      emoji: '🏔️', test: s => s.best / 30000 },
+  { id: 'streak3',  emoji: '🔥', test: s => s.longest / 3 },                        // goal 3 days in a row
+  { id: 'streak7',  emoji: '⚡', test: s => s.longest / 7 },
+  { id: 'streak14', emoji: '👑', test: s => s.longest / 14 },
+  { id: 'week',     emoji: '🗓️', test: s => (s.perfectWeek ? 1 : s.bestWeekGoalDays / 7) }, // goal Monday → Sunday
+  { id: 'weekend',  emoji: '🏖️', test: s => (s.weekendGoal ? 1 : 0) },              // goal on Saturday and Sunday
+  { id: 'comeback', emoji: '💪', test: s => (s.comeback ? 1 : 0) },                 // goal right after a day under 5K
+  { id: 'loyal',    emoji: '📅', test: s => s.longestLogged / 7 },                  // log 7 days in a row
+  { id: 'marathon', emoji: '🏅', test: s => s.total / MARATHON_STEPS },             // 42.2 km in total
+  { id: 'century',  emoji: '💯', test: s => s.total / CENTURY_STEPS },              // 100 km in total
+  { id: 'quarter',  emoji: '🎯', test: s => s.total / 250000 },
+  { id: 'champion', emoji: '🏆', test: (s, m, ctx) => s.total / ctx.target },       // 10K × every challenge day
+  { id: 'auto',     emoji: '🤖', test: (s, m) => (m.autoSyncs > 0 ? 1 : 0) },        // synced automatically
 ];
 export function badgesOf(m, ctx) {
   return BADGES.map(b => {
     const p = Math.max(0, Math.min(1, b.test(m.s, m, ctx) || 0));
-    return { id: b.id, emoji: b.emoji, name: b.name, desc: b.desc, earned: p >= 1, progress: p };
+    return { id: b.id, emoji: b.emoji, earned: p >= 1, progress: p };
   });
 }
 
@@ -262,18 +263,18 @@ export function hallOfFame(members, ctx) {
   const out = [];
   if (ctx.status === 'live') {
     const tl = top('today', 1);
-    if (tl) out.push({ id: 'today', emoji: '⚡', title: "Today's leader", m: tl, value: tl.s.today, unit: 'steps so far' });
+    if (tl) out.push({ id: 'today', emoji: '⚡', m: tl, value: tl.s.today });
   }
   const bd = top('best', 1);
-  if (bd) out.push({ id: 'bestday', emoji: '🏆', title: 'Best single day', m: bd, value: bd.s.best, unit: 'steps', note: ctx.dates[bd.s.bestIdx] });
+  if (bd) out.push({ id: 'bestday', emoji: '🏆', m: bd, value: bd.s.best, note: ctx.dates[bd.s.bestIdx] });
   const ls = top('longest', 2);
-  if (ls) out.push({ id: 'streak', emoji: '🔥', title: 'Longest streak', m: ls, value: ls.s.longest, unit: 'days in a row' });
+  if (ls) out.push({ id: 'streak', emoji: '🔥', m: ls, value: ls.s.longest });
   const gd = top('goalDays', 1);
-  if (gd) out.push({ id: 'goaldays', emoji: '🎯', title: 'Most 10K days', m: gd, value: gd.s.goalDays, unit: 'goal days' });
+  if (gd) out.push({ id: 'goaldays', emoji: '🎯', m: gd, value: gd.s.goalDays });
   const ww = members.filter(m => m.s.weekendDays > 0 && m.s.weekendAvg > 0).sort((a, b) => b.s.weekendAvg - a.s.weekendAvg)[0];
-  if (ww) out.push({ id: 'weekend', emoji: '🏖️', title: 'Weekend warrior', m: ww, value: Math.round(ww.s.weekendAvg), unit: 'avg on weekends' });
+  if (ww) out.push({ id: 'weekend', emoji: '🏖️', m: ww, value: Math.round(ww.s.weekendAvg) });
   const mi = members.filter(m => m.s.improvement != null && m.s.improvement > 0.02).sort((a, b) => b.s.improvement - a.s.improvement)[0];
-  if (mi) out.push({ id: 'improved', emoji: '📈', title: 'Most improved', m: mi, value: Math.round(mi.s.improvement * 100), unit: '% vs last week', pct: true });
+  if (mi) out.push({ id: 'improved', emoji: '📈', m: mi, value: Math.round(mi.s.improvement * 100), pct: true });
   return out;
 }
 

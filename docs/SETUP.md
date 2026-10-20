@@ -49,6 +49,7 @@ and the app leaves demo mode. Also bump `VERSION` in [`sw.js`](../sw.js) on ever
 | Fix someone's steps | Edit the cell in **Steps** (the app refreshes within ~20 s) |
 | Reset a forgotten PIN | In **Members**, clear that person's `pinHash` **and** `token` cells. They create a new PIN in the app and must update their Shortcut link |
 | See who synced when | **Members** → `lastSyncAt`, `lastSource`, `autoSyncs` · full history in **Log** |
+| Change someone's avatar | **Members** → `avatar` (`f1`–`f5`, `m1`–`m5`, empty = initials) |
 | Add a member | Add them to `ROSTER` in `Code.gs` and run `setup` again (data, PINs and keys are preserved) |
 | Export to Excel | **File → Download → Microsoft Excel** |
 
@@ -57,17 +58,21 @@ and the app leaves demo mode. Also bump `VERSION` in [`sw.js`](../sw.js) on ever
 After editing `Code.gs`: **Deploy → Manage deployments → ✏️ Edit → Version: New version → Deploy**.
 The URL stays the same.
 
+**Upgrading from v1.0 → v1.1** (languages + avatars): paste the new `Code.gs` and deploy a new version as above.
+The `avatar` column in **Members** is created automatically the first time someone picks an avatar
+(or run `setup` once to add it right away — steps, PINs and keys are preserved).
+
 ## Testing the backend locally
 
 ```bash
 node backend/test-harness.js
 ```
 
-Runs the backend against mocked Google services (setup, PINs, logging, sync, validation, lockout).
+Runs the backend against mocked Google services (setup, PINs, logging, sync, validation, lockout, avatars, languages).
 
 ## Security notes
 
-- Public read (`action=data`) only returns names and step counts.
+- Public read (`action=data`) only returns names, avatars and step counts.
 - Writes need a per-member **sync key** (random, 32 hex chars) obtained by entering the member's PIN.
 - PINs are stored as salted SHA-256 hashes; 8 wrong PINs lock that member for 15 minutes.
 - Automatic syncs use “max” semantics — they can never lower a day's value. Manual edits in the app can.

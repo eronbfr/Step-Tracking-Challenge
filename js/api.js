@@ -1,6 +1,8 @@
 // Backend client (Google Apps Script) with an offline outbox and a self-contained demo mode.
 import { CONFIG } from './config.js';
 import { iso, datesBetween, dow } from './metrics.js';
+import { t, lang } from './i18n.js';
+import { isAvatar } from './avatars.js';
 
 const params = new URLSearchParams(location.search);
 export const DEMO = !CONFIG.API_URL || params.has('demo');
@@ -9,7 +11,7 @@ const AS_OF = DEMO && /^\d{4}-\d{2}-\d{2}$/.test(params.get('asOf') || '') ? par
 export const today = () => AS_OF || iso(new Date());
 
 export class ApiError extends Error {
-  constructor(message, network = false) { super(message); this.network = network; }
+  constructor(message, network = false, code = '') { super(message); this.network = network; this.code = code; }
 }
 
 export const store = {
@@ -18,9 +20,10 @@ export const store = {
   del(k) { try { localStorage.removeItem(k); } catch { /* ignore */ } },
 };
 
-const KEY = { data: 't8:data', outbox: 't8:outbox', demo: 't8:demo', demoPins: 't8:demo-pins', demoSync: 't8:demo-sync' };
+const KEY = { data: 't8:data', outbox: 't8:outbox', demo: 't8:demo', demoPins: 't8:demo-pins', demoSync: 't8:demo-sync', demoAvatars: 't8:demo-avatars' };
 
 async function request(payload, method = 'POST') {
+  payload = { ...payload, lang: lang() }; // the server answers errors in the same language
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 20000);
   try {
@@ -33,13 +36,13 @@ async function request(payload, method = 'POST') {
           signal: ctrl.signal,
         });
     let json;
-    try { json = await res.json(); } catch { throw new ApiError('Unexpected server response. Is the API_URL correct?'); }
-    if (!json.ok) throw new ApiError(json.error || 'Request failed.');
+    try { json = await res.json(); } catch { throw new ApiError(t('err.badResponse')); }
+    if (!json.ok) throw new ApiError(json.error || t('err.requestFailed'), false, json.code || '');
     return json;
   } catch (e) {
     if (e instanceof ApiError) throw e;
-    if (e.name === 'AbortError') throw new ApiError('The server took too long to answer.', true);
-    throw new ApiError('You seem to be offline.', true);
+    if (e.name === 'AbortError') throw new ApiError(t('err.timeout'), true);
+    throw new ApiError(t('err.offline'), true);
   } finally {
     clearTimeout(timer);
   }
@@ -76,6 +79,16 @@ export async function logSteps(entry) {
   }
 }
 
+/** Saves the member's avatar (shown to the whole team). Empty string = back to initials. */
+export async function setAvatar({ id, token, avatar }) {
+  if (avatar && !isAvatar(avatar)) throw new ApiError('Unknown avatar.');
+  if (DEMO) {
+    store.set(KEY.demoAvatars, { ...store.get(KEY.demoAvatars, {}), [id]: avatar });
+    return { ok: true, avatar };
+  }
+  return request({ action: 'profile', m: id, t: token, avatar });
+}
+
 export async function flushOutbox() {
   const box = store.get(KEY.outbox, []);
   if (!box.length || DEMO) return 0;
@@ -96,7 +109,8 @@ export const pendingCount = () => store.get(KEY.outbox, []).length;
 
 export function syncUrl(id, token) {
   const base = CONFIG.API_URL || 'https://script.google.com/macros/s/YOUR-DEPLOYMENT/exec';
-  return `${base}?action=sync&m=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}&steps=`;
+  const l = lang() === 'en' ? '' : `&lang=${lang()}`; // the Shortcut's "✅ … steps saved" reply comes back in this language
+  return `${base}?action=sync&m=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}${l}&steps=`;
 }
 
 /* ── Outbox helpers ── */
@@ -135,6 +149,7 @@ function demoData() {
   const overrides = store.get(KEY.demo, {});
   const pins = store.get(KEY.demoPins, {});
   const synced = store.get(KEY.demoSync, {});
+  const avatars = store.get(KEY.demoAvatars, {});
   const dates = datesBetween(ch.start, ch.end);
   const members = CONFIG.ROSTER.map((r, k) => {
     const rand = rng(hash(r.id));
@@ -152,7 +167,7 @@ function demoData() {
       return Math.round(v / 10) * 10;
     });
     return {
-      id: r.id, name: r.name, country: r.country,
+      id: r.id, name: r.name, country: r.country, avatar: avatars[r.id] || '',
       joined: k !== 8 || !!pins[r.id],
       lastSyncAt: synced[r.id] || new Date(Date.now() - (k + 1) * 47 * 60000).toISOString(),
       lastSource: synced[r.id] ? 'app' : k % 3 === 0 ? 'shortcut' : 'app',
@@ -165,8 +180,8 @@ function demoData() {
 
 function demoClaim(id, pin) {
   const pins = store.get(KEY.demoPins, {});
-  if (!/^\d{4}$/.test(pin)) throw new ApiError('Your PIN must have 4 digits.');
-  if (pins[id] && pins[id] !== pin) throw new ApiError('Wrong PIN.');
+  if (!/^\d{4}$/.test(pin)) throw new ApiError(t('err.pinDigits'), false, 'pinDigits');
+  if (pins[id] && pins[id] !== pin) throw new ApiError(t('err.wrongPin'), false, 'wrongPin');
   const created = !pins[id];
   pins[id] = pin;
   store.set(KEY.demoPins, pins);

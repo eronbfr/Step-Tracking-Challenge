@@ -1,5 +1,7 @@
 // Reads the step count from a health-app screenshot (Samsung Health, Google Fit, Fitbit, Garmin, Apple Health…).
 // Tesseract.js is loaded on demand only when someone imports a screenshot.
+import { t } from './i18n.js';
+
 const TESSERACT_URL = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
 let loading = null;
 
@@ -11,7 +13,7 @@ function loadTesseract() {
     s.async = true;
     s.crossOrigin = 'anonymous';
     s.onload = () => resolve(window.Tesseract);
-    s.onerror = () => { loading = null; reject(new Error('Could not load the screenshot reader. Check your connection.')); };
+    s.onerror = () => { loading = null; reject(new Error(t('ocr.loadFail'))); };
     document.head.appendChild(s);
   });
   return loading;
@@ -40,12 +42,12 @@ async function prepare(file) {
 }
 
 export async function readSteps(file, onProgress = () => {}) {
-  onProgress(0.05, 'Loading the reader…');
+  onProgress(0.05, t('ocr.loading'));
   const T = await loadTesseract();
   const canvas = await prepare(file);
-  onProgress(0.15, 'Reading your screenshot…');
+  onProgress(0.15, t('ocr.reading'));
   const worker = await T.createWorker('eng', 1, {
-    logger: m => { if (m.status === 'recognizing text') onProgress(0.2 + m.progress * 0.8, 'Reading your screenshot…'); },
+    logger: m => { if (m.status === 'recognizing text') onProgress(0.2 + m.progress * 0.8, t('ocr.reading')); },
   });
   try {
     const { data } = await worker.recognize(canvas);

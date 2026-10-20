@@ -10,13 +10,16 @@
  *   GET  ?action=data                                   → public dashboard data (names + steps only)
  *   POST {action:'claim', m, pin, tz}                   → create / verify a member PIN, returns the sync key
  *   POST {action:'log',   m, t, date, steps, mode}      → save steps from the app (mode "set" by default)
+ *   POST {action:'profile', m, t, avatar}               → set the member's avatar (shown to the whole team)
  *   GET  ?action=sync&m=<id>&t=<key>&steps=<n>[&date=]  → automatic sync (iPhone Shortcut, Tasker…), mode "max"
+ *
+ * Every endpoint accepts lang=en|pt|es: error messages and the sync reply come back in that language.
  *
  * See docs/SETUP.md for the 5-minute deployment guide.
  */
 
 const APP = {
-  version: '1.0.0',
+  version: '1.1.0',
   team: 'Team 8',
   name: 'Step Challenge',
   start: '2026-10-20',
@@ -45,8 +48,33 @@ const TZ_BY_COUNTRY = {
 };
 const DEFAULT_TZ = 'America/Sao_Paulo';
 
+const AVATARS = ['f1', 'f2', 'f3', 'f4', 'f5', 'm1', 'm2', 'm3', 'm4', 'm5']; // same ids as js/avatars.js
+
 const SHEET = { steps: 'Steps', members: 'Members', log: 'Log' };
-const MEMBER_COLS = ['id', 'name', 'country', 'timezone', 'pinHash', 'token', 'joinedAt', 'lastSyncAt', 'lastSource', 'autoSyncs'];
+const MEMBER_COLS = ['id', 'name', 'country', 'timezone', 'pinHash', 'token', 'joinedAt', 'lastSyncAt', 'lastSource', 'autoSyncs', 'avatar'];
+
+/* User-facing messages: {date} is formatted per language, numbers get local thousands separators. */
+const MSG = {
+  saved:         { en: '✅ {steps} steps saved for {date}. Keep moving, {team}!', pt: '✅ {steps} passos salvos ({date}). Continue assim, {team}!', es: '✅ {steps} pasos guardados ({date}). ¡Sigue así, {team}!' },
+  pinDigits:     { en: 'Your PIN must have 4 digits.', pt: 'O PIN precisa ter 4 dígitos.', es: 'El PIN debe tener 4 dígitos.' },
+  pinLocked:     { en: 'Too many wrong PINs. Try again in 15 minutes.', pt: 'Muitos PINs errados. Tente de novo em 15 minutos.', es: 'Demasiados PIN incorrectos. Inténtalo de nuevo en 15 minutos.' },
+  wrongPin:      { en: 'Wrong PIN.', pt: 'PIN incorreto.', es: 'PIN incorrecto.' },
+  wrongPinLeft:  { en: 'Wrong PIN. {n} attempts left.', pt: 'PIN incorreto. Restam {n} tentativas.', es: 'PIN incorrecto. Quedan {n} intentos.' },
+  unknownMember: { en: 'Unknown member.', pt: 'Participante desconhecido.', es: 'Participante desconocido.' },
+  missingKey:    { en: 'Missing member or sync key.', pt: 'Faltou o participante ou a chave de sincronização.', es: 'Falta el participante o la clave de sincronización.' },
+  invalidKey:    { en: 'Invalid sync key. Open the app and sign in again.', pt: 'Chave de sincronização inválida. Abra o app e entre de novo.', es: 'Clave de sincronización inválida. Abre la app e inicia sesión de nuevo.' },
+  startsOn:      { en: 'The challenge starts on {date}.', pt: 'O desafio começa em {date}.', es: 'El reto empieza el {date}.' },
+  endedOn:       { en: 'The challenge ended on {date}.', pt: 'O desafio terminou em {date}.', es: 'El reto terminó el {date}.' },
+  futureDay:     { en: "You can't log steps for future days.", pt: 'Não dá para registrar passos de dias futuros.', es: 'No puedes registrar pasos de días futuros.' },
+  closed:        { en: 'The challenge is closed.', pt: 'O desafio está encerrado.', es: 'El reto está cerrado.' },
+  notInSheet:    { en: 'Member not found in the Steps sheet.', pt: 'Participante não encontrado na aba Steps.', es: 'Participante no encontrado en la hoja Steps.' },
+  missingSteps:  { en: 'Missing step count.', pt: 'Faltou o número de passos.', es: 'Falta el número de pasos.' },
+  positiveSteps: { en: 'Steps must be a positive number.', pt: 'Os passos precisam ser um número positivo.', es: 'Los pasos deben ser un número positivo.' },
+  tooHigh:       { en: 'That looks too high (max {max} steps per day).', pt: 'Parece alto demais (máx. {max} passos por dia).', es: 'Parece demasiado alto (máx. {max} pasos por día).' },
+  badDate:       { en: 'Dates must look like 2026-10-20.', pt: 'As datas devem ter o formato 2026-10-20.', es: 'Las fechas deben tener el formato 2026-10-20.' },
+  badAvatar:     { en: 'Unknown avatar.', pt: 'Avatar desconhecido.', es: 'Avatar desconocido.' },
+  sheetMissing:  { en: 'Sheet "{name}" is missing. Run setup() in the Apps Script editor.', pt: 'A aba "{name}" não existe. Rode setup() no editor do Apps Script.', es: 'Falta la hoja "{name}". Ejecuta setup() en el editor de Apps Script.' },
+};
 const FIRST_DAY_COL = 4;   // column D
 const FIRST_MEMBER_ROW = 3;
 
@@ -64,23 +92,24 @@ function doPost(e) {
 
 function handle_(p) {
   const action = String(p.action || '').toLowerCase();
+  const lang = langOf_(p.lang);
   const wantsText = action === 'sync' && String(p.format || '').toLowerCase() !== 'json';
   try {
     let out;
     switch (action) {
-      case 'data':  out = getData_(); break;
-      case 'claim': out = claim_(p); break;
-      case 'log':   out = log_(p, 'app'); break;
-      case 'sync':  out = log_(p, String(p.source || 'shortcut').slice(0, 20)); break;
-      default:      out = { ok: true, app: APP.team + ' ' + APP.name + ' API', version: APP.version };
+      case 'data':    out = getData_(); break;
+      case 'claim':   out = claim_(p); break;
+      case 'log':     out = log_(p, 'app'); break;
+      case 'sync':    out = log_(p, String(p.source || 'shortcut').slice(0, 20)); break;
+      case 'profile': out = profile_(p); break;
+      default:        out = { ok: true, app: APP.team + ' ' + APP.name + ' API', version: APP.version };
     }
-    if (wantsText) {
-      return text_('✅ ' + fmt_(out.steps) + ' steps saved for ' + prettyDate_(out.date) + '. Keep moving, ' + APP.team + '!');
-    }
+    if (wantsText) return text_(msg_(lang, 'saved', { steps: out.steps, date: out.date, team: APP.team }));
     return json_(out);
   } catch (err) {
-    const message = String((err && err.message) || err);
-    return wantsText ? text_('⚠️ ' + message) : json_({ ok: false, error: message });
+    const code = (err && err.code) || '';
+    const message = code ? msg_(lang, code, err.vars) : String((err && err.message) || err);
+    return wantsText ? text_('⚠️ ' + message) : json_({ ok: false, error: message, code: code });
   }
 }
 
@@ -106,6 +135,7 @@ function getData_() {
       lastSyncAt: toIso_(m.lastSyncAt),
       lastSource: String(m.lastSource || ''),
       autoSyncs: Number(m.autoSyncs) || 0,
+      avatar: AVATARS.indexOf(String(m.avatar)) >= 0 ? String(m.avatar) : '',
       daily: st.byId[id],
     };
   });
@@ -124,19 +154,19 @@ function getData_() {
 function claim_(p) {
   const id = normId_(p.m || p.member);
   const pin = String(p.pin || '').trim();
-  if (!/^\d{4}$/.test(pin)) throw new Error('Your PIN must have 4 digits.');
+  if (!/^\d{4}$/.test(pin)) throw fail_('pinDigits');
 
   const cache = CacheService.getScriptCache();
   const failKey = 'fail:' + id;
   const fails = Number(cache.get(failKey)) || 0;
-  if (fails >= APP.pinAttempts) throw new Error('Too many wrong PINs. Try again in 15 minutes.');
+  if (fails >= APP.pinAttempts) throw fail_('pinLocked');
 
   return withLock_(function () {
     const ss = SpreadsheetApp.getActive();
     const sh = sheet_(ss, SHEET.members);
     const mem = readMembers_(sh);
     const m = mem.byId[id];
-    if (!m) throw new Error('Unknown member.');
+    if (!m) throw fail_('unknownMember');
     const row = mem.rowById[id];
     const hash = hashPin_(id, pin);
     let created = false;
@@ -148,7 +178,7 @@ function claim_(p) {
     } else if (m.pinHash !== hash) {
       cache.put(failKey, String(fails + 1), 15 * 60);
       const left = APP.pinAttempts - fails - 1;
-      throw new Error('Wrong PIN.' + (left > 0 ? ' ' + left + ' attempts left.' : ''));
+      throw left > 0 ? fail_('wrongPinLeft', { n: left }) : fail_('wrongPin');
     }
 
     let token = String(m.token || '');
@@ -168,7 +198,7 @@ function claim_(p) {
 function log_(p, source) {
   const id = normId_(p.m || p.member);
   const token = String(p.t || p.token || '').trim();
-  if (!id || !token) throw new Error('Missing member or sync key.');
+  if (!id || !token) throw fail_('missingKey');
   const steps = parseSteps_(p.steps);
   const mode = p.mode === 'set' || p.mode === 'max' ? p.mode : (source === 'app' ? 'set' : 'max');
   const dates = challengeDates_();
@@ -178,22 +208,22 @@ function log_(p, source) {
     const memSh = sheet_(ss, SHEET.members);
     const mem = readMembers_(memSh);
     const m = mem.byId[id];
-    if (!m) throw new Error('Unknown member.');
-    if (!m.token || m.token !== token) throw new Error('Invalid sync key. Open the app and sign in again.');
+    if (!m) throw fail_('unknownMember');
+    if (!m.token || m.token !== token) throw fail_('invalidKey');
 
     const tz = validTz_(m.timezone) || TZ_BY_COUNTRY[m.country] || DEFAULT_TZ;
     const today = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
     const date = p.date ? normDate_(p.date) : today;
 
-    if (date < APP.start) throw new Error('The challenge starts on ' + prettyDate_(APP.start) + '.');
-    if (date > APP.end) throw new Error('The challenge ended on ' + prettyDate_(APP.end) + '.');
-    if (date > addDays_(today, 1)) throw new Error("You can't log steps for future days.");
-    if (today > addDays_(APP.end, APP.graceDays)) throw new Error('The challenge is closed.');
+    if (date < APP.start) throw fail_('startsOn', { date: APP.start });
+    if (date > APP.end) throw fail_('endedOn', { date: APP.end });
+    if (date > addDays_(today, 1)) throw fail_('futureDay');
+    if (today > addDays_(APP.end, APP.graceDays)) throw fail_('closed');
 
     const stSh = sheet_(ss, SHEET.steps);
     const st = readSteps_(stSh, dates.length);
     const row = st.rowById[id];
-    if (!row) throw new Error('Member not found in the Steps sheet.');
+    if (!row) throw fail_('notInSheet');
     const i = dates.indexOf(date);
     const previous = st.byId[id][i];
     const next = mode === 'max' ? Math.max(previous || 0, steps) : steps;
@@ -210,6 +240,26 @@ function log_(p, source) {
 
     CacheService.getScriptCache().remove('data');
     return { ok: true, id: id, date: date, steps: next, previous: previous, changed: changed, source: source };
+  });
+}
+
+function profile_(p) {
+  const id = normId_(p.m || p.member);
+  const token = String(p.t || p.token || '').trim();
+  if (!id || !token) throw fail_('missingKey');
+  const avatar = String(p.avatar || '').trim();
+  if (avatar && AVATARS.indexOf(avatar) < 0) throw fail_('badAvatar');
+
+  return withLock_(function () {
+    const sh = sheet_(SpreadsheetApp.getActive(), SHEET.members);
+    const mem = readMembers_(sh);
+    const m = mem.byId[id];
+    if (!m) throw fail_('unknownMember');
+    if (!m.token || m.token !== token) throw fail_('invalidKey');
+    ensureHeader_(sh, 'avatar'); // sheets created before v1.1 have no avatar column yet
+    setCell_(sh, mem.rowById[id], 'avatar', avatar);
+    CacheService.getScriptCache().remove('data');
+    return { ok: true, id: id, avatar: avatar };
   });
 }
 
@@ -249,7 +299,7 @@ function setupMembers_(ss) {
     const country = e.country || r.country || '';
     return [
       id, e.name || r.name || id, country, e.timezone || TZ_BY_COUNTRY[country] || DEFAULT_TZ,
-      e.pinHash || '', e.token || '', e.joinedAt || '', e.lastSyncAt || '', e.lastSource || '', Number(e.autoSyncs) || 0,
+      e.pinHash || '', e.token || '', e.joinedAt || '', e.lastSyncAt || '', e.lastSource || '', Number(e.autoSyncs) || 0, e.avatar || '',
     ];
   });
 
@@ -261,7 +311,7 @@ function setupMembers_(ss) {
   sh.setColumnWidth(2, 190);
   sh.setColumnWidth(5, 120);
   sh.setColumnWidth(6, 120);
-  sh.getRange(1, 12).setValue('ℹ️ To reset someone\'s PIN, clear their pinHash and token cells. Keep this sheet private.');
+  sh.getRange(1, MEMBER_COLS.length + 2).setValue('ℹ️ To reset someone\'s PIN, clear their pinHash and token cells. Keep this sheet private.');
   return ids;
 }
 
@@ -373,9 +423,14 @@ function setCell_(sh, row, col, value) {
   sh.getRange(row, MEMBER_COLS.indexOf(col) + 1).setValue(value);
 }
 
+function ensureHeader_(sh, col) {
+  const c = MEMBER_COLS.indexOf(col) + 1;
+  if (String(sh.getRange(1, c).getValue()).trim() !== col) sh.getRange(1, c).setValue(col).setFontWeight('bold').setBackground('#e8eefc');
+}
+
 function sheet_(ss, name) {
   const sh = ss.getSheetByName(name);
-  if (!sh) throw new Error('Sheet "' + name + '" is missing. Run setup() in the Apps Script editor.');
+  if (!sh) throw fail_('sheetMissing', { name: name });
   return sh;
 }
 
@@ -396,12 +451,12 @@ function cellSteps_(v) {
 
 function parseSteps_(raw) {
   let s = String(raw === null || raw === undefined ? '' : raw).replace(/[\s  ']/g, '');
-  if (!s) throw new Error('Missing step count.');
+  if (!s) throw fail_('missingSteps');
   if (/^\d{1,3}([.,]\d{3})+$/.test(s)) s = s.replace(/[.,]/g, '');   // 12,345 or 12.345
   else s = s.replace(',', '.');                                       // 12345,0 → 12345.0
   const n = Math.round(Number(s));
-  if (!isFinite(n) || n < 0) throw new Error('Steps must be a positive number.');
-  if (n > APP.maxSteps) throw new Error('That looks too high (max ' + fmt_(APP.maxSteps) + ' steps per day).');
+  if (!isFinite(n) || n < 0) throw fail_('positiveSteps');
+  if (n > APP.maxSteps) throw fail_('tooHigh', { max: APP.maxSteps });
   return n;
 }
 
@@ -417,7 +472,7 @@ function normId_(v) {
 
 function normDate_(v) {
   const m = String(v).trim().match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  if (!m) throw new Error('Dates must look like 2026-10-20.');
+  if (!m) throw fail_('badDate');
   return m[1] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[3]).slice(-2);
 }
 
@@ -443,8 +498,12 @@ function addDays_(iso, n) {
   return d.toISOString().slice(0, 10);
 }
 
-function prettyDate_(iso) {
+function prettyDate_(iso, lang) {
   const d = parseDate_(iso);
+  if (lang === 'pt' || lang === 'es') {
+    const dow = (lang === 'pt' ? ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'] : ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'])[d.getDay()];
+    return dow + ', ' + d.getDate() + '/' + ('0' + (d.getMonth() + 1)).slice(-2);
+  }
   const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
   return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()] + ', ' + mon + ' ' + d.getDate();
 }
@@ -455,8 +514,33 @@ function toIso_(v) {
   return isNaN(d.getTime()) ? '' : d.toISOString();
 }
 
-function fmt_(n) {
-  return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+function fmt_(n, lang) {
+  return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, lang === 'pt' ? '.' : ',');
+}
+
+/* ───────────────────────────── Messages ───────────────────────────── */
+
+function langOf_(v) {
+  const l = String(v || '').slice(0, 2).toLowerCase();
+  return l === 'pt' || l === 'es' ? l : 'en';
+}
+
+function msg_(lang, key, vars) {
+  const m = MSG[key] || {};
+  return String(m[lang] || m.en || key).replace(/\{(\w+)\}/g, function (all, k) {
+    if (!vars || !(k in vars)) return all;
+    const v = vars[k];
+    if (k === 'date') return prettyDate_(v, lang);
+    return typeof v === 'number' ? fmt_(v, lang) : String(v);
+  });
+}
+
+/** An Error that carries a message key, so handle_() can answer in the caller's language. */
+function fail_(code, vars) {
+  const e = new Error(msg_('en', code, vars));
+  e.code = code;
+  e.vars = vars || {};
+  return e;
 }
 
 function colLetter_(n) {

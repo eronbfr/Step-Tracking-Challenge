@@ -16,7 +16,7 @@ automatic step sync from your phone, friendly rankings, badges and health insigh
 - **iPhone**: open the link in **Safari** → Share → **Add to Home Screen**
 - **Android**: open the link in **Chrome** → ⋮ → **Install app**
 
-Then pick your name, create a 4-digit PIN and turn on **Auto-sync**.
+Then pick your language, your name, a 4-digit PIN and your avatar — and turn on **Auto-sync**.
 
 ## Features
 
@@ -29,6 +29,13 @@ Then pick your name, create a 4-digit PIN and turn on **Auto-sync**.
 - Fun facts: % around the Earth, CO₂ a car would emit, calories in tacos 🌮, arepas 🫓, empanadas 🥟, brigadeiros 🍫, alfajores 🍪
 
 **Ranking**: Total, this week, today, daily average, 10K days, streak, plus a podium and Hall of Fame cards.
+
+**Everywhere**
+- 🌐 Three languages — **English** (default), **Português (Brasil)** and **Español**. Picked on the first screen,
+  changeable any time in ⚙️ **Settings** (gear icon at the top of every page and in *Me*). Numbers and dates follow
+  the language (10,000 · 10.000), and the backend answers errors and the iPhone Shortcut reply in it too.
+- 🧑‍🎨 Avatar library — 5 female + 5 male illustrated avatars. The one you pick is saved on the server and shown to the
+  whole team: today board, ranking, podium, heatmap, member cards, sign-in.
 
 **Me**: today's ring, streaks, best day, consistency, projection, your daily steps vs the team average, weekday rhythm.
 Also 17 badges and health metrics: distance, active calories, walking time, fat-energy, CO₂, BMI, WHO weekly activity,
@@ -73,6 +80,7 @@ iPhone Shortcut  ──GET ?action=sync&m=…&t=…&steps=N──▶
 index.html · manifest.webmanifest · sw.js
 css/app.css
 js/  app.js (shell & flows) · views.js (pages) · charts.js (SVG) · metrics.js (health & stats) · api.js · ui.js · ocr.js · config.js
+     i18n.js + strings.js (en / pt / es) · avatars.js (SVG avatar library)
 backend/  Code.gs · test-harness.js
 tools/  dev_server.py · make_icons.py · make_invites.py
 docs/  SETUP.md · IOS_SHORTCUT.md · METRICS.md · ANNOUNCEMENT.md
@@ -90,7 +98,7 @@ When you release, bump `VERSION` in `sw.js` so installed apps pick up the new fi
 
 ## Privacy
 
-Names and daily step counts are visible to the team. PINs are hashed. Height and weight entered in the app never
+Names, avatars and daily step counts are visible to the team. PINs are hashed. Height and weight entered in the app never
 leave your phone. The original spreadsheet (with phone numbers) is not part of this repository.
 
 ---

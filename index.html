@@ -20,31 +20,35 @@
   <meta property="og:image" content="https://eronbfr.github.io/Step-Tracking-Challenge/icons/icon-512.png">
   <script>
     try { var t = JSON.parse(localStorage.getItem('t8:theme') || '"auto"'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+    try { var l = { pt: 'pt-BR', es: 'es-419' }[JSON.parse(localStorage.getItem('t8:lang') || '"en"')]; if (l) document.documentElement.lang = l; } catch (e) {}
   </script>
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body class="booting">
   <header class="topbar">
-    <a class="brand" href="#/team" aria-label="Team 8 Steps — home">
+    <a class="brand" href="#/team" aria-label="Team 8 Steps — home" data-i18n-aria="top.home">
       <img src="icons/icon.svg" alt="" width="36" height="36">
       <span><b>Team 8</b><small>Step Challenge</small></span>
     </a>
     <div class="top-right">
       <span class="day-chip" id="day-chip"></span>
-      <button class="icon-btn" id="refresh-btn" aria-label="Refresh data">
+      <button class="icon-btn" id="refresh-btn" aria-label="Refresh data" data-i18n-aria="top.refresh">
         <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
       </button>
+      <a class="icon-btn" id="settings-btn" href="#/settings" aria-label="Settings" title="Settings" data-i18n-aria="settings.title" data-i18n-title="settings.title">
+        <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2 4.8l.4-2.3h2.8l.4 2.3a7.4 7.4 0 0 1 2 .9l1.9-1.4 2 2-1.4 1.9a7.4 7.4 0 0 1 .9 2l2.3.4v2.8l-2.3.4a7.4 7.4 0 0 1-.9 2l1.4 1.9-2 2-1.9-1.4a7.4 7.4 0 0 1-2 .9l-.4 2.3h-2.8l-.4-2.3a7.4 7.4 0 0 1-2-.9l-1.9 1.4-2-2 1.4-1.9a7.4 7.4 0 0 1-.9-2l-2.3-.4v-2.8l2.3-.4a7.4 7.4 0 0 1 .9-2L4.3 6.3l2-2 1.9 1.4a7.4 7.4 0 0 1 2-.9z"/><circle cx="12" cy="12" r="3"/></svg>
+      </a>
     </div>
   </header>
 
   <main id="view" aria-live="polite"></main>
 
-  <nav class="nav" aria-label="Main">
-    <a href="#/team" data-route="team"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.3.1 4 1.6 4.5 4.3"/></svg>Team</a>
-    <a href="#/ranking" data-route="ranking"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M9.5 17h5"/></svg>Ranking</a>
-    <button class="fab" data-action="log" aria-label="Log steps"><svg class="ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
-    <a href="#/me" data-route="me"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.6-6 7-6s6.2 2.2 7 6"/></svg>Me</a>
-    <a href="#/sync" data-route="sync"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></svg>Auto-sync</a>
+  <nav class="nav" aria-label="Main" data-i18n-aria="nav.main">
+    <a href="#/team" data-route="team"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.3.1 4 1.6 4.5 4.3"/></svg><span data-i18n="nav.team">Team</span></a>
+    <a href="#/ranking" data-route="ranking"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M9.5 17h5"/></svg><span data-i18n="nav.ranking">Ranking</span></a>
+    <button class="fab" data-action="log" aria-label="Log steps" data-i18n-aria="common.logSteps"><svg class="ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+    <a href="#/me" data-route="me"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.6-6 7-6s6.2 2.2 7 6"/></svg><span data-i18n="nav.me">Me</span></a>
+    <a href="#/sync" data-route="sync"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></svg><span data-i18n="nav.sync">Auto-sync</span></a>
   </nav>
 
   <div id="tip" role="tooltip" hidden></div>

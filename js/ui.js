@@ -1,25 +1,35 @@
 // Small UI toolkit: formatting, icons, avatars, sheets, toasts, confetti.
 import { parseISO } from './metrics.js';
+import { t, locale } from './i18n.js';
+import { avatarSvg } from './avatars.js';
 
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 export const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── Numbers ── */
-export const fmt = n => Math.round(Number(n) || 0).toLocaleString('en-US');
+/* ── Numbers (formatted for the current language) ── */
+const NF = new Map();
+const nf = (min, max) => {
+  const k = `${locale()}|${min}|${max}`;
+  if (!NF.has(k)) NF.set(k, new Intl.NumberFormat(locale(), { minimumFractionDigits: min, maximumFractionDigits: max }));
+  return NF.get(k);
+};
+export const fmt = n => nf(0, 0).format(Math.round(Number(n) || 0));
+/** Fixed decimals with the local separator: dec(1.5) → "1.5" / "1,5" */
+export const dec = (n, d = 1) => nf(d, d).format(Number(n) || 0);
 export function compact(n) {
   n = Number(n) || 0;
   const a = Math.abs(n);
-  if (a >= 1e6) return `${(n / 1e6).toFixed(a >= 1e7 ? 1 : 2).replace(/\.?0+$/, '')}M`;
-  if (a >= 1e4) return `${(n / 1e3).toFixed(a >= 1e5 ? 0 : 1).replace(/\.0$/, '')}K`;
+  if (a >= 1e6) return `${nf(0, a >= 1e7 ? 1 : 2).format(n / 1e6)}M`;
+  if (a >= 1e4) return `${nf(0, a >= 1e5 ? 0 : 1).format(n / 1e3)}K`;
   return fmt(n);
 }
-export const pct = (x, d = 0) => `${(Math.max(0, x) * 100).toFixed(d)}%`;
+export const pct = (x, d = 0) => `${dec(Math.max(0, x) * 100, d)}%`;
 export function dist(km, units) {
   const v = units === 'imperial' ? km * 0.621371 : km;
   const u = units === 'imperial' ? 'mi' : 'km';
-  return { v, u, text: `${v >= 100 ? fmt(v) : v.toFixed(1)} ${u}` };
+  return { v, u, text: `${v >= 100 ? fmt(v) : dec(v, 1)} ${u}` };
 }
 export function duration(min) {
   if (min < 60) return `${Math.round(min)} min`;
@@ -28,23 +38,24 @@ export function duration(min) {
 }
 
 /* ── Dates ── */
-const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export function dateLabel(s, style = 'long') {
   const d = parseISO(s);
-  if (style === 'short') return `${MON[d.getMonth()]} ${d.getDate()}`;
-  if (style === 'dow') return `${DAY[d.getDay()]} ${d.getDate()}`;
-  if (style === 'num') return `${d.getDate()}`;
-  return `${DAY[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}`;
+  const parts = { d: d.getDate(), mon: t('cal.mon')[d.getMonth()], dow: t('cal.dow')[d.getDay()] };
+  if (style === 'short') return t('date.short', parts);
+  if (style === 'dow') return `${parts.dow} ${parts.d}`;
+  if (style === 'num') return `${parts.d}`;
+  return t('date.long', parts);
 }
+/** Short weekday names, Monday first. */
+export const weekdays = () => { const w = t('cal.dow'); return [...w.slice(1), w[0]]; };
 export function ago(isoTs) {
-  if (!isoTs) return 'never';
+  if (!isoTs) return t('ago.never');
   const s = (Date.now() - new Date(isoTs).getTime()) / 1000;
-  if (s < 60) return 'just now';
-  if (s < 3600) return `${Math.floor(s / 60)} min ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)} h ago`;
-  if (s < 172800) return 'yesterday';
-  return `${Math.floor(s / 86400)} days ago`;
+  if (s < 60) return t('ago.now');
+  if (s < 3600) return t('ago.min', { n: Math.floor(s / 60) });
+  if (s < 86400) return t('ago.h', { n: Math.floor(s / 3600) });
+  if (s < 172800) return t('ago.yesterday');
+  return t('ago.days', { n: Math.floor(s / 86400) });
 }
 
 /* ── Identity ── */
@@ -70,8 +81,11 @@ export function flagsSupported() {
   } catch { flagSupport = true; }
   return flagSupport;
 }
+/** A member's picture: their chosen illustrated avatar, or coloured initials. */
 export function avatar(m, size = 40, { flagged = true } = {}) {
   const badge = !flagged || !m.country ? '' : flagsSupported() ? `<span class="av-flag">${flag(m.country)}</span>` : `<span class="av-cc">${esc(m.country)}</span>`;
+  const pic = avatarSvg(m.avatar);
+  if (pic) return `<span class="avatar pic" style="--s:${size}px" aria-hidden="true">${pic}${badge}</span>`;
   return `<span class="avatar" style="--av:${avColor(m)};--s:${size}px" aria-hidden="true">${esc(initials(m.name))}${badge}</span>`;
 }
 
@@ -95,6 +109,8 @@ const P = {
   bolt: '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>',
   heart: '<path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.7-7 10-7 10z"/>',
   moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  gear: '<path d="M10.2 4.8l.4-2.3h2.8l.4 2.3a7.4 7.4 0 0 1 2 .9l1.9-1.4 2 2-1.4 1.9a7.4 7.4 0 0 1 .9 2l2.3.4v2.8l-2.3.4a7.4 7.4 0 0 1-.9 2l1.4 1.9-2 2-1.9-1.4a7.4 7.4 0 0 1-2 .9l-.4 2.3h-2.8l-.4-2.3a7.4 7.4 0 0 1-2-.9l-1.9 1.4-2-2 1.4-1.9a7.4 7.4 0 0 1-.9-2l-2.3-.4v-2.8l2.3-.4a7.4 7.4 0 0 1 .9-2L4.3 6.3l2-2 1.9 1.4a7.4 7.4 0 0 1 2-.9z"/><circle cx="12" cy="12" r="3"/>',
+  globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.5 5.2 3.5 8.5s-1.1 6.1-3.5 8.5c-2.4-2.4-3.5-5.2-3.5-8.5s1.1-6.1 3.5-8.5z"/>',
   info: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>',
   logout: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
   table: '<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M4 14.5h16M10 5v14"/>',
@@ -131,14 +147,14 @@ export function toast(msg, { type = 'info', duration = 3200, action = null } = {
 
 /* ── Bottom sheet ── */
 let openSheetEl = null;
-export function openSheet(html, { onClose, cls = '', label = 'Dialog' } = {}) {
+export function openSheet(html, { onClose, cls = '', label = t('common.dialog') } = {}) {
   closeSheet(true);
   const wrap = document.createElement('div');
   wrap.className = `sheet-wrap ${cls}`;
   wrap.innerHTML = `<div class="sheet-backdrop" data-close></div>
     <div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(label)}">
       <div class="sheet-handle" aria-hidden="true"></div>
-      <button class="icon-btn sheet-close" data-close aria-label="Close">${icon('close', 20)}</button>
+      <button class="icon-btn sheet-close" data-close aria-label="${esc(t('common.close'))}">${icon('close', 20)}</button>
       <div class="sheet-body">${html}</div>
     </div>`;
   document.body.appendChild(wrap);
