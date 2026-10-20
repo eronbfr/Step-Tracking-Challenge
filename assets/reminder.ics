@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Team 8//Step Challenge//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:team8-step-reminder-2026@eronbfr.github.io
+DTSTAMP:20261020T120000Z
+DTSTART:20261020T210000
+DTEND:20261020T211000
+RRULE:FREQ=DAILY;UNTIL=20261115T235959
+SUMMARY:👟 Log your steps — Team 8 Challenge
+DESCRIPTION:Open the app and log today's steps (or check your auto-sync): h
+ ttps://eronbfr.github.io/Step-Tracking-Challenge/
+URL:https://eronbfr.github.io/Step-Tracking-Challenge/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Log your steps — Team 8
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,113 @@
+{
+  "id": "./",
+  "name": "Team 8 · Step Challenge",
+  "short_name": "Team 8 Steps",
+  "description": "Team 8 Step Challenge — live dashboard, auto-sync, badges and health stats.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f5fa",
+  "theme_color": "#1650d0",
+  "categories": [
+    "health",
+    "fitness",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Log steps",
+      "short_name": "Log",
+      "url": "./?action=log",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Ranking",
+      "url": "./#/ranking",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "./share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "image",
+          "accept": [
+            "image/*"
+          ]
+        }
+      ]
+    }
+  },
+  "screenshots": [
+    {
+      "src": "docs/screenshots/team.jpg",
+      "sizes": "563x1218",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Live team dashboard"
+    },
+    {
+      "src": "docs/screenshots/ranking.jpg",
+      "sizes": "563x1218",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Friendly ranking & hall of fame"
+    },
+    {
+      "src": "docs/screenshots/me.jpg",
+      "sizes": "563x1218",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Your stats, streaks & health"
+    },
+    {
+      "src": "docs/screenshots/sync.jpg",
+      "sizes": "563x1218",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Auto-sync from your phone"
+    }
+  ]
+}

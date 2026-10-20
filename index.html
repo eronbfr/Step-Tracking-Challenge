@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Team 8 Steps</title>
+  <meta name="description" content="Team 8 Step Challenge — live team dashboard, auto-sync from your phone, badges and health stats. Oct 20 – Nov 15, 2026.">
+  <meta name="theme-color" content="#f3f5fa">
+  <meta name="color-scheme" content="light dark">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Team 8 Steps">
+  <meta property="og:title" content="Team 8 Step Challenge">
+  <meta property="og:description" content="10,000 steps a day · Oct 20 – Nov 15 · Let's go, Team 8!">
+  <meta property="og:image" content="https://eronbfr.github.io/Step-Tracking-Challenge/icons/icon-512.png">
+  <script>
+    try { var t = JSON.parse(localStorage.getItem('t8:theme') || '"auto"'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="booting">
+  <header class="topbar">
+    <a class="brand" href="#/team" aria-label="Team 8 Steps — home">
+      <img src="icons/icon.svg" alt="" width="36" height="36">
+      <span><b>Team 8</b><small>Step Challenge</small></span>
+    </a>
+    <div class="top-right">
+      <span class="day-chip" id="day-chip"></span>
+      <button class="icon-btn" id="refresh-btn" aria-label="Refresh data">
+        <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="view" aria-live="polite"></main>
+
+  <nav class="nav" aria-label="Main">
+    <a href="#/team" data-route="team"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.3.1 4 1.6 4.5 4.3"/></svg>Team</a>
+    <a href="#/ranking" data-route="ranking"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M9.5 17h5"/></svg>Ranking</a>
+    <button class="fab" data-action="log" aria-label="Log steps"><svg class="ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+    <a href="#/me" data-route="me"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.6-6 7-6s6.2 2.2 7 6"/></svg>Me</a>
+    <a href="#/sync" data-route="sync"><svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></svg>Auto-sync</a>
+  </nav>
+
+  <div id="tip" role="tooltip" hidden></div>
+  <div id="toasts" aria-live="polite"></div>
+
+  <noscript><p style="padding:24px;text-align:center">Team 8 Steps needs JavaScript to run.</p></noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
