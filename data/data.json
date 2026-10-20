@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-20T21:25:12.838Z",
+  "updatedAt": "2026-10-20T22:14:11.308Z",
   "cursor": {
-    "time": 1792531449,
+    "time": 1792531647,
     "seen": {
       "WcUoKA0kJbXz": 1792523469,
       "lmMylOCon8lW": 1792523479,
@@ -31,7 +31,8 @@
       "1zsDz2Zksz9b": 1792531424,
       "6yiZfBNx1Nkv": 1792531428,
       "kGc3SEyFE7gH": 1792531447,
-      "mkWOwzYz4SQs": 1792531449
+      "mkWOwzYz4SQs": 1792531449,
+      "qNGT5qQr1yeT": 1792531647
     }
   },
   "members": [
@@ -157,7 +158,14 @@
       "tz": "America/Bogota",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [],
+      "keys": [
+        {
+          "kid": "b943bcbb219946e8",
+          "pub": "BBNarkCbuS-JHZEQvPQ6zBlvOprdGE9hMsn9Cngsc0x0WHGMh6uoUB92PtxM625VGQX4eJWaQtB3-EVdw9sGnSY",
+          "l": "iPhone · Safari (app)",
+          "at": "2026-10-20T21:27:27.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 1792531449807,
