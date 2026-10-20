@@ -9,7 +9,7 @@ export const CONFIG = {
   IOS_SHORTCUT_URL: '',
 
   APP_URL: 'https://eronbfr.github.io/Step-Tracking-Challenge/',
-  VERSION: '1.0.0',
+  VERSION: '1.0.1',
 
   // Fallback values used before the first server response (the server's values win).
   CHALLENGE: { team: 'Team 8', name: 'Step Challenge', start: '2026-10-20', end: '2026-11-15', dailyGoal: 10000 },

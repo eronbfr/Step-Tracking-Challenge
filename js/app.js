@@ -448,8 +448,11 @@ function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   const dev = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !new URLSearchParams(location.search).has('sw');
   if (dev) return; // local development: always serve fresh files (add ?sw to test offline mode)
+  // Reload only when the user accepts an update — the first install also fires controllerchange (clients.claim)
+  // and reloading then would close the welcome / PIN sheet.
+  let updating = false;
   navigator.serviceWorker.register('./sw.js').then(reg => {
-    const offer = w => toast('✨ A new version is ready', { duration: 0, action: { label: 'Update', run: () => w.postMessage('SKIP_WAITING') } });
+    const offer = w => toast('✨ A new version is ready', { duration: 0, action: { label: 'Update', run: () => { updating = true; w.postMessage('SKIP_WAITING'); } } });
     if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
     reg.addEventListener('updatefound', () => {
       const w = reg.installing;
@@ -457,8 +460,7 @@ function registerSW() {
     });
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
   }).catch(() => {});
-  let reloading = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloading) { reloading = true; location.reload(); } });
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (updating) { updating = false; location.reload(); } });
 }
 
 /* Android share target: the service worker stores the shared screenshot, we pick it up here. */

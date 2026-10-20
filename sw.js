@@ -1,6 +1,6 @@
 // Team 8 · Step Challenge — service worker.
 // Bump VERSION on every release so installed apps pick up the new files.
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.0.1';
 const SHELL = `t8-shell-${VERSION}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
