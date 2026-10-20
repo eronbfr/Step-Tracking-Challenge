@@ -93,26 +93,13 @@
       "avatarTs": 1792523479614,
       "keys": [
         {
-          "kid": "7699b09d575be68d",
-          "pub": "BAlufXLq0yqUTcwtwhUNTZBifyZ7sBuN4LAYoa5M0ekNgBC-vvhde0m6lhVBydT6O3t70-OzQ1EGVHi4TTbBrwk",
-          "l": "Windows · Chrome",
-          "at": "2026-10-20T19:58:34.000Z"
-        }
-      ],
-      "requests": [
-        {
-          "kid": "9b0d2d4788ae40e6",
-          "pub": "BEZBbDnvUSJzwFArZaDKGxY2cAakOMWmfcT8UkXr2REyvwdSPOYJQ9cMHl0sNTT3sh74IAIccZ-VKHLkHTcpJ3U",
-          "l": "Android · Chrome",
-          "at": "2026-10-20T20:41:34.000Z"
-        },
-        {
           "kid": "88310a474cb9a3eb",
           "pub": "BFwqNyAZYojipi8E5RuOoxW7f4NJ_Pidpp8ujza9dMP4vTJo20FHDxD6VTrebUykVmNVOVAaNLGzTvrF7E-ENgc",
           "l": "Android · Chrome",
           "at": "2026-10-20T20:48:02.000Z"
         }
       ],
+      "requests": [],
       "syncHash": "",
       "syncTs": 0,
       "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
