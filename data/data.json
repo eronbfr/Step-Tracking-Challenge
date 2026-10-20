@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-20T19:59:48.969Z",
+  "updatedAt": "2026-10-20T21:00:41.910Z",
   "cursor": {
-    "time": 1792526315,
+    "time": 1792529282,
     "seen": {
       "WcUoKA0kJbXz": 1792523469,
       "lmMylOCon8lW": 1792523479,
@@ -18,7 +18,15 @@
       "FzSCI4FIHnrd": 1792526314,
       "rG4S1HR04dUG": 1792526315,
       "4VkOTEaEQ1ta": 1792526315,
-      "xEeyN9ohxRdz": 1792526315
+      "xEeyN9ohxRdz": 1792526315,
+      "v0rxvxcRi4Qt": 1792526690,
+      "38aEGRuDZDqs": 1792527253,
+      "XsefcaaNduRF": 1792527627,
+      "Qv5AEKQWlXlK": 1792527731,
+      "QXAGhjFD31th": 1792528022,
+      "5KjnjbF30Za6": 1792528888,
+      "70L2Qc3uXECX": 1792528894,
+      "rHSxFO1dZYd9": 1792529282
     }
   },
   "members": [
@@ -91,7 +99,20 @@
           "at": "2026-10-20T19:58:34.000Z"
         }
       ],
-      "requests": [],
+      "requests": [
+        {
+          "kid": "9b0d2d4788ae40e6",
+          "pub": "BEZBbDnvUSJzwFArZaDKGxY2cAakOMWmfcT8UkXr2REyvwdSPOYJQ9cMHl0sNTT3sh74IAIccZ-VKHLkHTcpJ3U",
+          "l": "Android · Chrome",
+          "at": "2026-10-20T20:41:34.000Z"
+        },
+        {
+          "kid": "88310a474cb9a3eb",
+          "pub": "BFwqNyAZYojipi8E5RuOoxW7f4NJ_Pidpp8ujza9dMP4vTJo20FHDxD6VTrebUykVmNVOVAaNLGzTvrF7E-ENgc",
+          "l": "Android · Chrome",
+          "at": "2026-10-20T20:48:02.000Z"
+        }
+      ],
       "syncHash": "",
       "syncTs": 0,
       "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
