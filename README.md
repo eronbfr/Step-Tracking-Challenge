@@ -22,6 +22,11 @@ Then pick your language and your name (no password: your phone is your key), cho
 
 **Team dashboard**
 - Team progress ring toward 2.43M steps, live “today” board with everyone's ring, goal-pace projection
+- 🌎 **Team map** — real NASA satellite imagery on a 3D globe that unrolls into a map of Latin America, with
+  everyone's avatar dropping onto their home city/state (today's progress ring, ✓ at 10K, tap for their card).
+  Live day/night line with city lights on the night side, local time per city, animated arcs linking the cities,
+  a pop-up “+steps” when someone logs, *World* mode (drag to spin the globe), zoom/pan, and a **country battle**
+  (average steps per person) that flies the map to each country
 - Daily team chart (with the 90K team goal line) and running total vs goal pace
 - “Who walked when” heatmap (member × day) with 10K markers
 - Team expedition: real distances between our home cities (Montevideo → Punta del Este, Bogotá → Medellín,
@@ -86,13 +91,14 @@ Nothing to deploy — the backend is this repository (details in **[docs/SETUP.m
 index.html · manifest.webmanifest · sw.js · package.json
 css/app.css
 avatars/  36 WebP avatars (imported from Sintonia by tools/import_avatars.py)
+assets/map/  NASA Blue Marble + Black Marble imagery and Natural Earth borders (built by tools/make_map.py)
 js/  app.js (shell & flows) · views.js (pages) · charts.js (SVG) · metrics.js (health & stats) · ui.js · ocr.js · config.js
      api.js (snapshot + relay + outbox) · ledger.js (rules, shared with the Action) · device.js (signing key)
-     i18n.js + strings.js (en / pt / es) · avatars.js (avatar library)
+     i18n.js + strings.js (en / pt / es) · avatars.js (avatar library) · worldmap.js (WebGL team map)
 data/  data.json · log.csv                    ← written by the Action
 backend/  fold.mjs · sheet.py · publish.sh · ledger.test.mjs
 .github/workflows/ledger.yml
-tools/  dev_server.py · mock_relay.py · import_avatars.py · make_icons.py · make_invites.py
+tools/  dev_server.py · mock_relay.py · import_avatars.py · make_icons.py · make_invites.py · make_map.py
 docs/  SETUP.md · IOS_SHORTCUT.md · METRICS.md · ANNOUNCEMENT.md
 ```
 
@@ -103,6 +109,7 @@ python tools/dev_server.py 8765       # app (no-cache; service worker off on loc
 python tools/mock_relay.py 8766       # local relay → http://localhost:8765/?relay=http://localhost:8766
 node --test backend/ledger.test.mjs   # ledger rules
 python tools/make_icons.py            # regenerate icons
+python tools/make_map.py <cache-dir>  # rebuild assets/map/ (downloads NASA + Natural Earth sources once)
 ```
 
 When you release, bump `VERSION` in `sw.js` so installed apps pick up the new files. The Action commits to `main`
@@ -113,6 +120,10 @@ every few minutes while people log steps, so `git pull --rebase` before you push
 Names, avatars and daily step counts are visible to the team and stored in this public repository, together with the
 team spreadsheet. Sign-in uses a key that never leaves your device. Height and weight entered in the app never
 leave your phone.
+
+Each member's pin on the Team map is their city in `ROSTER` ([`js/config.js`](js/config.js)) — city level only.
+
+Map imagery: NASA Visible Earth (Blue Marble Next Generation, Black Marble 2016) · borders: Natural Earth — both public domain.
 
 ---
 *Made with 💙 for Team 8. Health numbers are estimates, not medical advice.*

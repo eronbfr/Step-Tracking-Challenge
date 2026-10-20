@@ -57,12 +57,12 @@ export const FOODS = [
   { id: 'pizza',      emoji: '🍕', kcal: 285 },
 ];
 
-/* ── Team expedition: straight-line distances between team home cities ── */
-const CITY = {
+/* ── Team expedition: straight-line distances between team home cities (also the pins of the Team map) ── */
+export const CITY = {
   rio: [-22.9068, -43.1729], sp: [-23.5505, -46.6333], mvd: [-34.9011, -56.1645], pde: [-34.9667, -54.95],
   bog: [4.711, -74.0721], med: [6.2442, -75.5812], cdmx: [19.4326, -99.1332], aca: [16.8531, -99.8237],
 };
-function haversine([la1, lo1], [la2, lo2]) {
+export function haversine([la1, lo1], [la2, lo2]) {
   const r = Math.PI / 180;
   const a = Math.sin(((la2 - la1) * r) / 2) ** 2 + Math.cos(la1 * r) * Math.cos(la2 * r) * Math.sin(((lo2 - lo1) * r) / 2) ** 2;
   return 2 * 6371 * Math.asin(Math.sqrt(a));

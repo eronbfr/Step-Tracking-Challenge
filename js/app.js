@@ -6,6 +6,7 @@ import * as V from './views.js';
 import { t, tn, lang, setLang, langChosen, locale } from './i18n.js';
 import { AVATARS, avatarImg, avatarLabel } from './avatars.js';
 import { codeOf } from './ledger.js';
+import { setMapMode, focusCountry } from './worldmap.js';
 import { $, $$, esc, fmt, dec, compact, dateLabel, ago, avatar, avColor, icon, toast, openSheet, closeSheet, sheetBody, countUp, confetti, copyText } from './ui.js';
 
 const { store } = api;
@@ -202,6 +203,8 @@ const actions = {
       toast(t('toast.reset', { name: firstName(m) }), { type: 'good' });
     } catch (e) { toast(errText(e), { type: 'warn' }); }
   },
+  'map-mode': el => setMapMode(el.dataset.k),
+  'map-focus': el => focusCountry(el.dataset.cc),
   'rank-by': el => { state.rankBy = el.dataset.k; render(); },
   'team-chart': el => { state.teamChart = el.dataset.k; render(); },
   'toggle-table': el => { state.tables[el.dataset.k] = !state.tables[el.dataset.k]; render(); },

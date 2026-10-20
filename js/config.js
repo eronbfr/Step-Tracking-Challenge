@@ -23,19 +23,20 @@ export const CONFIG = {
   IOS_SHORTCUT_URL: '',
 
   APP_URL: 'https://eronbfr.github.io/Step-Tracking-Challenge/',
-  VERSION: '2.0.0',
+  VERSION: '2.1.0',
 
   CHALLENGE: { team: 'Team 8', name: 'Step Challenge', start: '2026-10-20', end: '2026-11-15', dailyGoal: 10000 },
 
+  // city: home pin on the Team map (ids in js/worldmap.js PLACES: cdmx, bog, rio, sp, mvd); defaults to the country's capital.
   ROSTER: [
-    { id: 'rogelio',  name: 'Rogelio Garcia',         country: 'MX' },
-    { id: 'gonza',    name: 'Gonza Souza',            country: 'UY' },
-    { id: 'sidnei',   name: 'Sidnei Marcos Guerbali', country: 'BR' },
-    { id: 'eron',     name: 'Eron Netto',             country: 'BR' },
-    { id: 'danielle', name: 'Danielle Surini',        country: 'BR' },
-    { id: 'luis',     name: 'Luís Rodney',            country: 'BR' },
-    { id: 'helbert',  name: 'Helbert Contreras',      country: 'CO' },
-    { id: 'armando',  name: 'Armando Alarcon',        country: 'MX' },
-    { id: 'minerva',  name: 'Minerva Perez',          country: 'MX' },
+    { id: 'rogelio',  name: 'Rogelio Garcia',         country: 'MX', city: 'cdmx' },
+    { id: 'gonza',    name: 'Gonza Souza',            country: 'UY', city: 'mvd' },
+    { id: 'sidnei',   name: 'Sidnei Marcos Guerbali', country: 'BR', city: 'sp' },
+    { id: 'eron',     name: 'Eron Netto',             country: 'BR', city: 'rio' },
+    { id: 'danielle', name: 'Danielle Surini',        country: 'BR', city: 'sp' },
+    { id: 'luis',     name: 'Luís Rodney',            country: 'BR', city: 'sp' },
+    { id: 'helbert',  name: 'Helbert Contreras',      country: 'CO', city: 'bog' },
+    { id: 'armando',  name: 'Armando Alarcon',        country: 'MX', city: 'cdmx' },
+    { id: 'minerva',  name: 'Minerva Perez',          country: 'MX', city: 'cdmx' },
   ],
 };

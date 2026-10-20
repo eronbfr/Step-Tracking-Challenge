@@ -1,11 +1,11 @@
 // Team 8 · Step Challenge — service worker.
 // Bump VERSION on every release so installed apps pick up the new files.
-const VERSION = 'v2.0.0';
+const VERSION = 'v2.1.0';
 const SHELL = `t8-shell-${VERSION}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/views.js', './js/api.js', './js/config.js', './js/metrics.js', './js/charts.js', './js/ui.js', './js/ocr.js',
-  './js/i18n.js', './js/strings.js', './js/avatars.js', './js/ledger.js', './js/device.js',
+  './js/i18n.js', './js/strings.js', './js/avatars.js', './js/ledger.js', './js/device.js', './js/worldmap.js',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png',
   './assets/reminder.ics',
 ];
@@ -61,7 +61,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Static files (shell, avatars): cache first, then network (and remember it).
+  // Static files (shell, avatars, map imagery): cache first, then network (and remember it).
   event.respondWith((async () => {
     const hit = await caches.match(req, { ignoreSearch: true });
     if (hit) return hit;

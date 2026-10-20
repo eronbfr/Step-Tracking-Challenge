@@ -4,8 +4,9 @@ import * as M from './metrics.js';
 import * as C from './charts.js';
 import { DEMO, storedSyncLink } from './api.js';
 import { codeOf } from './ledger.js';
+import * as W from './worldmap.js';
 import { t, tn, lang, LANGS } from './i18n.js';
-import { esc, fmt, dec, compact, pct, dist, duration, dateLabel, weekdays, ago, avatar, avColor, flag, icon, ring } from './ui.js';
+import { esc, fmt, dec, compact, pct, dist, duration, dateLabel, weekdays, ago, avatar, avColor, flag, flagsSupported, icon, ring } from './ui.js';
 
 const SOURCE = { shortcut: 'src.shortcut', app: 'src.app', tasker: 'src.android', android: 'src.android' };
 export const sourceLabel = s => (SOURCE[s] ? t(SOURCE[s]) : s ? `${s} 🤖` : t('src.app'));
@@ -93,6 +94,8 @@ export function viewTeam(st) {
       </button>`;
     }).join('')}</div>`, { actions: me ? `<button class="btn sm" data-action="log">${icon('plus', 16)} ${t('common.log')}</button>` : '' }) : ''}
 
+  ${teamMap(st)}
+
   <div class="kpis">
     ${kpi('📏', t('kpi.distance'), dist(team.km, units).text, t('kpi.marathons', { n: dec(team.km / 42.195, 1) }))}
     ${kpi('🔥', t('kpi.kcal'), `${compact(team.kcal)} kcal`, `≈ ${fmt(team.kcal / foodOfDay.kcal)} ${t(`food.${foodOfDay.id}`)} ${foodOfDay.emoji}`)}
@@ -138,6 +141,31 @@ function banners(st) {
     <button class="btn sm" data-action="install">${t('common.install')}</button><button class="icon-btn" data-action="dismiss-install" aria-label="${esc(t('common.dismiss'))}">${icon('close', 18)}</button></div>`;
   if (!st.me && !st.waiting && st.model.ctx.status !== 'finished') out += `<button class="banner join" data-action="signin"><span class="banner-emoji">👋</span><span>${t('banner.join')}</span>${icon('chevron', 20)}</button>`;
   return out;
+}
+
+/** World map with everyone pinned on their home city (js/worldmap.js) + the country battle. */
+function teamMap(st) {
+  const { members } = st.model;
+  const stats = W.countryStats(members);
+  if (!stats.length) return '';
+  const best = Math.max(...stats.map(c => c.avg));
+  const view = W.mapMode(), focus = W.mapFocus();
+  const modes = `<div class="seg" role="tablist" aria-label="${esc(t('map.modeAria'))}">${[['team', t('map.team')], ['world', t('map.world')]].map(([k, txt]) =>
+    `<button role="tab" aria-selected="${k === view}" class="${k === view ? 'on' : ''}" data-action="map-mode" data-k="${k}">${txt}</button>`).join('')}</div>`;
+  const sub = t('map.sub', {
+    people: tn('map.people', members.filter(W.placeOf).length), countries: tn('map.countries', stats.length),
+    d: dist(W.spanKm(members), st.profile.units).text,
+  });
+  return section(t('map.title'), sub, `
+    <div class="wmap-host" data-chart="worldmap"></div>
+    <p class="mini-h">${t('map.battle')}</p>
+    <div class="wm-cc">${stats.map((c, k) => `
+      <button class="wm-c ${focus === c.cc ? 'on' : ''}" data-action="map-focus" data-cc="${c.cc}" aria-label="${esc(t('map.focusAria', { country: c.name }))}">
+        <span class="wm-c-flag" aria-hidden="true">${flagsSupported() ? flag(c.cc) : `<span class="wm-c-cc">${c.cc}</span>`}</span>
+        <span class="wm-c-name"><b>${esc(c.name)}${k === 0 && c.avg > 0 ? ' 👑' : ''}</b><small>${tn('map.people', c.n)} · ${c.places.map(W.placeName).join(', ')}</small></span>
+        <span class="wm-c-val"><b>${c.avg > 0 ? compact(c.avg) : '—'}</b><small>${t('map.avg')}</small></span>
+        <span class="wm-c-bar"><i style="width:${best > 0 ? ((c.avg / best) * 100).toFixed(1) : 0}%"></i></span>
+      </button>`).join('')}</div>`, { cls: 'wide map-card', id: 'team-map', actions: modes });
 }
 
 function expedition(st) {
@@ -529,7 +557,9 @@ export function drawPage(st, root, mount) {
 
   root.querySelectorAll('[data-chart]').forEach(host => {
     const kind = host.dataset.chart;
-    if (kind === 'teamMain' && st.teamChart === 'daily') {
+    if (kind === 'worldmap') {
+      W.attachMap(host, { members, goal: ctx.goal, idx: ctx.status === 'live' ? ctx.todayIdx : ctx.lastIdx, meId: me && me.id });
+    } else if (kind === 'teamMain' && st.teamChart === 'daily') {
       mount(host, () => C.columnChart(host, {
         values: team.dailyTotals, xLabels: dayLabels, goal: team.dailyGoal, goalLabel: t('chart.goal', { v: compact(team.dailyGoal) }),
         emphasis: emph, futureFrom: future, labelIdx: emph, aria: t('chart.teamPerDay'),
