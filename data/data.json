@@ -8,12 +8,10 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-21T15:12:29.618Z",
+  "updatedAt": "2026-10-21T22:25:05.156Z",
   "cursor": {
-    "time": 1792590154,
+    "time": 1792619578,
     "seen": {
-      "YGRMEdBWH9mW": 1792551930,
-      "RRMl2p9dDw82": 1792557273,
       "mDvzyZ7dxz01": 1792579359,
       "gcPJw3EN4klu": 1792579382,
       "Ddgu3SYEAOXQ": 1792579453,
@@ -24,7 +22,9 @@
       "6LHYq93k9tsw": 1792586192,
       "j1vUF8CFeKfs": 1792588316,
       "DCYRoE6pKIh5": 1792588347,
-      "g7rza7gHiXyw": 1792590154
+      "g7rza7gHiXyw": 1792590154,
+      "Q9JzRbn05hOw": 1792619551,
+      "XGgopEMjN6Jf": 1792619578
     }
   },
   "members": [
