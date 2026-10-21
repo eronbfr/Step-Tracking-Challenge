@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-20T22:14:11.308Z",
+  "updatedAt": "2026-10-21T05:15:23.209Z",
   "cursor": {
-    "time": 1792531647,
+    "time": 1792557273,
     "seen": {
       "WcUoKA0kJbXz": 1792523469,
       "lmMylOCon8lW": 1792523479,
@@ -32,7 +32,9 @@
       "6yiZfBNx1Nkv": 1792531428,
       "kGc3SEyFE7gH": 1792531447,
       "mkWOwzYz4SQs": 1792531449,
-      "qNGT5qQr1yeT": 1792531647
+      "qNGT5qQr1yeT": 1792531647,
+      "YGRMEdBWH9mW": 1792551930,
+      "RRMl2p9dDw82": 1792557273
     }
   },
   "members": [
@@ -43,15 +45,22 @@
       "tz": "America/Mexico_City",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [],
+      "keys": [
+        {
+          "kid": "6c0f268db3477fd5",
+          "pub": "BBNabXZoTG39fIpd8wBZfsJEcCrnyL3RoIFrqT6ks5Qi4z2tAyj4piQCubJyeZK0q5fAOiPW88pM4JUQ6U4vRGA",
+          "l": "Android · Chrome (app)",
+          "at": "2026-10-21T03:05:30.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
-      "lastSyncAt": "",
-      "lastSource": "",
+      "daily": [6310, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792557272229, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "joinedAt": "2026-10-21T03:05:30.000Z",
+      "lastSyncAt": "2026-10-21T04:34:33.000Z",
+      "lastSource": "app",
       "autoSyncs": 0
     },
     {
