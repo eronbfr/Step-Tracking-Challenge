@@ -8,33 +8,17 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-21T05:15:23.209Z",
+  "updatedAt": "2026-10-21T12:04:36.076Z",
   "cursor": {
-    "time": 1792557273,
+    "time": 1792580638,
     "seen": {
-      "WcUoKA0kJbXz": 1792523469,
-      "lmMylOCon8lW": 1792523479,
-      "3pwlErBUXxQ4": 1792526314,
-      "FzSCI4FIHnrd": 1792526314,
-      "rG4S1HR04dUG": 1792526315,
-      "4VkOTEaEQ1ta": 1792526315,
-      "xEeyN9ohxRdz": 1792526315,
-      "v0rxvxcRi4Qt": 1792526690,
-      "38aEGRuDZDqs": 1792527253,
-      "XsefcaaNduRF": 1792527627,
-      "Qv5AEKQWlXlK": 1792527731,
-      "QXAGhjFD31th": 1792528022,
-      "5KjnjbF30Za6": 1792528888,
-      "70L2Qc3uXECX": 1792528894,
-      "rHSxFO1dZYd9": 1792529282,
-      "j9QLIW3QnhTw": 1792531208,
-      "1zsDz2Zksz9b": 1792531424,
-      "6yiZfBNx1Nkv": 1792531428,
-      "kGc3SEyFE7gH": 1792531447,
-      "mkWOwzYz4SQs": 1792531449,
-      "qNGT5qQr1yeT": 1792531647,
       "YGRMEdBWH9mW": 1792551930,
-      "RRMl2p9dDw82": 1792557273
+      "RRMl2p9dDw82": 1792557273,
+      "mDvzyZ7dxz01": 1792579359,
+      "gcPJw3EN4klu": 1792579382,
+      "Ddgu3SYEAOXQ": 1792579453,
+      "OTCRCwqesxOe": 1792580502,
+      "cZM5uXoQ3wkT": 1792580638
     }
   },
   "members": [
@@ -117,11 +101,11 @@
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [9060, 100, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792580502406, 1792580638355, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-20T19:11:09.000Z",
-      "lastSyncAt": "",
-      "lastSource": "",
+      "lastSyncAt": "2026-10-21T11:03:58.000Z",
+      "lastSource": "app",
       "autoSyncs": 0
     },
     {
@@ -147,15 +131,22 @@
       "name": "Luís Rodney",
       "country": "BR",
       "tz": "America/Sao_Paulo",
-      "avatar": "",
-      "avatarTs": 0,
-      "keys": [],
+      "avatar": "m4",
+      "avatarTs": 1792579381917,
+      "keys": [
+        {
+          "kid": "204dddd41425ed2c",
+          "pub": "BDgR_DtGRIKD3WStYDJwAdzKmbSMPY5dTf0axItlrQ1XXUM7-4UfkBbGyycMWDb89Vo5vBUUuu2CuS4X4eIV6hw",
+          "l": "iPhone · Safari",
+          "at": "2026-10-21T10:42:39.000Z"
+        }
+      ],
       "requests": [],
-      "syncHash": "",
-      "syncTs": 0,
+      "syncHash": "cb3c496590a205c59f967d180be5a82f690202adacd39584be23fff8edc04d67",
+      "syncTs": 1792579453159,
       "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
+      "joinedAt": "2026-10-21T10:42:39.000Z",
       "lastSyncAt": "",
       "lastSource": "",
       "autoSyncs": 0

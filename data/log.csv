@@ -16,3 +16,8 @@ time,member,name,event,date,steps,previous,source
 2026-10-20T21:27:27.000Z,helbert,Helbert Contreras,joined,,,,
 2026-10-21T03:05:30.000Z,rogelio,Rogelio Garcia,joined,,,,
 2026-10-21T04:34:33.000Z,rogelio,Rogelio Garcia,steps,2026-10-20,6310,,app
+2026-10-21T10:42:39.000Z,luis,Luís Rodney,joined,,,,
+2026-10-21T10:43:02.000Z,luis,Luís Rodney,avatar,,,,
+2026-10-21T10:44:13.000Z,luis,Luís Rodney,synckey,,,,
+2026-10-21T11:01:42.000Z,eron,Eron Netto,steps,2026-10-20,9060,,app
+2026-10-21T11:03:58.000Z,eron,Eron Netto,steps,2026-10-21,100,,app
