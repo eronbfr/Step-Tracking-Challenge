@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-21T12:04:36.076Z",
+  "updatedAt": "2026-10-21T13:40:26.807Z",
   "cursor": {
-    "time": 1792580638,
+    "time": 1792588347,
     "seen": {
       "YGRMEdBWH9mW": 1792551930,
       "RRMl2p9dDw82": 1792557273,
@@ -18,7 +18,12 @@
       "gcPJw3EN4klu": 1792579382,
       "Ddgu3SYEAOXQ": 1792579453,
       "OTCRCwqesxOe": 1792580502,
-      "cZM5uXoQ3wkT": 1792580638
+      "cZM5uXoQ3wkT": 1792580638,
+      "Hl5tGvUvqrV2": 1792585553,
+      "Wr3mO4NusNDr": 1792585694,
+      "6LHYq93k9tsw": 1792586192,
+      "j1vUF8CFeKfs": 1792588316,
+      "DCYRoE6pKIh5": 1792588347
     }
   },
   "members": [
@@ -51,18 +56,25 @@
       "id": "gonza",
       "name": "Gonza Souza",
       "country": "UY",
-      "tz": "America/Montevideo",
+      "tz": "America/Mendoza",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [],
+      "keys": [
+        {
+          "kid": "8fa42b0654f3850a",
+          "pub": "BFPPyhAORUwmpq-wABgx8XDllBc_ZheU1FloJBzJ5cC7RHWeTxkbl-_N51zHXQA5rd-DTeaQeusj9lnqGnBgHQQ",
+          "l": "iPhone · Safari",
+          "at": "2026-10-21T12:25:53.000Z"
+        }
+      ],
       "requests": [],
-      "syncHash": "",
-      "syncTs": 0,
-      "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
-      "lastSyncAt": "",
-      "lastSource": "",
+      "syncHash": "09742e2e5764b1b515392b3dd412606228983b698060c75a7a5bb39de98c0f25",
+      "syncTs": 1792585694378,
+      "daily": [10383, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792586192910, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "joinedAt": "2026-10-21T12:25:53.000Z",
+      "lastSyncAt": "2026-10-21T12:36:32.000Z",
+      "lastSource": "app",
       "autoSyncs": 0
     },
     {
@@ -112,16 +124,23 @@
       "id": "danielle",
       "name": "Danielle Surini",
       "country": "BR",
-      "tz": "America/Sao_Paulo",
-      "avatar": "",
-      "avatarTs": 0,
-      "keys": [],
+      "tz": "America/Fortaleza",
+      "avatar": "f8",
+      "avatarTs": 1792588348113,
+      "keys": [
+        {
+          "kid": "a84c05cab18ef81f",
+          "pub": "BN9jTeAvK8pmFIgYJCOypu12CDDzYXzdz_bND4Li2soUydZuoOz41KRCRnf--Xo5h7LWBRGNU8U4hiB6aaXPSEk",
+          "l": "Android · Chrome (app)",
+          "at": "2026-10-21T13:11:56.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
       "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
+      "joinedAt": "2026-10-21T13:11:56.000Z",
       "lastSyncAt": "",
       "lastSource": "",
       "autoSyncs": 0
