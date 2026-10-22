@@ -17,6 +17,7 @@ const CSS_FONTS = {
   serif: 'font-family: Didot, "Bodoni 72", Georgia, "Times New Roman", serif; font-weight: 600; font-style: italic;',
 };
 const HOLD_MS = 280;
+const MAX_PICK_BYTES = 300 * 1024 * 1024; // gallery videos are copied into memory (see pickFile)
 
 let S = null;
 addEventListener('popstate', () => { if (S && S.pushed) { S.pushed = false; close(); } }); // Android back button
@@ -65,6 +66,7 @@ export function openComposer({ info, onPost, preset = '' }) {
   };
   if (!S.pushed) try { history.pushState({ cmp: 1 }, ''); S.pushed = true; } catch { /* sandboxed */ }
   S.renderer = new K.Renderer(S.glc);
+  S.renderer.onrestore = requestDraw;
   layout();
   bind();
   requestAnimationFrame(() => el.classList.add('in'));
@@ -211,7 +213,12 @@ function stopRecording() {
 async function pickFile(file) {
   if (!file) return;
   try {
-    if (file.type.startsWith('video/')) return await loadVideo(file, 0, false);
+    // Android's photo picker lends the file for a few seconds only: the preview kept playing from its buffer, but the
+    // export reads the file again and failed ("Couldn't prepare the story"). Keep our own copy in memory.
+    if (file.type.startsWith('video/')) {
+      if (file.size > MAX_PICK_BYTES) { toast(t('st.tooLarge'), { type: 'warn', duration: 5000 }); return; }
+      return await loadVideo(new Blob([await file.arrayBuffer()], { type: file.type }), 0, false);
+    }
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.src = url;

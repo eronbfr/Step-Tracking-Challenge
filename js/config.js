@@ -25,7 +25,7 @@ export const CONFIG = {
   IOS_SHORTCUT_URL: '',
 
   APP_URL: 'https://eronbfr.github.io/Step-Tracking-Challenge/',
-  VERSION: '2.2.2',
+  VERSION: '2.2.3',
 
   CHALLENGE: { team: 'Team 8', name: 'Step Challenge', start: '2026-10-20', end: '2026-11-15', dailyGoal: 10000 },
 

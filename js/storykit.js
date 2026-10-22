@@ -95,17 +95,29 @@ function mediaQuad(tf, mw, mh) {
 export class Renderer {
   constructor(canvas, { preserve = false } = {}) {
     this.canvas = canvas;
-    const opts = { alpha: false, antialias: true, premultipliedAlpha: true, preserveDrawingBuffer: preserve };
+    this.opts = { alpha: false, antialias: true, premultipliedAlpha: true, preserveDrawingBuffer: preserve };
+    this.init();
+    if (this.gl) {
+      // Android drops WebGL contexts under GPU memory pressure: ask for it back and rebuild, instead of a white stage
+      canvas.addEventListener('webglcontextlost', e => { if (!this.disposed) e.preventDefault(); });
+      canvas.addEventListener('webglcontextrestored', () => {
+        if (this.disposed) return;
+        this.init();
+        this.dirty = this.odirty = true;
+        if (this.onrestore) this.onrestore();
+      });
+    } else this.ctx = this.canvas.getContext('2d');
+  }
+  init() {
+    const { canvas, opts } = this;
     let gl = null;
     try { gl = canvas.getContext('webgl', opts) || canvas.getContext('experimental-webgl', opts); } catch { gl = null; }
-    if (gl) {
-      try {
-        this.pg = program(gl, FS_GRAD); this.pm = program(gl, FS_MEDIA); this.po = program(gl, FS_OVER);
-        this.buf = gl.createBuffer(); this.tex = texture(gl); this.otex = texture(gl);
-        this.gl = gl;
-      } catch (e) { console.warn('story renderer', e); gl = null; }
-    }
-    if (!gl) this.ctx = canvas.getContext('2d');
+    if (!gl) return;
+    try {
+      this.pg = program(gl, FS_GRAD); this.pm = program(gl, FS_MEDIA); this.po = program(gl, FS_OVER);
+      this.buf = gl.createBuffer(); this.tex = texture(gl); this.otex = texture(gl);
+      this.gl = gl;
+    } catch (e) { console.warn('story renderer', e); }
   }
   source(el) { this.src = el; this.dirty = true; }
   overlay(c) { this.over = c; this.odirty = true; }
@@ -128,6 +140,7 @@ export class Renderer {
     const media = this.src && st.mw ? this.src : null;
     if (!this.gl) return this.draw2d(st, bg, media);
     const gl = this.gl;
+    if (gl.isContextLost()) return; // redrawn once 'webglcontextrestored' comes
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.disable(gl.BLEND);
     gl.useProgram(this.pg.p);
@@ -183,6 +196,7 @@ export class Renderer {
   }
 
   dispose() {
+    this.disposed = true;
     const ext = this.gl && this.gl.getExtension('WEBGL_lose_context');
     if (ext) ext.loseContext();
   }
