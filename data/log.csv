@@ -39,3 +39,5 @@ time,member,name,event,date,steps,previous,source
 2026-10-22T04:46:10.000Z,armando,Armando Alarcon,steps,2026-10-21,4842,,app
 2026-10-22T10:21:15.000Z,eron,Eron Netto,unstory,,,,
 2026-10-22T10:21:56.000Z,eron,Eron Netto,story,,,,
+2026-10-22T10:31:24.000Z,eron,Eron Netto,steps,2026-10-21,18461,1985,app
+2026-10-22T10:31:33.000Z,eron,Eron Netto,steps,2026-10-22,1100,,app
