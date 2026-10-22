@@ -8,13 +8,10 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-22T00:45:49.072Z",
+  "updatedAt": "2026-10-22T03:44:39.975Z",
   "cursor": {
-    "time": 1792627576,
+    "time": 1792633889,
     "seen": {
-      "Hl5tGvUvqrV2": 1792585553,
-      "Wr3mO4NusNDr": 1792585694,
-      "6LHYq93k9tsw": 1792586192,
       "j1vUF8CFeKfs": 1792588316,
       "DCYRoE6pKIh5": 1792588347,
       "g7rza7gHiXyw": 1792590154,
@@ -36,7 +33,8 @@
       "MxftdopEbUIs": 1792626555,
       "SWwIgDFavZfy": 1792626667,
       "fteyEf7xCT6P": 1792627539,
-      "qvNpZsmoZLz9": 1792627576
+      "qvNpZsmoZLz9": 1792627576,
+      "5f9Q1fYLEb9b": 1792633889
     }
   },
   "members": [
@@ -179,9 +177,9 @@
       "daily": [null, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [0, 1792626667000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T10:42:39.000Z",
-      "lastSyncAt": "2026-10-22T00:06:16.000Z",
+      "lastSyncAt": "2026-10-22T01:51:29.000Z",
       "lastSource": "shortcut",
-      "autoSyncs": 3
+      "autoSyncs": 4
     },
     {
       "id": "helbert",
@@ -258,5 +256,6 @@
       "lastSource": "app",
       "autoSyncs": 0
     }
-  ]
+  ],
+  "stories": []
 }
