@@ -2,6 +2,8 @@
 
 Supports what the app and backend/fold.mjs use: POST /<topic>, GET /<topic>/publish?message=…,
 GET /<topic>/json?poll=1&since=…, GET /<topic>/sse?since=… — with CORS like ntfy.sh.
+Attachments (stories): POST /<topic>?filename=…&message=… with the file as body → GET /file/<id>.<ext>,
+with ntfy.sh's anonymous limit of 2 MiB per file.
 
     python tools/mock_relay.py 8766
     app:    http://localhost:8765/?relay=http://localhost:8766
@@ -16,12 +18,32 @@ import time
 from urllib.parse import parse_qs, urlparse
 
 MESSAGES = []
+FILES = {}
+FILE_LIMIT = 2 * 1024 * 1024
 CHANGED = threading.Condition()
+TYPES = {bytes.fromhex('ffd8ff'): ('image/jpeg', '.jpg'), bytes.fromhex('89504e47'): ('image/png', '.png'), bytes.fromhex('1a45dfa3'): ('video/webm', '.webm')}
 
 
-def publish(topic, text):
-    msg = {'id': secrets.token_urlsafe(9)[:12], 'time': int(time.time()), 'expires': int(time.time()) + 43200,
-           'event': 'message', 'topic': topic, 'message': text}
+def sniff(data):
+    for magic, kind in TYPES.items():
+        if data.startswith(magic):
+            return kind
+    if data[4:8] == b'ftyp':
+        return ('video/mp4', '.mp4')
+    if data[:4] == b'RIFF' and data[8:12] == b'WEBP':
+        return ('image/webp', '.webp')
+    return ('application/octet-stream', '.bin')
+
+
+def publish(topic, text, attachment=None, host='localhost'):
+    msg = {'id': secrets.token_urlsafe(9)[:12].replace('-', 'x').replace('_', 'y'), 'time': int(time.time()),
+           'expires': int(time.time()) + 43200, 'event': 'message', 'topic': topic, 'message': text}
+    if attachment is not None:
+        name, data = attachment
+        ctype, ext = sniff(data)
+        FILES[msg['id'] + ext] = (ctype, data)
+        msg['attachment'] = {'name': name, 'type': ctype, 'size': len(data), 'expires': int(time.time()) + 10800,
+                             'url': f'http://{host}/file/{msg["id"]}{ext}'}
     with CHANGED:
         MESSAGES.append(msg)
         CHANGED.notify_all()
@@ -56,21 +78,31 @@ class Relay(http.server.BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, PUT, POST')
+        self.send_header('Access-Control-Allow-Methods', 'GET, PUT, POST, HEAD')
         self.send_header('Access-Control-Allow-Headers', '*')
         self.send_header('Content-Length', '0')
         self.end_headers()
 
     def do_POST(self):
-        topic = urlparse(self.path).path.strip('/')
-        text = self.rfile.read(int(self.headers.get('Content-Length') or 0)).decode('utf-8')
-        self.reply(200, json.dumps(publish(topic, text)))
+        url = urlparse(self.path)
+        topic = url.path.strip('/')
+        q = {k: v[-1] for k, v in parse_qs(url.query).items()}
+        body = self.rfile.read(int(self.headers.get('Content-Length') or 0))
+        name = q.get('filename') or q.get('file') or q.get('f') or self.headers.get('Filename')
+        if name:
+            if len(body) > FILE_LIMIT:
+                return self.reply(413, '{"code":41301,"http":413,"error":"attachment too large"}')
+            text = q.get('message') or q.get('m') or f'You received a file: {name}'
+            return self.reply(200, json.dumps(publish(topic, text, (name, body), self.headers.get('Host') or 'localhost')))
+        self.reply(200, json.dumps(publish(topic, body.decode('utf-8'))))
 
     do_PUT = do_POST
 
     def do_GET(self):
         url = urlparse(self.path)
         parts = url.path.strip('/').split('/')
+        if len(parts) == 2 and parts[0] == 'file':
+            return self.send_file(parts[1])
         q = {k: v[-1] for k, v in parse_qs(url.query).items()}
         if len(parts) != 2:
             return self.reply(404, '{"error":"not found"}')
@@ -83,6 +115,18 @@ class Relay(http.server.BaseHTTPRequestHandler):
         if kind == 'sse':
             return self.stream(topic, q.get('since'))
         return self.reply(404, '{"error":"not found"}')
+
+    def send_file(self, name):
+        if name not in FILES:
+            return self.reply(404, '{"error":"not found"}')
+        ctype, data = FILES[name]
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Content-Type', ctype)
+        self.send_header('Content-Length', str(len(data)))
+        self.send_header('Cache-Control', 'public, max-age=10800')
+        self.end_headers()
+        self.wfile.write(data)
 
     def stream(self, topic, since):
         self.send_response(200)

@@ -15,6 +15,8 @@ export const CONFIG = {
   REPO: 'eronbfr/Step-Tracking-Challenge',
   DATA_URL: 'https://raw.githubusercontent.com/eronbfr/Step-Tracking-Challenge/main/data/data.json',
   SHEET_URL: 'https://github.com/eronbfr/Step-Tracking-Challenge/raw/main/step-tracking_Team8.xlsx',
+  // Stories media kept by the Action (the relay only holds uploads for 3 hours). Branch rewritten with the live stories only.
+  STORIES_URL: 'https://raw.githubusercontent.com/eronbfr/Step-Tracking-Challenge/stories',
 
   // Members whose devices can approve sign-ins and reset anyone's devices (team captain).
   ADMINS: ['eron'],
@@ -23,7 +25,7 @@ export const CONFIG = {
   IOS_SHORTCUT_URL: '',
 
   APP_URL: 'https://eronbfr.github.io/Step-Tracking-Challenge/',
-  VERSION: '2.1.0',
+  VERSION: '2.2.0',
 
   CHALLENGE: { team: 'Team 8', name: 'Step Challenge', start: '2026-10-20', end: '2026-11-15', dailyGoal: 10000 },
 

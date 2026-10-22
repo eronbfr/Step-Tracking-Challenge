@@ -30,7 +30,7 @@ export const store = {
 
 const KEY = {
   view: 't8:view', snap: 't8:snapshot', tail: 't8:tail', outbox: 't8:outbox2', sent: 't8:sent',
-  demo: 't8:demo', demoJoined: 't8:demo-joined', demoSync: 't8:demo-sync', demoAvatars: 't8:demo-avatars',
+  demo: 't8:demo', demoJoined: 't8:demo-joined', demoSync: 't8:demo-sync', demoAvatars: 't8:demo-avatars', demoStories: 't8:demo-stories',
 };
 ['t8:data', 't8:outbox', 't8:demo-pins'].forEach(store.del); // v1 (Google Apps Script) leftovers
 
@@ -275,6 +275,135 @@ export async function syncLink(id, member, { rotate = false } = {}) {
   return syncUrl(id, k);
 }
 
+/* ── Stories ── */
+// The relay takes attachments of up to 2 MiB from anonymous publishers, so media is sent in parts (one message each,
+// unsigned); the signed 'story' message then names the parts and the file's SHA-256. See backend/stories.mjs.
+const PART = 1900 * 1024;
+export const STORY_MAX_BYTES = 5 * PART;
+const demoMedia = new Map(); // sid → Blob (demo mode keeps posted stories in memory)
+
+function uploadPart(blob, name, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const q = new URLSearchParams({ filename: name, message: JSON.stringify({ v: 1, t: 'blob' }) });
+    xhr.open('POST', `${RELAY}?${q}`); // no content type → a "simple" request, no CORS preflight
+    xhr.timeout = 120000;
+    xhr.upload.onprogress = e => e.lengthComputable && onProgress(e.loaded / e.total);
+    xhr.onload = () => {
+      if (xhr.status !== 200) return reject(new ApiError(`relay HTTP ${xhr.status}`, xhr.status === 429 || xhr.status >= 500, xhr.status === 413 ? 'tooLarge' : 'relay'));
+      try { resolve(JSON.parse(xhr.responseText)); } catch { reject(new ApiError('relay', true, 'relay')); }
+    };
+    xhr.onerror = () => reject(new ApiError('offline', true, 'offline'));
+    xhr.ontimeout = () => reject(new ApiError('timeout', true, 'timeout'));
+    xhr.send(new Blob([blob]));
+  });
+}
+
+export const storyId = () => L.b64u(crypto.getRandomValues(new Uint8Array(9)));
+
+/**
+ * Publishes a story: `blob` is the finished photo/video, `meta` = { kind, w, h, du, x, mn, bg }.
+ * onProgress(0…1) follows the upload. Returns the story id.
+ */
+export async function postStory({ id, blob, meta, sid = storyId() }, onProgress = () => {}) {
+  if (blob.size > STORY_MAX_BYTES) throw new ApiError('tooLarge', false, 'tooLarge');
+  const mt = (blob.type || '').split(';')[0] || (meta.kind === 'video' ? 'video/mp4' : 'image/jpeg');
+  const sha = L.hex(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer()));
+  const fields = { sid, k: meta.kind, mt, sz: blob.size, sha, w: meta.w, h: meta.h, x: meta.x || '', mn: meta.mn || [], bg: meta.bg || '' };
+  if (meta.kind === 'video') fields.du = meta.du;
+  if (DEMO) {
+    demoMedia.set(sid, blob);
+    const list = store.get(KEY.demoStories, []);
+    list.push({ ...fields, id: sid, m: id, at: nowSec(), p: [], src: '', views: {}, reacts: [], replies: [], local: true });
+    store.set(KEY.demoStories, list);
+    for (let k = 1; k <= 10; k++) { await new Promise(r => setTimeout(r, 70)); onProgress(k / 10); }
+    return sid;
+  }
+  const n = Math.ceil(blob.size / PART), ext = L.STORY.MIME[mt] || 'bin', urls = [];
+  for (let k = 0; k < n; k++) {
+    const part = blob.slice(k * PART, Math.min(blob.size, (k + 1) * PART));
+    const ev = await uploadPart(part, `${sid}.${k}.${ext}`, p => onProgress(Math.min(0.98, (k + p) / n)));
+    if (!ev.attachment || !ev.attachment.url) throw new ApiError('relay', false, 'relay');
+    tail.set(ev.id, slim(ev));
+    urls.push(ev.attachment.url);
+  }
+  fields.p = urls;
+  const r = await send('story', id, fields);
+  if (r.queued) throw new ApiError('offline', true, 'offline');
+  onProgress(1);
+  return sid;
+}
+
+export const deleteStory = (owner, sid) => (DEMO ? demoStoryEdit(sid, null) : send('unstory', owner, { sid }));
+export const markSeen = (id, sids) => (DEMO || !sids.length ? Promise.resolve({ ok: true }) : send('seen', id, { s: sids.slice(0, 60) }));
+export const react = (id, sid, e) => (DEMO ? demoStoryEdit(sid, s => s.reacts.push({ m: id, e, at: nowSec() })) : send('react', id, { sid, e }));
+export const reply = (id, sid, x) => (DEMO ? demoStoryEdit(sid, s => s.replies.push({ m: id, x, at: nowSec() })) : send('reply', id, { sid, x }));
+
+function demoStoryEdit(sid, fn) {
+  const list = store.get(KEY.demoStories, []);
+  const s = list.find(x => x.id === sid);
+  store.set(KEY.demoStories, fn ? list : list.filter(x => x.id !== sid));
+  if (s && fn) { fn(s); store.set(KEY.demoStories, list); }
+  return Promise.resolve({ ok: true });
+}
+
+const MEDIA_CACHE = 't8-stories';
+const mediaUrls = new Map(); // sid → Promise<object URL>
+const mediaKey = sid => `${location.origin}/__story/${sid}`;
+
+async function download(urls, type) {
+  const blobs = [];
+  for (const u of urls) {
+    const res = await http(u, { timeout: 60000, cache: 'default' });
+    if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status >= 500);
+    blobs.push(await res.blob());
+  }
+  return new Blob(blobs, { type });
+}
+
+/**
+ * A story's photo/video as an object URL. Fresh stories come from the relay (3-hour copies), older ones from the
+ * `stories` branch kept by the Action; whichever fails, the other is tried. Media is cached on the device.
+ */
+export function storyMediaUrl(story) {
+  if (mediaUrls.has(story.id)) return mediaUrls.get(story.id);
+  const p = (async () => {
+    if (demoMedia.has(story.id)) return URL.createObjectURL(demoMedia.get(story.id));
+    if (story.demo != null) return (await import('./storykit.js')).demoStoryUrl(story);
+    let cache = null;
+    try { cache = await caches.open(MEDIA_CACHE); } catch { /* no Cache Storage */ }
+    const hit = cache && await cache.match(mediaKey(story.id)).catch(() => null);
+    if (hit) return URL.createObjectURL(await hit.blob());
+    const branch = story.src ? [[`${CONFIG.STORIES_URL}/${story.src}`]] : [];
+    const relay = story.p && story.p.length ? [story.p] : [];
+    const fresh = nowSec() - story.at < 2.5 * 3600;
+    let blob = null, err = null;
+    for (const urls of fresh ? [...relay, ...branch] : [...branch, ...relay]) {
+      try { blob = await download(urls, story.mt); if (!story.sz || blob.size === story.sz) break; blob = null; } catch (e) { err = e; }
+    }
+    if (!blob) {
+      if (relay.length === 1 && fresh) return story.p[0]; // CORS-less fallback: let <img>/<video> load it directly
+      throw err || new ApiError('media', true, 'media');
+    }
+    if (cache) cache.put(mediaKey(story.id), new Response(blob, { headers: { 'Content-Type': story.mt, 'X-At': String(story.at) } })).catch(() => {});
+    return URL.createObjectURL(blob);
+  })();
+  mediaUrls.set(story.id, p);
+  p.catch(() => mediaUrls.delete(story.id));
+  return p;
+}
+
+/** Forget cached media of stories that are no longer on air. */
+export async function pruneStoryCache(liveIds) {
+  try {
+    const cache = await caches.open(MEDIA_CACHE);
+    for (const req of await cache.keys()) {
+      const sid = req.url.split('/__story/')[1];
+      if (sid && !liveIds.has(sid)) await cache.delete(req);
+    }
+  } catch { /* no Cache Storage */ }
+}
+
 /* ── Demo mode: realistic sample data so the dashboard can be previewed (?demo) ── */
 function rng(seed) {
   let a = seed >>> 0;
@@ -318,7 +447,24 @@ function demoData() {
       daily,
     };
   });
-  return { ok: true, demo: true, challenge: ch, admins: CONFIG.ADMINS, updatedAt: new Date().toISOString(), live: true, members };
+  return { ok: true, demo: true, challenge: ch, admins: CONFIG.ADMINS, updatedAt: new Date().toISOString(), live: true, members, stories: demoStories() };
+}
+
+// Sample stories drawn on the device (js/storykit.js demoStoryUrl) + whatever was posted in this demo session.
+const DEMO_STORIES = [
+  ['gonza', 5.1, 0], ['gonza', 2.2, 1], ['danielle', 3.4, 2], ['rogelio', 7.8, 3], ['helbert', 1.1, 4], ['minerva', 0.4, 5], ['luis', 11, 6],
+];
+let demoBase = 0;
+function demoStories() {
+  demoBase = demoBase || nowSec();
+  const sample = DEMO_STORIES.map(([m, hAgo, n]) => ({
+    id: `demo00${n}xx`, m, at: Math.round(demoBase - hAgo * 3600), k: 'image', mt: 'image/jpeg', w: 1080, h: 1920, sz: 0, sha: '',
+    p: [], src: '', x: '', mn: [], bg: '', demo: n,
+    views: Object.fromEntries(['armando', 'sidnei', 'helbert'].filter(x => x !== m).slice(0, 1 + (n % 3)).map((x, k) => [x, Math.round(demoBase - k * 900)])),
+    reacts: n % 2 ? [{ m: 'armando', e: '🔥', at: Math.round(demoBase - 600) }] : [], replies: [],
+  }));
+  const mine = store.get(KEY.demoStories, []).filter(s => demoMedia.has(s.id));
+  return [...sample, ...mine].sort((a, b) => a.at - b.at);
 }
 
 function demoLog({ id, date, steps }) {

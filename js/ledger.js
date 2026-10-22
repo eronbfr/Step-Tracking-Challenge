@@ -13,13 +13,21 @@ export const MAX_STEPS = 100000;
 const GRACE_DAYS = 7;           // late edits allowed for a week after the end
 const SEEN_SECONDS = 13 * 3600; // the relay keeps messages for 12 h
 const MAX_KEYS = 8, MAX_REQUESTS = 4;
+// Stories: the media travels as relay attachments (≤ 2 MiB each, so bigger files come in parts) and the Action copies it
+// to the `stories` branch. The ledger keeps what a story is, who saw it and the reactions, for two days.
+export const STORY = {
+  TTL: 24 * 3600, KEEP: 48 * 3600, MAX_PARTS: 6, MAX_BYTES: 12 * 1024 * 1024, MAX_SECONDS: 61, PER_DAY: 30,
+  MIME: { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' },
+  REACTIONS: ['❤️', '🔥', '👏', '😂', '😮', '😍', '💪', '🎉'],
+};
+const PART_URL = /^https?:\/\/[^\s/?#]+\/file\/[A-Za-z0-9_-]+(\.[A-Za-z0-9]{1,5})?$/;
 const TZ_BY_COUNTRY = { BR: 'America/Sao_Paulo', MX: 'America/Mexico_City', UY: 'America/Montevideo', CO: 'America/Bogota' };
 const DEFAULT_TZ = 'America/Sao_Paulo';
 
 /* ───────────── Encoding & crypto helpers ───────────── */
 const subtle = () => globalThis.crypto.subtle;
 const utf8 = s => new TextEncoder().encode(s);
-const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+export const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
 export const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 export const unb64u = s => Uint8Array.from(atob(String(s).replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((String(s).length + 3) % 4)), c => c.charCodeAt(0));
 
@@ -101,7 +109,12 @@ export function normalize(raw, cfg = CONFIG) {
   const members = cfg.ROSTER.map(r => merge(r, byId.get(r.id)));
   if (old) old.members.forEach(m => { if (!cfg.ROSTER.some(r => r.id === m.id)) members.push(merge(m, m)); });
   const cursor = old && old.cursor ? { time: Number(old.cursor.time) || 0, seen: { ...(old.cursor.seen || {}) } } : { time: 0, seen: {} };
-  return { v: VERSION, challenge, updatedAt: (old && old.updatedAt) || null, cursor, members };
+  const stories = (old && Array.isArray(old.stories) ? old.stories : []).filter(s => s && s.id && s.m).map(s => ({
+    ...s, p: Array.isArray(s.p) ? s.p : [], mn: Array.isArray(s.mn) ? s.mn : [], src: s.src || '',
+    views: s.views && typeof s.views === 'object' ? s.views : {},
+    reacts: Array.isArray(s.reacts) ? s.reacts : [], replies: Array.isArray(s.replies) ? s.replies : [],
+  }));
+  return { v: VERSION, challenge, updatedAt: (old && old.updatedAt) || null, cursor, members, stories };
 }
 
 /** What the screens need (no signing material beyond public key ids). */
@@ -118,6 +131,10 @@ export function toView(state) {
       joined: m.keys.length > 0, joinedAt: m.joinedAt, lastSyncAt: m.lastSyncAt, lastSource: m.lastSource, autoSyncs: m.autoSyncs,
       daily: m.daily.slice(), syncHash: m.syncHash,
       keys: m.keys.map(({ kid, l, at }) => ({ kid, l, at })), requests: m.requests.map(({ kid, l, at }) => ({ kid, l, at })),
+    })),
+    stories: (state.stories || []).map(s => ({
+      ...s, p: s.p.slice(), mn: (s.mn || []).slice(), views: { ...s.views },
+      reacts: s.reacts.map(r => ({ ...r })), replies: s.replies.map(r => ({ ...r })),
     })),
   };
 }
@@ -150,6 +167,7 @@ export async function applyEvents(state, events, { local = false } = {}) {
   if (!local) {
     const floor = state.cursor.time - SEEN_SECONDS;
     for (const [id, t] of Object.entries(state.cursor.seen)) if (t < floor) delete state.cursor.seen[id];
+    state.stories = state.stories.filter(s => s.at >= state.cursor.time - STORY.KEEP);
   }
   return out;
 }
@@ -159,6 +177,7 @@ async function applyOne(state, ev) {
   if (/^sync\s/i.test(text)) return applyShortcut(state, ev, text);
   let msg;
   try { msg = JSON.parse(text); } catch { return res(false, 'notJson'); }
+  if (msg && msg.v === 1 && msg.t === 'blob') return res(true, 'blob'); // a story's media part; the signed 'story' message names it
   if (!msg || typeof msg !== 'object' || msg.v !== 1 || typeof msg.t !== 'string' || typeof msg.sig !== 'string') return res(false, 'badMessage');
   const m = findMember(state, msg.m);
   if (!m) return res(false, 'unknownMember');
@@ -234,10 +253,73 @@ async function applyOne(state, ev) {
       const steps = typeof msg.s === 'number' ? Math.round(msg.s) : parseSteps(msg.s);
       return setSteps(state, m, ev, { date: msg.d, steps, ts, mode: 'set', source: 'app' }, base);
     }
+    case 'story': return own ? addStory(state, m, ev, msg, base) : res(false, 'notAllowed', base);
+    case 'unstory': {
+      const s = storyOf(state, msg.sid);
+      if (!s || s.m !== m.id) return res(true, 'gone', base);
+      if (!memberOrAdmin) return res(false, 'notAllowed', base);
+      state.stories = state.stories.filter(x => x !== s);
+      return res(true, 'unstory', { ...base, sid: s.id });
+    }
+    case 'seen': {
+      if (!own) return res(false, 'notAllowed', base);
+      const ids = Array.isArray(msg.s) ? msg.s.slice(0, 60).map(String) : [];
+      state.stories.forEach(s => { if (ids.includes(s.id) && s.m !== m.id && !s.views[m.id]) s.views[m.id] = ev.time; });
+      return res(true, 'seen', base);
+    }
+    case 'react':
+    case 'reply': {
+      if (!own) return res(false, 'notAllowed', base);
+      const s = storyOf(state, msg.sid);
+      if (!s) return res(true, 'gone', base);
+      if (s.m === m.id) return res(false, 'notAllowed', base);
+      if (msg.t === 'react') {
+        if (!STORY.REACTIONS.includes(msg.e)) return res(false, 'badReaction', base);
+        s.reacts = [...s.reacts, { m: m.id, e: msg.e, at: ev.time }].slice(-60);
+      } else {
+        const x = String(msg.x || '').replace(/[\u0000-\u0009\u000b-\u001f]/g, '').trim().slice(0, 300);
+        if (!x) return res(false, 'empty', base);
+        s.replies = [...s.replies, { m: m.id, x, at: ev.time }].slice(-40);
+      }
+      if (!s.views[m.id]) s.views[m.id] = ev.time;
+      return res(true, msg.t, { ...base, sid: s.id, owner: s.m });
+    }
     default:
       return res(false, 'unknownType', base);
   }
 }
+
+/* ───────────── Stories ───────────── */
+const storyOf = (state, sid) => state.stories.find(s => s.id === String(sid || ''));
+const num = (v, lo, hi) => (typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi ? v : null);
+
+function addStory(state, m, ev, msg, base) {
+  const sid = String(msg.sid || '');
+  if (!/^[A-Za-z0-9_-]{8,24}$/.test(sid)) return res(false, 'badStory', base);
+  if (storyOf(state, sid)) return res(true, 'alreadyPosted', base);
+  const kind = msg.k === 'video' ? 'video' : msg.k === 'image' ? 'image' : '';
+  const parts = Array.isArray(msg.p) ? msg.p.map(String) : [];
+  const ok = kind && STORY.MIME[msg.mt] && msg.mt.startsWith(kind) && /^[0-9a-f]{64}$/.test(String(msg.sha || ''))
+    && parts.length >= 1 && parts.length <= STORY.MAX_PARTS && parts.every(u => PART_URL.test(u))
+    && num(msg.sz, 1, STORY.MAX_BYTES) != null && num(msg.w, 16, 4096) != null && num(msg.h, 16, 4096) != null
+    && (kind === 'image' || num(msg.du, 0.3, STORY.MAX_SECONDS) != null);
+  if (!ok) return res(false, 'badStory', base);
+  if (state.stories.filter(s => s.m === m.id && s.at > ev.time - 86400).length >= STORY.PER_DAY) return res(false, 'tooMany', base);
+  const ids = new Set(state.members.map(x => x.id));
+  state.stories.push({
+    id: sid, m: m.id, at: ev.time, k: kind, mt: msg.mt, p: parts, sz: msg.sz, sha: msg.sha, w: Math.round(msg.w), h: Math.round(msg.h),
+    du: kind === 'video' ? Math.round(msg.du * 10) / 10 : 0,
+    x: String(msg.x || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 300),
+    mn: (Array.isArray(msg.mn) ? msg.mn : []).map(String).filter(id => ids.has(id) && id !== m.id).slice(0, 9),
+    bg: /^#[0-9a-f]{6}$/i.test(String(msg.bg || '')) ? msg.bg : '',
+    src: '', views: {}, reacts: [], replies: [],
+  });
+  state.stories.sort((a, b) => a.at - b.at);
+  return res(true, 'story', { ...base, sid });
+}
+
+/** Stories still on air at unix time `now` (seconds), oldest first. */
+export const liveStories = (stories, now) => (stories || []).filter(s => s.at > now - STORY.TTL && s.at <= now + 300);
 
 /** iPhone Shortcut / automation: plain text "sync <member> <sync-key> <steps> [yyyy-mm-dd]". Keeps the highest value. */
 async function applyShortcut(state, ev, text) {

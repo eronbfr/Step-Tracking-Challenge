@@ -145,6 +145,61 @@ test('avatars, replays and roster merging', async () => {
   assert.equal(again.members[0].daily.length, L.datesOf(again.challenge).length);
 });
 
+test('stories: post, views, reactions, replies, delete and expiry', async () => {
+  const s = L.normalize(null);
+  const a = await device(), b = await device(), captain = await device();
+  await run(s, ev(await a.claim('danielle', at(22)), at(22)), ev(await b.claim('armando', at(22)), at(22)), ev(await captain.claim('eron', at(22)), at(22)));
+  const story = (sid, extra = {}) => ({
+    sid, k: 'image', mt: 'image/jpeg', p: ['https://ntfy.sh/file/AbC123xyz.jpg'], sz: 245000, sha: 'a'.repeat(64), w: 1080, h: 1920,
+    x: 'Bora, Team 8!', mn: ['armando', 'nobody', 'danielle'], bg: '#123abc', ...extra,
+  });
+
+  assert.equal((await run(s, ev({ v: 1, t: 'blob' }, at(22)))).code, 'blob');
+  assert.equal((await run(s, ev(await a.msg('story', 'danielle', story('story00001')), at(22)))).code, 'story');
+  assert.equal((await run(s, ev(await a.msg('story', 'danielle', story('story00001')), at(22)))).code, 'alreadyPosted');
+  assert.equal((await run(s, ev(await b.msg('story', 'danielle', story('story00002')), at(22)))).code, 'unknownKey');
+  assert.equal((await run(s, ev(await a.msg('story', 'danielle', story('story00003', { p: ['https://evil.example/x.jpg'] })), at(22)))).code, 'badStory');
+  assert.equal((await run(s, ev(await a.msg('story', 'danielle', story('story00004', { k: 'video', mt: 'video/mp4' })), at(22)))).code, 'badStory'); // no duration
+  assert.equal((await run(s, ev(await a.msg('story', 'danielle', story('story00005', { k: 'video', mt: 'video/mp4', du: 9.46 })), at(22)))).code, 'story');
+
+  const st = () => s.stories.find(x => x.id === 'story00001');
+  assert.deepEqual(st().mn, ['armando']);
+  assert.equal(s.stories.find(x => x.id === 'story00005').du, 9.5);
+
+  assert.equal((await run(s, ev(await b.msg('seen', 'armando', { s: ['story00001', 'story00005'] }), at(22) + 60))).code, 'seen');
+  assert.equal(st().views.armando, at(22) + 60);
+  await run(s, ev(await a.msg('seen', 'danielle', { s: ['story00001'] }), at(22) + 70)); // own views are not counted
+  assert.equal(st().views.danielle, undefined);
+
+  assert.equal((await run(s, ev(await b.msg('react', 'armando', { sid: 'story00001', e: '🔥' }), at(22) + 80))).code, 'react');
+  assert.equal((await run(s, ev(await b.msg('react', 'armando', { sid: 'story00001', e: '💩' }), at(22) + 80))).code, 'badReaction');
+  assert.equal((await run(s, ev(await a.msg('react', 'danielle', { sid: 'story00001', e: '🔥' }), at(22) + 80))).code, 'notAllowed');
+  assert.equal((await run(s, ev(await b.msg('reply', 'armando', { sid: 'story00001', x: '  Que lindo! 👏  ' }), at(22) + 90))).code, 'reply');
+  assert.deepEqual(st().reacts.map(r => [r.m, r.e]), [['armando', '🔥']]);
+  assert.equal(st().replies[0].x, 'Que lindo! 👏');
+
+  const view = L.toView(s);
+  assert.equal(view.stories.length, 2);
+  view.stories[0].views.hacker = 1; // the view is a copy
+  assert.equal(st().views.hacker, undefined);
+  assert.equal(L.liveStories(view.stories, at(22) + 3600).length, 2);
+  assert.equal(L.liveStories(view.stories, at(23) + 3600).length, 0);
+
+  // only the owner or the captain can delete
+  assert.equal((await run(s, ev(await b.msg('unstory', 'danielle', { sid: 'story00005' }), at(22)))).code, 'unknownKey');
+  assert.equal((await run(s, ev(await captain.msg('unstory', 'danielle', { sid: 'story00005' }), at(22)))).code, 'unstory');
+  assert.equal((await run(s, ev(await a.msg('unstory', 'danielle', { sid: 'story00001' }), at(22)))).code, 'unstory');
+  assert.equal(s.stories.length, 0);
+
+  // persisted fields survive a snapshot round trip; two days later the story leaves the ledger
+  await run(s, ev(await a.msg('story', 'danielle', story('story00006')), at(23)));
+  s.stories[0].src = 'story00006.jpg';
+  const again = L.normalize(JSON.parse(JSON.stringify(s)));
+  assert.equal(again.stories[0].src, 'story00006.jpg');
+  await run(again, ev(await b.msg('seen', 'armando', { s: [] }), at(25) + 60));
+  assert.equal(again.stories.length, 0);
+});
+
 test('step parsing accepts the formats phones produce', () => {
   assert.equal(L.parseSteps('12,345'), 12345);
   assert.equal(L.parseSteps('12.345'), 12345);

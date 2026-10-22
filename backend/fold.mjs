@@ -16,7 +16,7 @@ const RELAY = `${opt('--relay', process.env.RELAY_URL || CONFIG.RELAY_URL)}/${CO
 const DATA = path.join(ROOT, 'data', 'data.json');
 const LOG = path.join(ROOT, 'data', 'log.csv');
 const SUMMARY = opt('--summary-file', '');
-const LOG_EVENTS = ['steps', 'joined', 'requested', 'approved', 'denied', 'revoked', 'reset', 'avatar', 'synckey'];
+const LOG_EVENTS = ['steps', 'joined', 'requested', 'approved', 'denied', 'revoked', 'reset', 'avatar', 'synckey', 'story', 'unstory'];
 
 const readJson = async f => { try { return JSON.parse(await readFile(f, 'utf8')); } catch { return null; } };
 const exists = f => access(f).then(() => true, () => false);
@@ -56,7 +56,8 @@ for (const r of results) {
   console.log(`${r.ok ? '✓' : '✗'} ${new Date(r.time * 1000).toISOString()} ${r.t || '?'} ${r.m || '?'} ${r.code}${what}`);
 }
 
-const changedMembers = JSON.stringify(state.members) !== JSON.stringify(before.members);
+const changedMembers = JSON.stringify(state.members) !== JSON.stringify(before.members)
+  || JSON.stringify(state.stories) !== JSON.stringify(before.stories); // stories, views, reactions
 const changedConfig = !prev || prev.v !== L.VERSION || JSON.stringify(state.challenge) !== JSON.stringify(prev.challenge);
 // Even with nothing valid to apply, move the cursor now and then so the relay window clients read stays short.
 const cursorStale = results.length > 0 && state.cursor.time - before.cursor.time > 6 * 3600;
@@ -77,9 +78,12 @@ if (rows.length) {
 }
 
 const steps = rows.filter(r => r.code === 'steps');
+const stories = rows.filter(r => r.code === 'story');
+const other = rows.length - steps.length - stories.length;
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const who = [...new Set(rows.map(r => r.m))];
 const summary = rows.length
-  ? `data: ${steps.length} step update${steps.length === 1 ? '' : 's'}${rows.length > steps.length ? ` + ${rows.length - steps.length} account event${rows.length - steps.length === 1 ? '' : 's'}` : ''} (${who.join(', ')})`
-  : 'data: refresh ledger snapshot';
+  ? `data: ${[steps.length && plural(steps.length, 'step update'), stories.length && plural(stories.length, 'story'), other && plural(other, 'account event')].filter(Boolean).join(' + ')} (${who.join(', ')})`
+  : results.some(r => r.ok) ? 'data: story views & reactions' : 'data: refresh ledger snapshot';
 console.log(summary);
 if (SUMMARY) await writeFile(SUMMARY, `${summary}\n`);

@@ -3,7 +3,7 @@
 **Oct 20 – Nov 15, 2026 · 10,000 steps a day · 9 teammates 🇲🇽 🇺🇾 🇧🇷 🇨🇴**
 
 A Progressive Web App (installable, works offline) for the Team 8 step challenge. It has a live team dashboard,
-automatic step sync from your phone, friendly rankings, badges and health insights.
+automatic step sync from your phone, friendly rankings, badges, health insights and Instagram-style **stories**.
 
 ### ▶️ Open the app: **https://eronbfr.github.io/Step-Tracking-Challenge/**
 
@@ -35,10 +35,24 @@ Then pick your language and your name (no password: your phone is your key), cho
 
 **Ranking**: Total, this week, today, daily average, 10K days, streak, plus a podium and Hall of Fame cards.
 
+**📸 Stories** — everyone's avatar sits in the top bar; a colourful ring means there's something new to watch.
+- Viewer like Instagram's: progress bars, tap left/right, hold to pause, swipe sideways (3D cube) to the next
+  person, swipe down to close, reply or react (❤️ 🔥 👏 😂 😮 😍 💪 🎉). Your own story shows who saw it, the
+  reactions and the replies; delete it any time (the captain can too). Stories last 24 h.
+- Composer: in-app camera (tap = photo, hold = up to 15 s of video, front/back), gallery, or an *Aa* text story on a
+  gradient. Edit like on Instagram: 10 swipeable filters (WebGL), text in 6 styles with colours / highlight /
+  alignment / size, stickers (today's steps, % of today's goal, streak, ranking, day of the challenge, your city,
+  time, **@mentions**, TEAM 8, emoji), drawing (pen, marker, neon, eraser), and drag / pinch / rotate everything
+  (snap guides, drag to the bin). Save to the phone or post; hitting 10K offers a ready-made story.
+- Live: new stories, mentions, reactions and replies pop up in every open app within a second.
+
 **Everywhere**
+- ⚙️ **Settings** (*Ajustes*) in the bottom bar, laid out like the iPhone's: profile & devices, Auto-sync, refresh,
+  daily reminder, install, language, appearance (light / dark / automatic), health profile & units, team captain,
+  how we calculate. Pull down on any page to refresh.
 - 🌐 Three languages — **English** (default), **Português (Brasil)** and **Español**. Picked on the first screen,
-  changeable any time in ⚙️ **Settings** (gear icon at the top of every page and in *Me*). Numbers and dates follow
-  the language (10,000 · 10.000), and the backend answers errors and the iPhone Shortcut reply in it too.
+  changeable any time in ⚙️ Settings → Language. Numbers and dates follow the language (10,000 · 10.000), and the
+  backend answers errors and the iPhone Shortcut reply in it too.
 - 🧑‍🎨 Avatar library — the 36 illustrated avatars of the Sintonia app (15 female, 21 male). The one you pick is
   shown to the whole team: today board, ranking, podium, heatmap, member cards, sign-in.
 - ⚡ Live — when anyone logs steps, every open app updates within a second.
@@ -67,7 +81,7 @@ Nothing to deploy — the backend is this repository (details in **[docs/SETUP.m
    whose devices can approve sign-ins and reset anyone.
 2. Share the message in [docs/ANNOUNCEMENT.md](docs/ANNOUNCEMENT.md) 🎉
 3. The team spreadsheet [`step-tracking_Team8.xlsx`](step-tracking_Team8.xlsx) updates itself a few minutes after
-   every change (also downloadable from ⚙️ → Team captain).
+   every change (also downloadable from ⚙️ Settings → Team captain).
 
 `?demo` shows sample data; `?demo&asOf=2026-11-04` previews another day.
 
@@ -78,6 +92,7 @@ Nothing to deploy — the backend is this repository (details in **[docs/SETUP.m
         ▲                                     │ every ~5 min
         │                                     ▼
         └──── data/data.json ◀── GitHub Action "Ledger": backend/fold.mjs + backend/sheet.py ──▶ step-tracking_Team8.xlsx
+                                              backend/stories.mjs ──▶ branch `stories` (photos & videos, last 24 h)
 ```
 
 - **Frontend**: vanilla JavaScript modules, no build step, hand-made SVG charts, system font, light/dark themes,
@@ -85,6 +100,8 @@ Nothing to deploy — the backend is this repository (details in **[docs/SETUP.m
 - **Backend**: an event-sourced ledger ([`js/ledger.js`](js/ledger.js)) shared by the app and a scheduled GitHub
   Action. Each device signs its messages with its own ECDSA key (WebCrypto); public keys live in `data/data.json`.
   Device approval with a 4-digit code, captain reset, sync keys for the iPhone Shortcut, offline queue and resend.
+- **Stories**: photos and videos travel as relay attachments (≤ 2 MiB each, so videos may come in parts); the
+  Action copies them to the `stories` branch, rewritten as a single commit so expired media leaves no history.
 - **Data**: `data/data.json` (snapshot), `data/log.csv` (every change) and the original Excel file, kept up to date.
 
 ```
@@ -92,11 +109,12 @@ index.html · manifest.webmanifest · sw.js · package.json
 css/app.css
 avatars/  36 WebP avatars (imported from Sintonia by tools/import_avatars.py)
 assets/map/  NASA Blue Marble + Black Marble imagery and Natural Earth borders (built by tools/make_map.py)
-js/  app.js (shell & flows) · views.js (pages) · charts.js (SVG) · metrics.js (health & stats) · ui.js · ocr.js · config.js
+js/  app.js (shell & flows) · views.js (pages) · settings.js (Settings) · charts.js (SVG) · metrics.js (health & stats) · ui.js · ocr.js · config.js
+     stories.js (rail & viewer) · composer.js (camera & editor) · storykit.js (WebGL filters, text, stickers, export)
      api.js (snapshot + relay + outbox) · ledger.js (rules, shared with the Action) · device.js (signing key)
      i18n.js + strings.js (en / pt / es) · avatars.js (avatar library) · worldmap.js (WebGL team map)
 data/  data.json · log.csv                    ← written by the Action
-backend/  fold.mjs · sheet.py · publish.sh · ledger.test.mjs
+backend/  fold.mjs · stories.mjs · sheet.py · publish.sh · ledger.test.mjs
 .github/workflows/ledger.yml
 tools/  dev_server.py · mock_relay.py · import_avatars.py · make_icons.py · make_invites.py · make_map.py
 docs/  SETUP.md · IOS_SHORTCUT.md · METRICS.md · ANNOUNCEMENT.md
@@ -120,6 +138,10 @@ every few minutes while people log steps, so `git pull --rebase` before you push
 Names, avatars and daily step counts are visible to the team and stored in this public repository, together with the
 team spreadsheet. Sign-in uses a key that never leaves your device. Height and weight entered in the app never
 leave your phone.
+
+Stories are public like everything else here: the photo or video sits on the public relay for 3 hours and on this
+repository's `stories` branch while the story is on air (24 h). The branch is then rewritten without it — but anyone
+who opened it could have saved a copy, so post what you'd show the whole team.
 
 Each member's pin on the Team map is their city in `ROSTER` ([`js/config.js`](js/config.js)) — city level only.
 

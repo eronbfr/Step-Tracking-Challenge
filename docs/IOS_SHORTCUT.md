@@ -3,7 +3,7 @@
 A Shortcut reads today's step count from **Apple Health** and sends it to the team, automatically,
 several times a day. Once it's set up nobody needs to type anything.
 
-Each member's **personal sync link** is in the app → **Auto-sync** tab → *Create my link* / *Copy my link*. It looks like:
+Each member's **personal sync link** is in the app → ⚙️ **Settings → Auto-sync** → *Create my link* / *Copy my link*. It looks like:
 
 ```
 https://ntfy.sh/t8steps-2026-o58d4zb7pyzw/publish?message=sync%20eron%20<sync-key>%20
@@ -32,7 +32,7 @@ Build it once with an **Import Question**, share the iCloud link, and members on
 1. Build the Shortcut as in Option A, but in step 4 paste a placeholder such as `PASTE-YOUR-LINK` followed by the
    *Rounded Number* variable.
 2. Tap the **ⓘ / Settings** of the Shortcut → **Setup** → **Add Import Question** → select the *Text* action's
-   placeholder → question: *“Paste your personal sync link from the Team 8 app (Auto-sync tab)”*.
+   placeholder → question: *“Paste your personal sync link from the Team 8 app (Settings → Auto-sync)”*.
 3. **Share → Copy iCloud Link**.
 4. Paste it in [`js/config.js`](../js/config.js) as `IOS_SHORTCUT_URL` and commit. The app then shows an
    **Add Shortcut** button instead of the build instructions.

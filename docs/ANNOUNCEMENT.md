@@ -12,7 +12,7 @@ https://eronbfr.github.io/Step-Tracking-Challenge/
 • Android: open in Chrome → ⋮ → Install app
 
 1️⃣ Pick your name (no password — your phone is your key) and choose your avatar 🧑‍🎨
-2️⃣ Turn on Auto-sync (⚡ tab) — iPhones sync from Apple Health by themselves; on Android just share a screenshot of your health app to the app
+2️⃣ Turn on Auto-sync (⚙️ Settings → Auto-sync) — iPhones sync from Apple Health by themselves; on Android just share a screenshot of your health app to the app
 3️⃣ Walk! Live team dashboard, friendly ranking, badges, streaks and your health stats 💪
 
 Let's go, Team 8! 🚀

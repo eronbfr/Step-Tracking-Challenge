@@ -6,16 +6,18 @@ import * as V from './views.js';
 import { t, tn, lang, setLang, langChosen, locale } from './i18n.js';
 import { AVATARS, avatarImg, avatarLabel } from './avatars.js';
 import { codeOf } from './ledger.js';
-import { setMapMode, focusCountry } from './worldmap.js';
+import { setMapMode, focusCountry, placeOf, placeName } from './worldmap.js';
+import { viewSettings, SUBPAGES } from './settings.js';
+import * as ST from './stories.js';
 import { $, $$, esc, fmt, dec, compact, dateLabel, ago, avatar, avColor, icon, toast, openSheet, closeSheet, sheetBody, countUp, confetti, copyText } from './ui.js';
 
 const { store } = api;
 const LS = { me: 't8:me', waiting: 't8:waiting', profile: 't8:profile', theme: 't8:theme', welcomed: 't8:welcomed', installHidden: 't8:install-hidden' };
-const ROUTES = ['team', 'ranking', 'me', 'sync', 'settings'];
+const ROUTES = ['team', 'ranking', 'me', 'settings'];
 
 const state = {
   data: null, model: null, sig: '',
-  route: 'team',
+  route: 'team', sub: '',                     // sub: Settings page (#/settings/<sub>)
   me: store.get(LS.me),                       // { id } — valid while this device's key is one of the member's keys
   kid: '',                                    // this device's key id
   waiting: store.get(LS.waiting),             // { id } — sign-in request waiting for approval
@@ -43,23 +45,24 @@ const mount = (host, fn) => { drawers.set(host, fn); host._w = Math.round(host.c
 function render() {
   if (!state.model) return;
   ro.disconnect();
-  const view = { team: V.viewTeam, ranking: V.viewRanking, me: V.viewMe, sync: V.viewSync, settings: V.viewSettings }[state.route];
+  const view = { team: V.viewTeam, ranking: V.viewRanking, me: V.viewMe, settings: st => viewSettings(st, st.sub) }[state.route];
   viewEl.innerHTML = view(state);
   V.drawPage(state, viewEl, mount);
   if (state.animate) { countUp(viewEl); state.animate = false; }
   renderChrome();
+  ST.renderRail();
 }
 
 function renderChrome() {
   $$('.nav a[data-route]').forEach(a => a.classList.toggle('on', a.dataset.route === state.route));
   $$('.nav a[data-route]').forEach(a => a.setAttribute('aria-current', a.dataset.route === state.route ? 'page' : 'false'));
-  $('#settings-btn').classList.toggle('on', state.route === 'settings');
-  const ctx = state.model && state.model.ctx;
-  $('#day-chip').textContent = !ctx ? '' : ctx.status === 'live' ? t('chip.day', { n: ctx.dayNumber, N: ctx.N }) : ctx.status === 'upcoming' ? t('chip.in', { n: ctx.daysToStart }) : t('chip.finished');
-  const btn = $('#refresh-btn');
-  btn.classList.toggle('spin', state.loading);
-  btn.classList.toggle('offline', !navigator.onLine);
-  btn.title = navigator.onLine ? t('top.updated', { ago: ago(state.data && state.data.updatedAt) }) : t('top.offline');
+  const badge = $('.nav .nav-badge');
+  badge.hidden = !state.approvals.length;
+  badge.textContent = state.approvals.length || '';
+  document.body.classList.toggle('offline', !navigator.onLine);
+  if (!state.loading) document.body.classList.remove('ptr-run');
+  const upd = $('[data-action="refresh"] .ios-value');
+  if (upd) upd.innerHTML = state.loading ? '<span class="ios-spin"></span>' : !navigator.onLine ? esc(t('top.offline')) : state.data && state.data.updatedAt ? esc(ago(state.data.updatedAt)) : '';
 }
 
 /** Static shell text (index.html) follows the chosen language too. */
@@ -82,10 +85,14 @@ function setData(data, { force = false } = {}) {
   state.data = data;
   state.pending = api.pendingCount();
   checkIdentity();
-  if (!force && sig === state.sig && state.model) return renderChrome();
+  if (!force && sig === state.sig && state.model) {
+    ST.onData(data); // stories, views and reactions change without touching the dashboard
+    return renderChrome();
+  }
   state.sig = sig;
   rebuild();
   render();
+  ST.onData(data);
 }
 
 /* ═════════════ Identity: this device's key in the ledger ═════════════ */
@@ -156,11 +163,17 @@ async function refresh({ silent = true } = {}) {
 
 /* ═════════════ Routing ═════════════ */
 function routeFromHash() {
-  const r = (location.hash.match(/^#\/(\w+)/) || [])[1];
-  return ROUTES.includes(r) ? r : 'team';
+  const [, r, sub] = location.hash.match(/^#\/(\w+)(?:\/(\w+))?/) || [];
+  if (r === 'sync') return { route: 'settings', sub: 'sync' }; // old links & bookmarks
+  return ROUTES.includes(r) ? { route: r, sub: r === 'settings' && SUBPAGES.includes(sub) ? sub : '' } : { route: 'team', sub: '' };
 }
 addEventListener('hashchange', () => {
-  state.route = routeFromHash();
+  const was = state.route === 'settings' ? (state.sub ? 2 : 1) : 0;
+  Object.assign(state, routeFromHash());
+  const now = state.route === 'settings' ? (state.sub ? 2 : 1) : 0;
+  // Settings pages slide like iOS: deeper → in from the right, back → in from the left
+  viewEl.classList.remove('push', 'pop');
+  if (was && now && was !== now) { void viewEl.offsetWidth; viewEl.classList.add(now > was ? 'push' : 'pop'); }
   state.animate = true;
   render();
   scrollTo({ top: 0, behavior: 'instant' });
@@ -172,6 +185,13 @@ const SHEETS = { welcome: () => welcomeHtml(), lang: () => langPromptHtml() };
 const actions = {
   log: el => openLog({ date: el.dataset.date }),
   member: el => openMember(el.dataset.id),
+  'story-open': el => ST.railTap(el.dataset.id),
+  'story-new': () => compose(),
+  units: el => {
+    state.profile = { ...state.profile, units: el.dataset.k === 'imperial' ? 'imperial' : 'metric' };
+    store.set(LS.profile, state.profile);
+    rebuild(); render();
+  },
   signin: () => openSignin(),
   signout: async () => {
     const id = state.me && state.me.id;
@@ -254,16 +274,25 @@ document.addEventListener('click', e => {
   actions[el.dataset.action](el, e);
 });
 
+// Health profile (Settings → Health): saved as you type, like iOS — no Save button.
+function saveProfile(form, { quiet = false } = {}) {
+  const f = new FormData(form);
+  const num = (v, lo, hi) => { const n = Number(v); return n >= lo && n <= hi ? n : null; };
+  state.profile = { ...state.profile, heightCm: num(f.get('heightCm'), 120, 230), weightKg: num(f.get('weightKg'), 35, 250) };
+  store.set(LS.profile, state.profile);
+  rebuild();
+  if (!quiet) { render(); toast(t('toast.profileSaved'), { type: 'good' }); }
+}
 document.addEventListener('submit', e => {
   const form = e.target.closest('form[data-form="profile"]');
   if (!form) return;
   e.preventDefault();
-  const f = new FormData(form);
-  const num = (v, lo, hi) => { const n = Number(v); return n >= lo && n <= hi ? n : null; };
-  state.profile = { heightCm: num(f.get('heightCm'), 120, 230), weightKg: num(f.get('weightKg'), 35, 250), units: f.get('units') === 'imperial' ? 'imperial' : 'metric' };
-  store.set(LS.profile, state.profile);
-  rebuild(); render();
-  toast(t('toast.profileSaved'), { type: 'good' });
+  document.activeElement && document.activeElement.blur();
+  saveProfile(form);
+});
+document.addEventListener('change', e => {
+  const form = e.target.closest('form[data-form="profile"]');
+  if (form) saveProfile(form, { quiet: true });
 });
 
 /* ═════════════ Log steps flow ═════════════ */
@@ -293,7 +322,7 @@ function openLog({ date, steps, pickScreenshot = false, file = null } = {}) {
         <button type="button" class="btn" data-save>${icon('check', 18)} ${t('common.save')}</button>
       </div>
       <input type="file" accept="image/*" data-file hidden>
-      <p class="muted sm center">${t('log.tired')} <a href="#/sync" class="link" data-close>${t('log.turnOnAuto')}</a></p>
+      <p class="muted sm center">${t('log.tired')} <a href="#/settings/sync" class="link" data-close>${t('log.turnOnAuto')}</a></p>
     </div>`, { label: t('common.logSteps') });
 
   const input = $('#steps-in', body);
@@ -368,7 +397,10 @@ function openLog({ date, steps, pickScreenshot = false, file = null } = {}) {
       closeSheet();
       const meNow = state.model.me;
       const newBadges = meNow.badges.filter(b => b.earned && !badgesBefore.has(b.id));
-      if (n >= ctx.goal && (before || 0) < ctx.goal) { confetti(); toast(t('toast.goalCrushed', { v: fmt(n) }), { type: 'good' }); }
+      if (n >= ctx.goal && (before || 0) < ctx.goal) {
+        confetti();
+        toast(t('toast.goalCrushed', { v: fmt(n) }), { type: 'good', duration: 7000, action: { label: t('st.shareGoal'), run: () => compose({ preset: 'steps' }) } });
+      }
       else toast(res.queued ? t('toast.savedOffline') : t('toast.saved', { v: fmt(n), date: dateLabel(sel, 'short') }), { type: res.queued ? 'warn' : 'good' });
       newBadges.slice(0, 2).forEach((b, k) => setTimeout(() => toast(t('toast.newBadge', { emoji: b.emoji, name: V.badgeName(b) }), { type: 'badge', duration: 4200 }), 900 + k * 1200));
       if (newBadges.length && !(n >= ctx.goal && (before || 0) < ctx.goal)) setTimeout(() => confetti({ count: 80 }), 900);
@@ -527,7 +559,7 @@ function openNextSteps() {
       <h2>${t('next.title')}</h2>
       <p class="muted">${t('next.text')}</p>
       <button class="option" data-action="avatar"><span>🧑‍🎨</span><div><b>${t('avatar.title')}</b><small>${t('next.avatarSub')}</small></div>${icon('chevron', 20)}</button>
-      <a class="option" href="#/sync" data-close><span>⚡</span><div><b>${t('next.auto')}</b><small>${t('next.autoSub')}</small></div>${icon('chevron', 20)}</a>
+      <a class="option" href="#/settings/sync" data-close><span>⚡</span><div><b>${t('next.auto')}</b><small>${t('next.autoSub')}</small></div>${icon('chevron', 20)}</a>
       ${V.isStandalone() ? '' : `<button class="option" data-action="install"><span>📲</span><div><b>${t('next.install')}</b><small>${t('next.installSub')}</small></div>${icon('chevron', 20)}</button>`}
       <button class="option" data-action="log"><span>👟</span><div><b>${t('next.log')}</b><small>${t('next.logSub')}</small></div>${icon('chevron', 20)}</button>
     </div>`, { label: t('next.aria') });
@@ -651,12 +683,86 @@ function openLangPrompt() {
   openSheet(langPromptHtml(), { label: t('lang.pick'), onClose: () => setLang(lang()) });
 }
 
+/* ═════════════ Stories ═════════════ */
+function storyInfo() {
+  const { me, ctx, team, members } = state.model;
+  const place = placeOf(me);
+  return {
+    me: { id: me.id, first: me.first, avatarHtml: avatar(me, 30, { flagged: false }) },
+    steps: me.s.today || 0, goal: ctx.goal, streak: me.s.current, rank: me.rank, M: team.M,
+    day: ctx.dayNumber, N: ctx.N, live: ctx.status === 'live', place: place ? placeName(place) : '',
+    members: members.map(m => ({ id: m.id, first: m.first, avatarHtml: avatar(m, 46, { flagged: false }) })),
+  };
+}
+
+/** New story: camera / gallery / text → editor (js/composer.js, loaded on first use). */
+async function compose({ preset = '' } = {}) {
+  if (!state.model) return;
+  if (!state.me || !state.model.me) return openSignin({ then: () => compose({ preset }) });
+  closeSheet(true);
+  try {
+    const { openComposer } = await import('./composer.js');
+    openComposer({ info: storyInfo(), preset, onPost: publishStory });
+  } catch { toast(t('err.requestFailed'), { type: 'warn' }); }
+}
+
+async function publishStory({ blob, meta }) {
+  if (!state.me) return;
+  ST.setUpload(0);
+  try {
+    await api.postStory({ id: state.me.id, blob, meta }, p => ST.setUpload(p));
+    ST.setUpload(null);
+    setData(await api.current(), { force: true });
+    toast(t('st.published'), { type: 'good' });
+    confetti({ count: 50 });
+  } catch (e) {
+    ST.setUpload(null);
+    toast(e && e.code === 'tooLarge' ? t('st.tooLarge') : errText(e), { type: 'warn', duration: 9000, action: { label: t('st.retry'), run: () => publishStory({ blob, meta }) } });
+  }
+}
+
+/* ═════════════ Pull to refresh (the old refresh button) & iOS-style edge swipe back in Settings ═════════════ */
+function gestures() {
+  const ptr = $('#ptr');
+  let y0 = null, x0 = 0, dy = 0, edge = false;
+  const blocked = e => document.body.classList.contains('no-scroll') || e.touches.length > 1 || e.target.closest('.rail, .wmap, .chart, input, textarea, select');
+  addEventListener('touchstart', e => {
+    if (blocked(e)) return;
+    x0 = e.touches[0].clientX;
+    edge = state.route === 'settings' && !!state.sub && x0 < 24;
+    if (scrollY > 2 && !edge) return;
+    y0 = e.touches[0].clientY; dy = 0;
+  }, { passive: true });
+  addEventListener('touchmove', e => {
+    if (y0 == null) return;
+    const dx = e.touches[0].clientX - x0;
+    dy = e.touches[0].clientY - y0;
+    if (edge) { viewEl.style.transform = dx > 0 ? `translateX(${dx * 0.6}px)` : ''; return; }
+    if (dy <= 0 || scrollY > 2) { ptr.style.removeProperty('--pull'); document.body.classList.remove('pulling'); return; }
+    document.body.classList.add('pulling');
+    ptr.style.setProperty('--pull', String(Math.min(1.25, dy / 110)));
+  }, { passive: true });
+  addEventListener('touchend', e => {
+    if (y0 == null) return;
+    const dx = (e.changedTouches[0] || {}).clientX - x0;
+    y0 = null;
+    if (edge) {
+      viewEl.style.transform = '';
+      if (dx > 90) location.hash = '#/settings';
+      return;
+    }
+    document.body.classList.remove('pulling');
+    ptr.style.removeProperty('--pull');
+    if (dy > 110 && !state.loading) { if (navigator.vibrate) navigator.vibrate(10); document.body.classList.add('ptr-run'); refresh({ silent: false }); }
+  });
+}
+
 /* ═════════════ Install & theme ═════════════ */
 addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   state.installEvent = e;
   state.canInstall = true;
-  if (state.route === 'sync') render();
+  if (state.route === 'settings') render();
 });
 addEventListener('appinstalled', () => { state.installEvent = null; state.canInstall = false; toast(t('toast.installed'), { type: 'good' }); });
 
@@ -719,8 +825,10 @@ async function takeSharedScreenshot() {
 async function boot() {
   applyTheme();
   applyLang();
-  state.route = routeFromHash();
-  $('#refresh-btn').addEventListener('click', () => refresh({ silent: false }));
+  Object.assign(state, routeFromHash());
+  if (/^#\/sync/.test(location.hash)) history.replaceState(null, '', '#/settings/sync');
+  ST.initStories({ state, compose, openMember, signin: () => openSignin(), changed: () => api.current().then(v => setData(v)).catch(() => {}) });
+  gestures();
   state.kid = await api.deviceKid();
 
   const cached = api.cachedData();
@@ -729,7 +837,9 @@ async function boot() {
   document.body.classList.remove('booting');
 
   await refresh({ silent: !!cached });
-  api.live(view => setData(view)); // other people's steps appear within a second
+  api.live(view => setData(view)); // other people's steps and stories appear within a second
+  ST.flushSeen();
+  api.pruneStoryCache(new Set((state.data.stories || []).map(s => s.id)));
 
   const params = new URLSearchParams(location.search);
   if (params.has('shared')) {
@@ -750,7 +860,7 @@ async function boot() {
     if (document.visibilityState === 'visible' && Date.now() - state.lastFetch > 30000) refresh();
   });
   addEventListener('online', () => { renderChrome(); refresh(); });
-  addEventListener('offline', renderChrome);
+  addEventListener('offline', () => { renderChrome(); toast(t('top.offline'), { type: 'warn' }); });
   registerSW();
 }
 

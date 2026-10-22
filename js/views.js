@@ -1,4 +1,4 @@
-// Page views: Team dashboard · Ranking · Me (stats + health) · Auto-sync · Settings.
+// Page views: Team dashboard · Ranking · Me (stats + health) · Auto-sync (shown inside Settings, js/settings.js).
 import { CONFIG } from './config.js';
 import * as M from './metrics.js';
 import * as C from './charts.js';
@@ -124,7 +124,7 @@ export function viewTeam(st) {
   ${expedition(st)}
   ${funFacts(st)}
   <p class="foot-note">${st.data && st.data.updatedAt ? t('team.updated', { ago: ago(st.data.updatedAt) }) : ''} · ${t('team.estimates')}
-    <a href="#/sync" class="link">${t('team.howCalc')}</a></p>`;
+    <a href="#/settings/about" class="link">${t('team.howCalc')}</a></p>`;
 }
 
 function banners(st) {
@@ -276,16 +276,13 @@ const INSIGHTS = [
     you: s => t('ins.who.you', { v: fmt(s.weekActive) }) },
 ];
 
-const gearBtn = cls => `<a class="icon-btn ${cls}" href="#/settings" aria-label="${esc(t('settings.open'))}" title="${esc(t('settings.title'))}">${icon('gear', 20)}</a>`;
-
 export function viewMe(st) {
   const { me, ctx, team } = st.model;
   if (!me) return `
-    <div class="page-h with-action"><div><h1>${t('nav.me')}</h1></div>${gearBtn('')}</div>
+    <div class="page-h"><h1>${t('nav.me')}</h1></div>
     <section class="card center-card"><div class="big-emoji">👟</div><h2>${t('me.joinTitle')}</h2>
       <p class="muted">${t('me.joinText')}</p>
-      <button class="btn lg" data-action="signin">${t('me.pickName')}</button></section>
-    ${settingsLink()}`;
+      <button class="btn lg" data-action="signin">${t('me.pickName')}</button></section>`;
 
   const s = me.ps, p = st.profile, units = p.units;
   const today = s.today || 0;
@@ -303,7 +300,6 @@ export function viewMe(st) {
     <div class="me-id"><h1>${esc(me.name)}</h1>
       <p><span class="tag">${level.emoji} ${levelName(level)}</span><span class="tag">${t('me.rankOf', { rank: me.rank, M: team.M })}</span><span class="tag">🏅 ${earned}/${me.badges.length}</span></p>
       <p class="muted sm">${me.lastSyncAt ? t('me.lastUpdate', { ago: ago(me.lastSyncAt), src: sourceLabel(me.lastSource) }) : t('me.noSteps')}</p></div>
-    ${gearBtn('me-gear')}
   </section>
 
   <section class="card today-me">
@@ -311,7 +307,7 @@ export function viewMe(st) {
       <div class="ring-center"><small>${t(ctx.status === 'live' ? 'common.today' : 'common.lastDay')}</small><b data-count="${today}">${fmt(today)}</b><small>${t('me.of', { goal: fmt(ctx.goal) })}</small></div></div>
     <p class="today-msg">${ctx.status !== 'live' ? '' : s.today == null ? t('me.nothingToday')
       : toGo ? t('me.toGo', { v: fmt(toGo), min: Math.ceil(toGo / 100) }) : t('me.crushed', { v: fmt(today - ctx.goal) })}</p>
-    <div class="btn-row"><button class="btn" data-action="log">${icon('plus', 18)} ${t('common.logSteps')}</button><a class="btn ghost" href="#/sync">${icon('bolt', 18)} ${t('nav.sync')}</a></div>
+    <div class="btn-row"><button class="btn" data-action="log">${icon('plus', 18)} ${t('common.logSteps')}</button><a class="btn ghost" href="#/settings/sync">${icon('bolt', 18)} ${t('nav.sync')}</a></div>
   </section>
 
   <div class="stat-grid">
@@ -341,7 +337,7 @@ export function viewMe(st) {
       ${health('⏱️', t('kpi.walkTime'), duration(s.minutes), t('hm.minDay', { n: fmt(s.avg / 100) }))}
       ${health('🧈', t('hm.fat'), `${fmt(M.toFatGrams(s.kcal))} g`, t('hm.fatSub'))}
       ${health('🌿', t('hm.co2'), `${fmt(M.toCo2Kg(s.km))} kg`, t('hm.co2Sub'))}
-      ${bmi ? health('⚖️', t('hm.bmi'), dec(bmi, 1), t(`bmi.${M.bmiClass(bmi)}`)) : health('⚖️', t('hm.bmi'), '—', `<a class="link" href="#/settings">${t('hm.addHW')}</a>`)}
+      ${bmi ? health('⚖️', t('hm.bmi'), dec(bmi, 1), t(`bmi.${M.bmiClass(bmi)}`)) : health('⚖️', t('hm.bmi'), '—', `<a class="link" href="#/settings/health">${t('hm.addHW')}</a>`)}
     </div>
     <div class="who">
       ${ring(s.weekActive / 150, { size: 84, stroke: 9, label: t('who.aria') })}
@@ -365,54 +361,11 @@ export function viewMe(st) {
   ${section(t('badges.title', { a: earned, b: me.badges.length }), t('badges.sub'), `
     <div class="badges">${me.badges.map(b => `<div class="badge ${b.earned ? 'earned' : ''}" title="${esc(badgeDesc(b))}">
       <span class="badge-emoji">${b.emoji}</span><b>${esc(badgeName(b))}</b><small>${esc(badgeDesc(b))}</small>
-      ${b.earned ? '' : `<span class="bar thin"><i style="width:${(b.progress * 100).toFixed(0)}%"></i></span>`}</div>`).join('')}</div>`)}
-
-  ${settingsLink()}`;
+      ${b.earned ? '' : `<span class="bar thin"><i style="width:${(b.progress * 100).toFixed(0)}%"></i></span>`}</div>`).join('')}</div>`)}`;
 }
 
 const stat = (label, value, sub) => `<div class="stat"><span class="stat-label">${label}</span><span class="stat-value">${value}</span><span class="stat-sub">${sub}</span></div>`;
 const health = (emoji, label, value, sub) => `<div class="hm"><span class="hm-ic">${emoji}</span><span class="hm-label">${label}</span><b>${value}</b><small>${sub}</small></div>`;
-
-const settingsLink = () => `<a class="card settings-link" href="#/settings"><span class="settings-ic">${icon('gear', 22)}</span>
-  <span><b>${t('settings.title')}</b><small>${t('me.settingsLink')}</small></span>${icon('chevron', 20)}</a>`;
-
-/* ════════════════════════════════ SETTINGS ════════════════════════════════ */
-export function viewSettings(st) {
-  const p = st.profile;
-  const me = st.model.me;
-  const captain = !!me && (st.data.admins || []).includes(me.id);
-  const row = (first, label, control) => `<div class="setting-row ${first ? 'first' : ''}"><span>${label}</span>${control}</div>`;
-  const invite = row(false, `${icon('share', 18)} ${t('settings.invite')}`, `<button class="btn sm ghost" data-action="share-app">${t('settings.share')}</button>`);
-  return `
-  <div class="page-h"><h1>${t('settings.title')} ⚙️</h1><p>${t('settings.sub')}</p></div>
-
-  ${section(t('settings.lang'), t('settings.langSub'), langOptions())}
-
-  ${section(t('settings.avatar'), t('settings.avatarSub'), me ? `
-    <div class="av-current">${avatar(me, 72, { flagged: false })}<div><b>${esc(me.name)}</b><small>${t(me.avatar ? 'settings.avatarSet' : 'settings.avatarNone')}</small></div></div>
-    <button class="btn full" data-action="avatar">${icon('user', 18)} ${t(me.avatar ? 'avatar.change' : 'avatar.title')}</button>`
-    : `<p class="muted">${t('settings.avatarSignin')}</p><button class="btn av-signin" data-action="signin">${t('common.signin')}</button>`)}
-
-  ${me ? devicesSection(st, me, captain) : ''}
-  ${captain ? captainSection(st) : ''}
-
-  ${section(t('settings.appearance'), '', row(true, `${icon('moon', 18)} ${t('settings.theme')}`,
-    seg('theme', [['auto', t('theme.auto')], ['light', t('theme.light')], ['dark', t('theme.dark')]], st.theme, t('settings.theme'))))}
-
-  ${section(t('settings.health'), t('settings.healthSub'), `
-    <form class="form" data-form="profile">
-      <label>${t('form.height')} <span class="input-unit"><input name="heightCm" type="number" inputmode="numeric" min="120" max="230" placeholder="175" value="${p.heightCm || ''}"><i>cm</i></span></label>
-      <label>${t('form.weight')} <span class="input-unit"><input name="weightKg" type="number" inputmode="decimal" min="35" max="250" step="0.1" placeholder="70" value="${p.weightKg || ''}"><i>kg</i></span></label>
-      <label>${t('form.units')} <select name="units"><option value="metric" ${p.units !== 'imperial' ? 'selected' : ''}>${t('form.km')}</option><option value="imperial" ${p.units === 'imperial' ? 'selected' : ''}>${t('form.mi')}</option></select></label>
-      <button class="btn" type="submit">${icon('check', 18)} ${t('common.save')}</button>
-    </form>`)}
-
-  ${section(t('settings.account'), '', (st.me
-    ? row(true, `${icon('logout', 18)} ${t('settings.signedAs', { name: esc(me ? me.first : st.me.id) })}`, `<button class="btn sm ghost" data-action="signout">${t('settings.signout')}</button>`)
-    : row(true, `${icon('user', 18)} ${t('settings.notSigned')}`, `<button class="btn sm" data-action="signin">${t('common.signin')}</button>`)) + invite)}
-
-  <p class="foot-note">Team 8 Step Challenge · v${CONFIG.VERSION}${DEMO ? ` · ${t('common.demoMode')}` : ''}</p>`;
-}
 
 /** Pending sign-in requests with the code to compare (approvals sheet, settings). */
 export function requestList(list) {
@@ -425,30 +378,6 @@ export function requestList(list) {
         <button class="btn sm" data-action="approve" data-m="${esc(m.id)}" data-k="${esc(r.kid)}">${icon('check', 16)} ${t('req.approve')}</button>
       </span>
     </li>`).join('')}</ul>`;
-}
-
-function devicesSection(st, me, captain) {
-  const mine = captain ? [] : st.approvals.filter(a => a.m.id === me.id); // the captain sees them all below
-  return section(t('settings.devices'), t('settings.devicesSub'), `
-    <ul class="device-list">${(me.keys || []).map(k => {
-      const here = k.kid === st.kid;
-      return `<li><span class="device-ic">${icon('phone', 18)}</span><span class="device-name"><b>${esc(k.l || '?')}${here ? ` <em>${t('settings.thisDevice')}</em>` : ''}</b>
-        <small>${t('settings.since', { date: k.at ? dateLabel(k.at.slice(0, 10)) : '—' })}</small></span>
-        ${here ? '' : `<button class="btn sm ghost" data-action="revoke-device" data-k="${esc(k.kid)}">${t('settings.remove')}</button>`}</li>`;
-    }).join('')}</ul>
-    ${mine.length ? requestList(mine) : ''}`);
-}
-
-function captainSection(st) {
-  const { members } = st.model;
-  return section(t('admin.title'), t('admin.sub'), `
-    ${st.approvals.length ? requestList(st.approvals) : `<p class="muted sm">${t('req.none')}</p>`}
-    <ul class="captain-list">${members.map(m => `
-      <li>${avatar(m, 34, { flagged: false })}<span class="device-name"><b>${esc(m.name)}</b>
-        <small>${m.joined ? tn('admin.devices', (m.keys || []).length) : t('admin.notJoined')}${m.lastSyncAt ? ` · ${ago(m.lastSyncAt)}` : ''}</small></span>
-        ${m.joined && m.id !== st.me.id ? `<button class="btn sm ghost" data-action="reset-member" data-id="${esc(m.id)}">${t('admin.reset')}</button>` : ''}</li>`).join('')}</ul>
-    <div class="setting-row"><span>${icon('table', 18)} <span><b>${t('admin.sheet')}</b><br><small class="muted">${t('admin.sheetSub')}</small></span></span>
-      <a class="btn sm ghost" href="${esc(CONFIG.SHEET_URL)}" target="_blank" rel="noopener">${icon('install', 16)} ${t('admin.download')}</a></div>`);
 }
 
 /* ════════════════════════════════ SYNC ════════════════════════════════ */
@@ -500,7 +429,7 @@ export function viewSync(st) {
       <p class="muted sm">${t('and.example')}</p></details>`;
 
   return `
-  <div class="page-h"><h1>${t('sync.title')}</h1><p>${t('sync.sub')}</p></div>
+  <p class="ios-intro">${t('sync.sub')}</p>
   <section class="card sync-status ${autoOn ? 'on' : ''}">
     <span class="sync-emoji">${autoOn ? '🤖' : '⚡'}</span>
     <div>${!st.me ? `<b>${t('sync.signinTitle')}</b><p>${t('sync.signinText')}</p>`
@@ -509,42 +438,7 @@ export function viewSync(st) {
     ${!st.me ? `<button class="btn sm" data-action="signin">${t('common.signin')}</button>` : ''}
   </section>
 
-  ${section(t('sync.phone'), '', `${seg('platform', [['ios', '📱 iPhone'], ['android', '🤖 Android']], plat, t('sync.phoneAria'))}<div class="guide">${plat === 'ios' ? ios : android}</div>`)}
-
-  ${section(t('rem.title'), t('rem.sub'), `
-    <div class="btn-row wrap">
-      <a class="btn ghost" href="assets/reminder.ics" download="team8-step-reminder.ics">${icon('calendar', 18)} Apple / Outlook</a>
-      <a class="btn ghost" href="${gcalUrl(st.model.ctx)}" target="_blank" rel="noopener">${icon('calendar', 18)} Google Calendar</a>
-    </div>`)}
-
-  ${section(t('inst.title'), isStandalone() ? t('inst.installed') : t('inst.sub'), isStandalone() ? '' : `
-    ${isIOS() ? `<ol class="steps compact"><li>${t('inst.ios1')}</li><li>${t('inst.ios2', { icon: icon('share', 16) })}</li><li>${t('inst.ios3')}</li></ol>`
-      : `${st.canInstall ? `<button class="btn" data-action="install">${icon('install', 18)} ${t('inst.now')}</button>` : ''}
-        <ol class="steps compact"><li>${t('inst.and1')}</li><li>${t('inst.and2')}</li></ol>`}`)}
-
-  ${section(t('calc.title'), t('calc.sub'), `
-    <ul class="calc">
-      <li>${t('calc.distance')}</li>
-      <li>${t('calc.kcal')}</li>
-      <li>${t('calc.time')}</li>
-      <li>${t('calc.level')}</li>
-      <li>${t('calc.avg')}</li>
-      <li>${t('calc.privacy')}</li>
-    </ul>
-    <p class="muted sm">Team 8 Step Challenge · v${CONFIG.VERSION}${DEMO ? ` · ${t('common.demoMode')}` : ''}</p>`)}`;
-}
-
-function gcalUrl(ctx) {
-  const d = ctx.start.replace(/-/g, '');
-  const until = ctx.end.replace(/-/g, '');
-  const q = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: t('rem.gcalTitle'),
-    details: t('rem.gcalDetails', { url: CONFIG.APP_URL }),
-    dates: `${d}T210000/${d}T211000`,
-    recur: `RRULE:FREQ=DAILY;UNTIL=${until}`,
-  });
-  return `https://calendar.google.com/calendar/render?${q}`;
+  ${section(t('sync.phone'), '', `${seg('platform', [['ios', '📱 iPhone'], ['android', '🤖 Android']], plat, t('sync.phoneAria'))}<div class="guide">${plat === 'ios' ? ios : android}</div>`)}`;
 }
 
 /* ════════════════════════════════ Charts per page ════════════════════════════════ */
