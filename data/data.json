@@ -8,15 +8,10 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-21T22:25:05.156Z",
+  "updatedAt": "2026-10-22T00:45:49.072Z",
   "cursor": {
-    "time": 1792619578,
+    "time": 1792627576,
     "seen": {
-      "mDvzyZ7dxz01": 1792579359,
-      "gcPJw3EN4klu": 1792579382,
-      "Ddgu3SYEAOXQ": 1792579453,
-      "OTCRCwqesxOe": 1792580502,
-      "cZM5uXoQ3wkT": 1792580638,
       "Hl5tGvUvqrV2": 1792585553,
       "Wr3mO4NusNDr": 1792585694,
       "6LHYq93k9tsw": 1792586192,
@@ -24,7 +19,24 @@
       "DCYRoE6pKIh5": 1792588347,
       "g7rza7gHiXyw": 1792590154,
       "Q9JzRbn05hOw": 1792619551,
-      "XGgopEMjN6Jf": 1792619578
+      "XGgopEMjN6Jf": 1792619578,
+      "Y3UQ2BZ6nMPs": 1792623844,
+      "Uyt3RVZKujv8": 1792623870,
+      "EpKlzoBPoafG": 1792623930,
+      "dkawyQPk3JKv": 1792624276,
+      "r98mAqofVpAB": 1792624412,
+      "mEndlTMOVNm1": 1792624481,
+      "t0uu7qajVJiX": 1792626050,
+      "kNZtjJvaxSDA": 1792626150,
+      "SpNHBmJpaYZm": 1792626314,
+      "zIHyZBvqWQmF": 1792626330,
+      "nWvLqhpbSwV7": 1792626372,
+      "GmObAFzzLuZW": 1792626400,
+      "08s5HwfZyNWD": 1792626443,
+      "MxftdopEbUIs": 1792626555,
+      "SWwIgDFavZfy": 1792626667,
+      "fteyEf7xCT6P": 1792627539,
+      "qvNpZsmoZLz9": 1792627576
     }
   },
   "members": [
@@ -162,14 +174,14 @@
         }
       ],
       "requests": [],
-      "syncHash": "cb3c496590a205c59f967d180be5a82f690202adacd39584be23fff8edc04d67",
-      "syncTs": 1792579453159,
-      "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "syncHash": "003b90d95a49bf45842b1ea6a6903a9acebfe5fcfb2ab085aaca2be6bdc43798",
+      "syncTs": 1792626555411,
+      "daily": [null, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [0, 1792626667000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T10:42:39.000Z",
-      "lastSyncAt": "",
-      "lastSource": "",
-      "autoSyncs": 0
+      "lastSyncAt": "2026-10-22T00:06:16.000Z",
+      "lastSource": "shortcut",
+      "autoSyncs": 3
     },
     {
       "id": "helbert",
@@ -200,18 +212,25 @@
       "id": "armando",
       "name": "Armando Alarcon",
       "country": "MX",
-      "tz": "America/Mexico_City",
-      "avatar": "",
-      "avatarTs": 0,
-      "keys": [],
+      "tz": "Etc/GMT+6",
+      "avatar": "m18",
+      "avatarTs": 1792623870309,
+      "keys": [
+        {
+          "kid": "5cbaf3509dea8bb5",
+          "pub": "BC5qj7zLPh4Hlv_Ww9U9bo43x8N3-AER8zmwb5BXZO9qM7PQZ53HG-WYC0rr2MhPiQ-D579-vNp8Ch4rBCW-ivY",
+          "l": "Windows · Chrome",
+          "at": "2026-10-21T23:04:04.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
-      "lastSyncAt": "",
-      "lastSource": "",
+      "daily": [5345, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792623930255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "joinedAt": "2026-10-21T23:04:04.000Z",
+      "lastSyncAt": "2026-10-21T23:05:30.000Z",
+      "lastSource": "app",
       "autoSyncs": 0
     },
     {
@@ -219,17 +238,24 @@
       "name": "Minerva Perez",
       "country": "MX",
       "tz": "America/Mexico_City",
-      "avatar": "",
-      "avatarTs": 0,
-      "keys": [],
+      "avatar": "f10",
+      "avatarTs": 1792624481890,
+      "keys": [
+        {
+          "kid": "78bd0c19f8b60af2",
+          "pub": "BF3MZChwFFAYZ84pciAYUgIdU8g8YAhxSge416NCLPAUB7OAPME21lRB_Yh9759Brl99nrlMRrsi3N6GARH7Ib4",
+          "l": "Windows · Chrome",
+          "at": "2026-10-21T23:11:16.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
-      "lastSyncAt": "",
-      "lastSource": "",
+      "daily": [12641, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792624412448, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "joinedAt": "2026-10-21T23:11:16.000Z",
+      "lastSyncAt": "2026-10-21T23:13:32.000Z",
+      "lastSource": "app",
       "autoSyncs": 0
     }
   ]
