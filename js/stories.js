@@ -184,7 +184,9 @@ export function openViewer(mid) {
   video.preload = 'auto';
   video.addEventListener('ended', () => V && V.video === video && next());
   video.play().catch(() => {}); // inside the tap: lets this element play with sound later (iOS)
-  video.addEventListener('waiting', () => V && pause('buffer'));
+  // buffering only pauses a video story that is on screen: the unlock play() above (no src yet) fires 'waiting' too,
+  // and that 'buffer' pause used to stay forever on photo and text stories (progress bar stuck at 0)
+  video.addEventListener('waiting', () => V && V.video === video && !video.hidden && (cur() || {}).k === 'video' && pause('buffer'));
   video.addEventListener('playing', () => V && resume('buffer'));
   video.addEventListener('error', () => { // a format this phone can't play: show the error card and move on
     if (!V || V.video !== video || (cur() || {}).k !== 'video') return;
@@ -296,6 +298,7 @@ async function show() {
   const f = V.face;
   f.dataset.sid = s.id;
   V.ready = false; V.elapsed = 0; V.prog = 0; V.last = 0;
+  V.pauses.delete('buffer'); // belonged to the previous media
   bars(f, list);
   f.querySelector('.sv-time').textContent = shortAgo(s.at);
   const captain = (app.state.data.admins || []).includes(meId());
