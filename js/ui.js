@@ -167,6 +167,11 @@ export function toast(msg, { type = 'info', duration = 3200, action = null } = {
   return el;
 }
 
+/* ── Page scroll lock, shared by every overlay (sheet, story viewer, composer) so closing one keeps the others locked ── */
+let scrollLocks = 0;
+export function lockScroll() { if (++scrollLocks === 1) document.body.classList.add('no-scroll'); }
+export function unlockScroll() { if (scrollLocks && --scrollLocks === 0) document.body.classList.remove('no-scroll'); }
+
 /* ── Bottom sheet ── */
 let openSheetEl = null;
 export function openSheet(html, { onClose, cls = '', label = t('common.dialog') } = {}) {
@@ -180,7 +185,7 @@ export function openSheet(html, { onClose, cls = '', label = t('common.dialog') 
       <div class="sheet-body">${html}</div>
     </div>`;
   document.body.appendChild(wrap);
-  document.body.classList.add('no-scroll');
+  lockScroll();
   wrap._onClose = onClose;
   wrap.addEventListener('click', e => { if (e.target.closest('[data-close]')) closeSheet(); });
   openSheetEl = wrap;
@@ -192,7 +197,7 @@ export function closeSheet(immediate = false) {
   const wrap = openSheetEl;
   if (!wrap) return;
   openSheetEl = null;
-  document.body.classList.remove('no-scroll');
+  unlockScroll();
   const done = () => { wrap.remove(); wrap._onClose && wrap._onClose(); };
   if (immediate) return done();
   wrap.classList.remove('in');

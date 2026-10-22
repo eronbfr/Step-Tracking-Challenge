@@ -95,35 +95,47 @@ code { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; 
 .link { color: var(--brand-text); font-weight: 650; text-decoration: none; }
 
 /* ── Top bar: the stories rail (js/stories.js) ── */
+/* Fixed (not sticky) with its full height reserved on <body>: compacting the rail must never move the page, or the
+   scroll position crosses the threshold back and forth and the whole screen shakes. The compact state only animates
+   transform / opacity (GPU) — no width/height/padding transitions, which re-laid out the bar on every frame. */
+:root { --topbar-h: 103px; --rail-k: 0.667; } /* 6px + rail 92px + 4px + 1px border; compact avatars are 2/3 */
+body { padding-top: calc(env(safe-area-inset-top) + var(--topbar-h)); }
 .topbar {
-  position: sticky; top: 0; z-index: 20;
-  padding: calc(env(safe-area-inset-top) + 6px) 0 4px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 20; contain: layout style;
+  padding: calc(env(safe-area-inset-top) + 6px) 0 4px; pointer-events: none;
+}
+.topbar::before { /* the frosted background, slid up (not resized) when compact */
+  content: ""; position: absolute; inset: 0; z-index: -1;
   background: color-mix(in srgb, var(--bg) 86%, transparent);
   -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px);
-  border-bottom: 1px solid transparent; transition: border-color 0.25s;
+  border-bottom: 1px solid transparent; transition: transform 0.25s, border-color 0.25s; will-change: transform;
 }
-body.rail-compact .topbar { border-bottom-color: var(--hair); }
+body.rail-compact .topbar::before { transform: translateY(-42px); border-bottom-color: var(--hair); }
 .rail {
-  display: flex; justify-content: flex-start; justify-content: safe center; gap: 2px; overflow-x: auto; overscroll-behavior-x: contain;
-  scrollbar-width: none; padding: 2px 10px; max-width: 1120px; margin: 0 auto; min-height: 92px;
-  transition: min-height 0.25s;
+  display: flex; justify-content: flex-start; justify-content: safe center; gap: 2px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+  scrollbar-width: none; padding: 2px 10px; max-width: 1120px; margin: 0 auto; height: 92px; pointer-events: auto;
 }
 .rail::-webkit-scrollbar { display: none; }
-body.rail-compact .rail { min-height: 50px; }
+body.rail-compact .rail { pointer-events: none; } /* the empty strip under the compact avatars lets taps through */
+body.rail-compact .st-ring, body.rail-compact .st-plus { pointer-events: auto; }
 .st-item {
   position: relative; flex: none; width: 74px; display: flex; flex-direction: column; align-items: center; gap: 4px;
   background: none; border: 0; padding: 2px 0 0; cursor: pointer; color: var(--ink); transition: width 0.25s;
 }
 .st-ring {
-  position: relative; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; padding: 3px;
-  transition: width 0.25s, height 0.25s, padding 0.25s, transform 0.15s;
+  position: relative; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; padding: 3px; flex: none;
+  transform-origin: 50% 0; transition: transform 0.25s;
 }
 .st-item:active .st-ring { transform: scale(0.93); }
-.st-face { width: 100%; height: 100%; border-radius: 50%; background: var(--bg); padding: 2.5px; display: grid; place-items: center; transition: padding 0.25s; }
+.st-face { width: 100%; height: 100%; border-radius: 50%; background: var(--bg); padding: 2.5px; display: grid; place-items: center; }
 .st-face .avatar { width: 100%; height: 100%; font-size: 19px; box-shadow: none; }
 .st-face .avatar.pic { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--av, var(--brand)) 18%, transparent); }
 .st-blank { background: var(--surface-2); color: var(--muted); border: 1.5px dashed var(--axis); }
-.st-item.new .st-ring { background: conic-gradient(from 200deg, #ffd600, #ff7a00, #ff0069, #d300c5, #7638fa, #ffd600); animation: st-glow 3s ease-in-out infinite; }
+.st-item.new .st-ring { background: conic-gradient(from 200deg, #ffd600, #ff7a00, #ff0069, #d300c5, #7638fa, #ffd600); }
+.st-item.new .st-ring::before { /* glow on its own layer: animating filter on the ring repainted the bar every frame */
+  content: ""; position: absolute; inset: 0; border-radius: 50%; z-index: -1; background: inherit; filter: blur(6px); opacity: 0;
+  animation: st-glow 3s ease-in-out infinite;
+}
 .st-item.seen .st-ring { background: var(--axis); padding: 1.5px; }
 .st-item.seen .st-face { padding: 4px; }
 .st-item.none .st-ring { background: transparent; }
@@ -132,22 +144,20 @@ body.rail-compact .rail { min-height: 50px; }
 .st-item.up .st-ring::after { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px dashed var(--brand); opacity: 0.35; animation: spin 2.4s linear infinite; }
 .st-plus {
   position: absolute; left: calc(50% + 12px); top: 48px; width: 23px; height: 23px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--brand); color: #fff; border: 2.5px solid var(--bg); transition: top 0.25s, left 0.25s, width 0.25s, height 0.25s;
+  background: var(--brand); color: #fff; border: 2.5px solid var(--bg); transform-origin: 0 0; transition: transform 0.25s;
 }
 .st-plus .ic { stroke-width: 3.2; }
 .st-name {
   max-width: 70px; font-size: 11.5px; font-weight: 600; line-height: 1.2; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: opacity 0.2s, max-height 0.25s; max-height: 16px;
+  transition: opacity 0.2s;
 }
 .st-item.new .st-name, .st-item.own .st-name { color: var(--ink); }
 body.rail-compact .st-item { width: 50px; }
-body.rail-compact .st-ring { width: 44px; height: 44px; padding: 2px; }
-body.rail-compact .st-item.seen .st-ring { padding: 1.5px; }
-body.rail-compact .st-face { padding: 2px; }
-body.rail-compact .st-face .avatar { font-size: 13px; }
-body.rail-compact .st-name { opacity: 0; max-height: 0; }
-body.rail-compact .st-plus { top: 30px; left: calc(50% + 7px); width: 19px; height: 19px; }
-@keyframes st-glow { 50% { filter: saturate(1.25) brightness(1.06); } }
+body.rail-compact .st-ring { transform: scale(var(--rail-k)); }
+body.rail-compact .st-item:active .st-ring { transform: scale(calc(var(--rail-k) * 0.93)); }
+body.rail-compact .st-plus { transform: translate(-5px, -18px) scale(0.83); }
+body.rail-compact .st-name { opacity: 0; }
+@keyframes st-glow { 50% { opacity: 0.45; } }
 
 /* Pull to refresh (replaces the old refresh button) */
 .ptr {

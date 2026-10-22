@@ -3,7 +3,7 @@
 import { liveStories, STORY } from './ledger.js';
 import * as api from './api.js';
 import { t } from './i18n.js';
-import { $, esc, avatar, icon, toast, ago, reducedMotion } from './ui.js';
+import { $, esc, avatar, icon, toast, ago, reducedMotion, lockScroll, unlockScroll } from './ui.js';
 
 const IMAGE_MS = 5500;
 const SEEN = 't8:seen', UNSENT = 't8:seen-unsent';
@@ -34,11 +34,16 @@ export function initStories(hooks) {
     else if (e.key === 'ArrowLeft') prev();
     else if (e.key === ' ') { e.preventDefault(); (V.pauses.has('key') ? resume : pause)('key'); }
   });
-  // compact rail once the page scrolls
-  let compact = false;
+  // compact rail once the page scrolls — with hysteresis, checked once per frame
+  let compact = false, ticking = false;
   addEventListener('scroll', () => {
-    const c = scrollY > 28;
-    if (c !== compact) { compact = c; document.body.classList.toggle('rail-compact', c); }
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const c = compact ? scrollY > 12 : scrollY > 48;
+      if (c !== compact) { compact = c; document.body.classList.toggle('rail-compact', c); }
+    });
   }, { passive: true });
   setInterval(() => { if (document.visibilityState === 'visible') renderRail(); }, 60000); // stories expire
 }
@@ -171,7 +176,7 @@ export function openViewer(mid) {
   el.setAttribute('aria-label', t('st.viewer'));
   el.innerHTML = `<div class="sv-scene"><div class="sv-cube"></div></div>`;
   document.body.appendChild(el);
-  document.body.classList.add('no-scroll');
+  lockScroll();
   const video = document.createElement('video');
   video.className = 'sv-vid';
   video.playsInline = true;
@@ -208,7 +213,7 @@ export function closeViewer(immediate = false) {
   v.video.pause();
   v.video.removeAttribute('src');
   try { v.video.load(); } catch { /* ignore */ }
-  document.body.classList.remove('no-scroll');
+  unlockScroll();
   flushSeen();
   if (v.pushed) { v.pushed = false; try { history.back(); } catch { /* ignore */ } }
   renderRail();

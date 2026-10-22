@@ -2,7 +2,7 @@
 // text, stickers, drawing, pinch / rotate / drag on everything → export (js/storykit.js) → onPost({ blob, meta }).
 import * as K from './storykit.js';
 import { t, tn } from './i18n.js';
-import { esc, icon, toast, fmt, reducedMotion } from './ui.js';
+import { esc, icon, toast, fmt, reducedMotion, lockScroll, unlockScroll } from './ui.js';
 
 const EMOJIS = ['👟', '🏃‍♀️', '🏃‍♂️', '🚶‍♀️', '🚶‍♂️', '🔥', '💪', '🎉', '🏆', '🥇', '✅', '💯', '⚡', '❤️', '😍', '😂', '😎', '🤩', '🥵', '😴',
   '🌞', '🌙', '🌧️', '🌈', '🌊', '⛰️', '🌳', '🌮', '🫓', '🥟', '🍫', '🍕', '☕', '🥤', '🍎', '🎧', '🎶', '📸', '🗺️', '🌎',
@@ -55,7 +55,7 @@ export function openComposer({ info, onPost, preset = '' }) {
     <input type="file" accept="image/*,video/*" hidden data-file>
     <i class="cmp-probe t"></i><i class="cmp-probe b"></i>`;
   document.body.appendChild(el);
-  document.body.classList.add('no-scroll');
+  lockScroll();
   S = {
     el, info, onPost, stage: el.querySelector('.cmp-stage'), cam: el.querySelector('.cmp-cam'), glc: el.querySelector('.cmp-gl'),
     drawC: el.querySelector('.cmp-draw'), itemsEl: el.querySelector('.cmp-items'), top: el.querySelector('.cmp-top'), bottom: el.querySelector('.cmp-bottom'),
@@ -80,7 +80,7 @@ function close(immediate = false) {
   cancelAnimationFrame(s.raf);
   if (s.media.kind === 'video') { s.media.el.pause(); URL.revokeObjectURL(s.media.url); }
   s.renderer.dispose();
-  document.body.classList.remove('no-scroll');
+  unlockScroll();
   if (s.pushed) { s.pushed = false; try { history.back(); } catch { /* ignore */ } }
   if (s.vv) visualViewport.removeEventListener('resize', s.vv);
   removeEventListener('resize', layout);
