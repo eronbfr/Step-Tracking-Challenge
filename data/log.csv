@@ -44,3 +44,7 @@ time,member,name,event,date,steps,previous,source
 2026-10-22T11:06:21.000Z,eron,Eron Netto,story,,,,
 2026-10-22T11:21:02.000Z,gonza,Gonza Souza,requested,,,,
 2026-10-22T12:17:38.000Z,gonza,Gonza Souza,approved,,,,
+2026-10-22T15:25:40.000Z,luis,Luís Rodney,steps,2026-10-22,0,,shortcut
+2026-10-22T15:53:11.000Z,minerva,Minerva Perez,steps,2026-10-21,10808,,app
+2026-10-22T17:37:14.000Z,gonza,Gonza Souza,requested,,,,
+2026-10-22T17:45:58.000Z,gonza,Gonza Souza,approved,,,,

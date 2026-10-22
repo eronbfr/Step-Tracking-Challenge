@@ -8,24 +8,10 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-22T15:22:55.419Z",
+  "updatedAt": "2026-10-22T19:17:28.932Z",
   "cursor": {
-    "time": 1792671458,
+    "time": 1792691158,
     "seen": {
-      "t0uu7qajVJiX": 1792626050,
-      "kNZtjJvaxSDA": 1792626150,
-      "SpNHBmJpaYZm": 1792626314,
-      "zIHyZBvqWQmF": 1792626330,
-      "nWvLqhpbSwV7": 1792626372,
-      "GmObAFzzLuZW": 1792626400,
-      "08s5HwfZyNWD": 1792626443,
-      "MxftdopEbUIs": 1792626555,
-      "SWwIgDFavZfy": 1792626667,
-      "fteyEf7xCT6P": 1792627539,
-      "qvNpZsmoZLz9": 1792627576,
-      "5f9Q1fYLEb9b": 1792633889,
-      "0Wy91DdIJzTB": 1792641041,
-      "EEwN1lPZPrC8": 1792641041,
       "BdEKy9KZldYw": 1792644370,
       "syGBIdKN6AGU": 1792664475,
       "mEBGHNEuOTzJ": 1792664516,
@@ -38,7 +24,12 @@
       "7kfCSMjpMd7B": 1792667179,
       "1jAb0eZnXmPb": 1792667181,
       "DrQfBzUTdmDZ": 1792668062,
-      "PaD8CLuRwXqj": 1792671458
+      "PaD8CLuRwXqj": 1792671458,
+      "hEnIuhbQz9Jg": 1792682740,
+      "O34Kq6yEemty": 1792682747,
+      "oMOqiU74X4zi": 1792684391,
+      "726MWVjeKcnL": 1792690634,
+      "U3gX8uN2h0BY": 1792691158
     }
   },
   "members": [
@@ -86,6 +77,12 @@
           "pub": "BBWxUTnzzsjvdzvQi3qsttkua7x1fn79GgesoA-4GkThPyMrIoiNxMKPWqxeXG0dUQmRVlYv_89BwhPVgedTGKk",
           "l": "iPhone · Safari",
           "at": "2026-10-22T11:21:02.000Z"
+        },
+        {
+          "kid": "a008415e47196227",
+          "pub": "BMYmYZV8vFl3M28e511Qt3flv6lgJEBpAs-6RrntoWJofvtbvx2CJGYzt3tAl-ua2j7_QLiWlKTOFJq5vPrQpag",
+          "l": "iPhone · Safari",
+          "at": "2026-10-22T17:37:14.000Z"
         }
       ],
       "requests": [],
@@ -184,12 +181,12 @@
       "requests": [],
       "syncHash": "003b90d95a49bf45842b1ea6a6903a9acebfe5fcfb2ab085aaca2be6bdc43798",
       "syncTs": 1792626555411,
-      "daily": [null, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 1792626667000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [null, 0, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [0, 1792626667000, 1792682740000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T10:42:39.000Z",
-      "lastSyncAt": "2026-10-22T01:51:29.000Z",
+      "lastSyncAt": "2026-10-22T15:25:47.000Z",
       "lastSource": "shortcut",
-      "autoSyncs": 4
+      "autoSyncs": 6
     },
     {
       "id": "helbert",
@@ -259,10 +256,10 @@
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [12641, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792624412448, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [12641, 10808, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792624412448, 1792684391481, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T23:11:16.000Z",
-      "lastSyncAt": "2026-10-21T23:13:32.000Z",
+      "lastSyncAt": "2026-10-22T15:53:11.000Z",
       "lastSource": "app",
       "autoSyncs": 0
     }
