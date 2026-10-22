@@ -678,6 +678,14 @@ function bind() {
   const pt = e => { const r = G ? G.rect : stage.getBoundingClientRect(); return { x: (e.clientX - r.left) / S.sc, y: (e.clientY - r.top) / S.sc }; };
   const two = () => { const [a, b] = [...P.values()]; return { d: Math.hypot(b.x - a.x, b.y - a.y), a: Math.atan2(b.y - a.y, b.x - a.x), c: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } }; };
   const guides = (v, h) => { stage.querySelector('.cmp-guide.v').classList.toggle('on', v); stage.querySelector('.cmp-guide.h').classList.toggle('on', h); };
+  // A tap opens the text editor on pointerup, but its click comes a moment later and lands on the editor itself,
+  // which read it as "tap outside = done" and closed it at once (the screen just blinked). Eat that one click.
+  const tapText = item => {
+    const eat = e => { e.stopPropagation(); e.preventDefault(); };
+    el.addEventListener('click', eat, { capture: true, once: true });
+    setTimeout(() => el.removeEventListener('click', eat, true), 400);
+    openText(item);
+  };
 
   stage.addEventListener('pointerdown', e => {
     if (!S || S.mode !== 'edit' || e.button > 0) return;
@@ -745,7 +753,7 @@ function bind() {
     if (g.it) {
       if (g.trash) { removeItem(g.it); if (navigator.vibrate) navigator.vibrate(20); return; }
       if (!g.moved && performance.now() - g.t0 < 350) {
-        if (g.it.type === 'text') return openText(g.it);
+        if (g.it.type === 'text') return tapText(g.it);
         if (g.it.d.kind !== 'emoji') { g.it.d = { ...g.it.d, style: ((g.it.d.style || 0) + 1) % K.STICKER_STYLES }; paintItem(g.it); place(g.it); }
         return;
       }
@@ -753,7 +761,7 @@ function bind() {
       return;
     }
     const dx = q.x - g.p0.x, dy = q.y - g.p0.y;
-    if (!g.moved && performance.now() - g.t0 < 350) return openText(null);
+    if (!g.moved && performance.now() - g.t0 < 350) return tapText(null);
     if (!g.pinch && S.media.kind !== 'none' && Math.abs(dx) * S.sc > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) setFilter(S.filter + (dx < 0 ? 1 : -1));
   };
   stage.addEventListener('pointerup', up);
