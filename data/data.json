@@ -8,18 +8,10 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-22T10:52:19.882Z",
+  "updatedAt": "2026-10-22T15:22:55.419Z",
   "cursor": {
-    "time": 1792665093,
+    "time": 1792671458,
     "seen": {
-      "Q9JzRbn05hOw": 1792619551,
-      "XGgopEMjN6Jf": 1792619578,
-      "Y3UQ2BZ6nMPs": 1792623844,
-      "Uyt3RVZKujv8": 1792623870,
-      "EpKlzoBPoafG": 1792623930,
-      "dkawyQPk3JKv": 1792624276,
-      "r98mAqofVpAB": 1792624412,
-      "mEndlTMOVNm1": 1792624481,
       "t0uu7qajVJiX": 1792626050,
       "kNZtjJvaxSDA": 1792626150,
       "SpNHBmJpaYZm": 1792626314,
@@ -39,7 +31,14 @@
       "mEBGHNEuOTzJ": 1792664516,
       "9D7xeZw3F1HE": 1792664516,
       "1eULJe3nekZX": 1792665084,
-      "fKPfKgVccQBp": 1792665093
+      "fKPfKgVccQBp": 1792665093,
+      "884RTU0HkTWY": 1792667168,
+      "SL39udkC1y8m": 1792667172,
+      "3l0zJyN9iDGP": 1792667176,
+      "7kfCSMjpMd7B": 1792667179,
+      "1jAb0eZnXmPb": 1792667181,
+      "DrQfBzUTdmDZ": 1792668062,
+      "PaD8CLuRwXqj": 1792671458
     }
   },
   "members": [
@@ -81,6 +80,12 @@
           "pub": "BFPPyhAORUwmpq-wABgx8XDllBc_ZheU1FloJBzJ5cC7RHWeTxkbl-_N51zHXQA5rd-DTeaQeusj9lnqGnBgHQQ",
           "l": "iPhone · Safari",
           "at": "2026-10-21T12:25:53.000Z"
+        },
+        {
+          "kid": "50c4a55f47c4e766",
+          "pub": "BBWxUTnzzsjvdzvQi3qsttkua7x1fn79GgesoA-4GkThPyMrIoiNxMKPWqxeXG0dUQmRVlYv_89BwhPVgedTGKk",
+          "l": "iPhone · Safari",
+          "at": "2026-10-22T11:21:02.000Z"
         }
       ],
       "requests": [],
@@ -279,6 +284,26 @@
       "mn": [],
       "bg": "#1650d0",
       "src": "T07_p55OLzNy.jpg",
+      "views": {},
+      "reacts": [],
+      "replies": []
+    },
+    {
+      "id": "1MsmHRViOp2G",
+      "m": "eron",
+      "at": 1792667181,
+      "k": "video",
+      "mt": "video/mp4",
+      "p": ["https://ntfy.sh/file/884RTU0HkTWY.mp4", "https://ntfy.sh/file/SL39udkC1y8m.bin", "https://ntfy.sh/file/3l0zJyN9iDGP.bin", "https://ntfy.sh/file/7kfCSMjpMd7B.bin"],
+      "sz": 6851582,
+      "sha": "c99ca70fe843c7921b7ba25d8376d18284ee515f9fc75df6be09bc9ad67e5c22",
+      "w": 720,
+      "h": 1280,
+      "du": 13.3,
+      "x": "200% proud to be!! 🔥🔥 · Nokia!",
+      "mn": [],
+      "bg": "#5b5c5d",
+      "src": "",
       "views": {},
       "reacts": [],
       "replies": []
