@@ -83,28 +83,28 @@
   "screenshots": [
     {
       "src": "docs/screenshots/team.jpg",
-      "sizes": "563x1218",
+      "sizes": "563x1111",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Live team dashboard"
     },
     {
       "src": "docs/screenshots/ranking.jpg",
-      "sizes": "563x1218",
+      "sizes": "563x1111",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Friendly ranking & hall of fame"
     },
     {
       "src": "docs/screenshots/me.jpg",
-      "sizes": "563x1218",
+      "sizes": "563x1111",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Your stats, streaks & health"
     },
     {
       "src": "docs/screenshots/sync.jpg",
-      "sizes": "563x1218",
+      "sizes": "563x1111",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "Auto-sync from your phone"
