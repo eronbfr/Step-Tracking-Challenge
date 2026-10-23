@@ -1,4 +1,4 @@
-/* Team 8 · Step Challenge — styles */
+/* Nokia - Step Challenge 2026 - Team 8 — styles */
 
 :root {
   color-scheme: light;
@@ -902,6 +902,26 @@ details.callout summary { cursor: pointer; }
 .ios-calc b { color: var(--ink); }
 .ios-empty { padding: 14px 16px; color: var(--muted); font-size: 14.5px; }
 .ios-plain { display: grid; gap: 14px; }
+
+/* README page (Settings → About → Source code), rendered by js/markdown.js */
+.md { padding: 6px 18px 18px; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 12px; }
+.md h2 { font-size: 22px; font-weight: 800; color: var(--ink); margin: 22px 0 8px; letter-spacing: -0.02em; }
+.md h3 { font-size: 18px; font-weight: 750; color: var(--ink); margin: 22px 0 8px; padding-top: 14px; border-top: 1px solid var(--hair); }
+.md h4 { font-size: 15.5px; font-weight: 700; color: var(--ink); margin: 16px 0 6px; }
+.md p, .md ul, .md ol, .md pre, .md .md-table { margin: 0 0 10px; }
+.md ul, .md ol { padding-left: 20px; display: grid; gap: 5px; }
+.md b { color: var(--ink); }
+.md code { font-size: 12.5px; background: var(--surface-2); border-radius: 5px; padding: 1px 5px; overflow-wrap: anywhere; }
+.md pre { background: var(--surface-2); border-radius: 12px; padding: 12px; overflow-x: auto; overflow-wrap: normal; }
+.md pre code { background: none; padding: 0; font-size: 11px; line-height: 1.5; white-space: pre; }
+.md .md-table { overflow-x: auto; border: 1px solid var(--hair); border-radius: 12px; }
+.md table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.md th, .md td { text-align: left; vertical-align: top; padding: 8px 10px; border-top: 1px solid var(--hair); min-width: 72px; }
+.md th { border-top: 0; color: var(--ink); background: var(--surface-2); }
+.md img { display: block; width: 100%; max-width: 160px; height: auto; border-radius: 10px; }
+.md td img { width: 112px; max-width: none; }
+.md hr { border: 0; border-top: 1px solid var(--hair); margin: 18px 0 12px; }
 .ios-intro { margin: -6px 4px 2px; color: var(--ink-2); font-size: 15px; }
 .ios .req-list { margin-top: 0; }
 .ios .req { background: var(--surface); border: 1px solid var(--hair); }

@@ -1,8 +1,8 @@
-# 👟 Team 8 · Step Challenge
+# 👟 Nokia - Step Challenge 2026 - Team 8
 
 **Oct 20 – Nov 15, 2026 · 10,000 steps a day · 9 teammates 🇲🇽 🇺🇾 🇧🇷 🇨🇴**
 
-A Progressive Web App (installable, works offline) for the Team 8 step challenge. It has a live team dashboard,
+A Progressive Web App (installable, works offline) for the Nokia Step Challenge 2026, Team 8. It has a live team dashboard,
 automatic step sync from your phone, friendly rankings, badges, health insights and Instagram-style **stories**.
 
 ### ▶️ Open the app: **https://eronbfr.github.io/Step-Tracking-Challenge/**
@@ -15,6 +15,8 @@ automatic step sync from your phone, friendly rankings, badges, health insights 
 
 - **iPhone**: open the link in **Safari** → Share → **Add to Home Screen**
 - **Android**: open the link in **Chrome** → ⋮ → **Install app**
+
+On the home screen the app is called **Nokia Team 8**.
 
 Then pick your language and your name (no password: your phone is your key), choose your avatar and turn on **Auto-sync**.
 
@@ -29,7 +31,7 @@ Then pick your language and your name (no password: your phone is your key), cho
   (average steps per person) that flies the map to each country
 - Daily team chart (with the 90K team goal line) and running total vs goal pace
 - “Who walked when” heatmap (member × day) with 10K markers
-- Team expedition: real distances between our home cities (Montevideo → Punta del Este, Bogotá → Medellín,
+- Team expedition: a marathon, then real distances between our home cities (Montevideo → Punta del Este, Bogotá → Medellín,
   Mexico City → Acapulco, Rio → São Paulo, Camino de Santiago, São Paulo → Montevideo, Bogotá → Mexico City)
 - Fun facts: % around the Earth, CO₂ a car would emit, calories in tacos 🌮, arepas 🫓, empanadas 🥟, brigadeiros 🍫, alfajores 🍪
 
@@ -39,8 +41,8 @@ Then pick your language and your name (no password: your phone is your key), cho
 - Viewer like Instagram's: progress bars, tap left/right, hold to pause, swipe sideways (3D cube) to the next
   person, swipe down to close, reply or react (❤️ 🔥 👏 😂 😮 😍 💪 🎉). Your own story shows who saw it, the
   reactions and the replies; delete it any time (the captain can too). Stories last 24 h.
-- Composer: in-app camera (tap = photo, hold = up to 15 s of video, front/back), gallery, or an *Aa* text story on a
-  gradient. Edit like on Instagram: 10 swipeable filters (WebGL), text in 6 styles with colours / highlight /
+- Composer: in-app camera (tap = photo, hold = up to 15 s of video, front/back), gallery (longer videos are trimmed
+  to 15 s), or an *Aa* text story on a gradient. Edit like on Instagram: 10 swipeable filters (WebGL), text in 6 styles with colours / highlight /
   alignment / size, stickers (today's steps, % of today's goal, streak, ranking, day of the challenge, your city,
   time, **@mentions**, TEAM 8, emoji), drawing (pen, marker, neon, eraser), and drag / pinch / rotate everything
   (snap guides, drag to the bin). Save to the phone or post; hitting 10K offers a ready-made story.
@@ -49,10 +51,10 @@ Then pick your language and your name (no password: your phone is your key), cho
 **Everywhere**
 - ⚙️ **Settings** (*Ajustes*) in the bottom bar, laid out like the iPhone's: profile & devices, Auto-sync, refresh,
   daily reminder, install, language, appearance (light / dark / automatic), health profile & units, team captain,
-  how we calculate. Pull down on any page to refresh.
+  and *About & how we calculate*, whose **Source code** row opens this README inside the app. Pull down on any page
+  to refresh.
 - 🌐 Three languages — **English** (default), **Português (Brasil)** and **Español**. Picked on the first screen,
-  changeable any time in ⚙️ Settings → Language. Numbers and dates follow the language (10,000 · 10.000), and the
-  backend answers errors and the iPhone Shortcut reply in it too.
+  changeable any time in ⚙️ Settings → Language. Numbers and dates follow the language (10,000 · 10.000).
 - 🧑‍🎨 Avatar library — the 36 illustrated avatars of the Sintonia app (15 female, 21 male). The one you pick is
   shown to the whole team: today board, ranking, podium, heatmap, member cards, sign-in.
 - ⚡ Live — when anyone logs steps, every open app updates within a second.
@@ -67,9 +69,9 @@ Details in [docs/METRICS.md](docs/METRICS.md).
 | Phone | How | Effort |
 |---|---|---|
 | **iPhone** | An Apple **Shortcuts** automation reads Apple Health and opens your personal sync link whenever you close an app you use daily (the iPhone is unlocked then, so Health is readable) | Set up once (~2 min), then fully automatic |
-| **Android** | **Share a screenshot** of any health app (Samsung Health, Google Fit, Fitbit, Garmin…) to *Team 8 Steps*. The app reads the number with on-device OCR | 2 taps |
+| **Android** | **Share a screenshot** of any health app (Samsung Health, Google Fit, Fitbit, Garmin…) to *Nokia Team 8*. The app reads the number with on-device OCR | 2 taps |
 | Android power users | Tasker + the Tasker Health Connect plugin reads steps from Health Connect and calls the same sync link | Set up once (~10 min) |
-| Everyone | Quick manual entry (+500/+1K chips), backfill past days, works offline (queued), daily 9 PM calendar reminder | Seconds |
+| Everyone | Quick manual entry (+500 / +1K / +2.5K / +5K chips), backfill past days, works offline (queued), daily 9 PM calendar reminder | Seconds |
 
 Automatic syncs never lower a day's value, so running them several times a day is safe. A sync of 0 (Health unreadable)
 or without a number is ignored and flagged on the member's Auto-sync page. See [docs/IOS_SHORTCUT.md](docs/IOS_SHORTCUT.md).
@@ -110,7 +112,7 @@ index.html · manifest.webmanifest · sw.js · package.json
 css/app.css
 avatars/  36 WebP avatars (imported from Sintonia by tools/import_avatars.py)
 assets/map/  NASA Blue Marble + Black Marble imagery and Natural Earth borders (built by tools/make_map.py)
-js/  app.js (shell & flows) · views.js (pages) · settings.js (Settings) · charts.js (SVG) · metrics.js (health & stats) · ui.js · ocr.js · config.js
+js/  app.js (shell & flows) · views.js (pages) · settings.js (Settings) · markdown.js (README page) · charts.js (SVG) · metrics.js (health & stats) · ui.js · ocr.js · config.js
      stories.js (rail & viewer) · composer.js (camera & editor) · storykit.js (WebGL filters, text, stickers, export)
      api.js (snapshot + relay + outbox) · ledger.js (rules, shared with the Action) · device.js (signing key)
      i18n.js + strings.js (en / pt / es) · avatars.js (avatar library) · worldmap.js (WebGL team map)
@@ -131,8 +133,13 @@ python tools/make_icons.py            # regenerate icons
 python tools/make_map.py <cache-dir>  # rebuild assets/map/ (downloads NASA + Natural Earth sources once)
 ```
 
-When you release, bump `VERSION` in `sw.js` so installed apps pick up the new files. The Action commits to `main`
+When you release, bump `VERSION` in `sw.js` and `js/config.js` so installed apps pick up the new files. The Action commits to `main`
 every few minutes while people log steps, so `git pull --rebase` before you push.
+
+**This README is also the app's *Source code* page** (⚙️ Settings → About & how we calculate → Source code): the app
+renders this very file, always the latest published version. Whenever the app changes, update this README in the same
+commit — it is what the team reads in the app. Keep to plain Markdown (headings, lists, tables, code blocks, links,
+images); links to repository files open on GitHub and images load from the app.
 
 ## Privacy
 
@@ -149,4 +156,4 @@ Each member's pin on the Team map is their city in `ROSTER` ([`js/config.js`](js
 Map imagery: NASA Visible Earth (Blue Marble Next Generation, Black Marble 2016) · borders: Natural Earth — both public domain.
 
 ---
-*Made with 💙 for Team 8. Health numbers are estimates, not medical advice.*
+*Health numbers are estimates, not medical advice.*

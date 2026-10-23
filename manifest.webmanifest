@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Team 8 · Step Challenge",
-  "short_name": "Team 8 Steps",
-  "description": "Team 8 Step Challenge — live dashboard, auto-sync, badges and health stats.",
+  "name": "Nokia - Step Challenge 2026 - Team 8",
+  "short_name": "Nokia Team 8",
+  "description": "Nokia - Step Challenge 2026 - Team 8 — live dashboard, auto-sync, badges and health stats.",
   "lang": "en",
   "dir": "ltr",
   "start_url": "./?source=pwa",

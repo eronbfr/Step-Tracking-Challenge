@@ -1,7 +1,7 @@
 # Announcement — ready to paste (WhatsApp / Teams / email)
 
 ```
-👟 Team 8 Step Challenge starts TODAY! 🇲🇽🇺🇾🇧🇷🇨🇴
+👟 Nokia - Step Challenge 2026 - Team 8 starts TODAY! 🇲🇽🇺🇾🇧🇷🇨🇴
 
 📅 Oct 20 – Nov 15 · 🎯 10,000 steps a day
 🏆 Team goal: 2.43 million steps together

@@ -77,7 +77,7 @@ def write_steps(ws, data):
         ws.cell(row, total_col).number_format = ws.cell(first_row, total_col).number_format
 
     stamp = dt.datetime.fromisoformat(data['updatedAt'].replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M UTC')
-    ws['B1'] = f'Updated {stamp} by the Team 8 app'
+    ws['B1'] = f'Updated {stamp} by the Nokia - Step Challenge 2026 - Team 8 app'
     ws['B1'].font = Font(italic=True, color='767C93', size=9)
 
 

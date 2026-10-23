@@ -42,7 +42,7 @@ Build it once with an **Import Question**, share the iCloud link, and members on
 1. Build the Shortcut as in Option A, but in step 4 paste a placeholder such as `PASTE-YOUR-LINK` followed by the
    *Rounded Number* variable.
 2. Tap the **ⓘ / Settings** of the Shortcut → **Setup** → **Add Import Question** → select the *Text* action's
-   placeholder → question: *“Paste your personal sync link from the Team 8 app (Settings → Auto-sync)”*.
+   placeholder → question: *“Paste your personal sync link from the Nokia - Step Challenge 2026 - Team 8 app (Settings → Auto-sync)”*.
 3. **Share → Copy iCloud Link**.
 4. Paste it in [`js/config.js`](../js/config.js) as `IOS_SHORTCUT_URL` and commit. The app then shows an
    **Add Shortcut** button instead of the build instructions.
@@ -72,5 +72,5 @@ today's steps at the end (`…%208432`, optional `%202026-10-21` after the steps
    `longValues.Steps_count_total`) → **HTTP Request** GET `<link><total>`.
 4. Profile: Time 08:00–23:59, every 2 h.
 
-For everyone else the app's **screenshot import** (share a screenshot of any health app to *Team 8 Steps*)
+For everyone else the app's **screenshot import** (share a screenshot of any health app to *Nokia Team 8*)
 is the fastest route.

@@ -1,12 +1,15 @@
 // Settings ("Ajustes"), laid out like the iPhone's Settings app: grouped inset lists, coloured icons, pages that slide in.
-//   #/settings · #/settings/profile · sync · language · appearance · health · reminder · captain · about
+//   #/settings · #/settings/profile · sync · language · appearance · health · reminder · captain · about · readme
+//   "Source code" (About) shows README.md itself, so the README is the one place to keep the project description current.
 import { CONFIG } from './config.js';
 import { DEMO } from './api.js';
 import { t, tn, lang, LANGS } from './i18n.js';
 import { esc, dateLabel, ago, avatar, icon } from './ui.js';
 import { viewSync, requestList, isStandalone } from './views.js';
+import { markdown } from './markdown.js';
 
-export const SUBPAGES = ['profile', 'sync', 'language', 'appearance', 'health', 'reminder', 'captain', 'about'];
+export const SUBPAGES = ['profile', 'sync', 'language', 'appearance', 'health', 'reminder', 'captain', 'about', 'readme'];
+export const parentOf = sub => (sub === 'readme' ? 'about' : '');
 const C = { green: '#34c759', blue: '#007aff', red: '#ff3b30', orange: '#ff9500', indigo: '#5856d6', pink: '#ff2d55', gray: '#8e8e93', teal: '#30b0c7', purple: '#af52de' };
 
 function row({ ic, color, label, value = '', href = '', action = '', k = '', badge = 0, chevron = true, cls = '', sub = '' }) {
@@ -22,11 +25,11 @@ function row({ ic, color, label, value = '', href = '', action = '', k = '', bad
 const group = (rows, { head = '', foot = '', cls = '' } = {}) =>
   `<section class="ios-sec ${cls}">${head ? `<h2 class="ios-head">${head}</h2>` : ''}<div class="ios-group">${rows}</div>${foot ? `<p class="ios-foot">${foot}</p>` : ''}</section>`;
 const check = on => (on ? `<span class="ios-check">${icon('check', 20)}</span>` : '');
-const nav = title => `<nav class="ios-nav"><a class="ios-back" href="#/settings" data-back>${icon('back', 22)}<span>${t('settings.title')}</span></a>
+const nav = (title, back = '') => `<nav class="ios-nav"><a class="ios-back" href="#/settings${back ? `/${back}` : ''}" data-back>${icon('back', 22)}<span>${t(back ? `settings.${back}Short` : 'settings.title')}</span></a>
   <span class="ios-nav-title">${title}</span></nav><h1 class="ios-title">${title}</h1>`;
 
 export function viewSettings(st, sub = '') {
-  const page = { profile, sync, language, appearance, health, reminder, captain, about }[sub];
+  const page = { profile, sync, language, appearance, health, reminder, captain, about, readme }[sub];
   return `<div class="ios ${sub ? 'sub' : 'root'}">${page ? page(st) : root(st)}</div>`;
 }
 
@@ -60,7 +63,7 @@ function root(st) {
     ${group(
       row({ ic: 'share', color: C.green, label: t('settings.invite'), action: 'share-app', chevron: false })
       + row({ ic: 'calc', color: C.gray, label: t('settings.about'), href: '#/settings/about' }))}
-    <p class="ios-ver">Team 8 Step Challenge · v${CONFIG.VERSION}${DEMO ? ` · ${t('common.demoMode')}` : ''}</p>`;
+    <p class="ios-ver">${CONFIG.BRAND} · v${CONFIG.VERSION}${DEMO ? ` · ${t('common.demoMode')}` : ''}</p>`;
 }
 
 function profile(st) {
@@ -152,6 +155,25 @@ function about() {
   return `${nav(t('settings.about'))}
     ${group(`<ul class="ios-calc">${['distance', 'kcal', 'time', 'level', 'avg', 'privacy'].map(k => `<li>${t(`calc.${k}`)}</li>`).join('')}</ul>`, { head: t('calc.title') })}
     ${group(`<div class="ios-row static"><span class="ios-label">${t('settings.version')}</span><span class="ios-value">${CONFIG.VERSION}</span></div>
-      <a class="ios-row" href="https://github.com/${CONFIG.REPO}" target="_blank" rel="noopener"><span class="ios-label">${t('settings.source')}</span><span class="ios-value">GitHub</span>${icon('chevron', 16, 'ios-chev')}</a>`,
-      { foot: `Team 8 Step Challenge${DEMO ? ` · ${t('common.demoMode')}` : ''} · ${t('settings.madeWith')}` })}`;
+      <a class="ios-row" href="#/settings/readme"><span class="ios-label">${t('settings.source')}</span><span class="ios-value">${t('settings.readme')}</span>${icon('chevron', 16, 'ios-chev')}</a>`,
+      { foot: `${CONFIG.BRAND}${DEMO ? ` · ${t('common.demoMode')}` : ''}` })}`;
+}
+
+/* README.md rendered in the app: fetched once per session (network first in sw.js, cached copy offline). */
+let readmeHtml = '', readmeLoad = null;
+function readme() {
+  return `${nav(t('settings.source'), 'about')}
+    <article class="ios-group md" data-readme>${readmeHtml || `<p class="ios-empty"><span class="ios-spin"></span></p>`}</article>`;
+}
+export function fillReadme(root) {
+  const box = root.querySelector('[data-readme]');
+  if (!box || readmeHtml) return;
+  readmeLoad = readmeLoad || fetch('README.md', { cache: 'no-cache' })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(src => { readmeHtml = markdown(src, { base: `https://github.com/${CONFIG.REPO}/blob/main/` }); })
+    .catch(() => { readmeLoad = null; });
+  readmeLoad.then(() => {
+    const el = document.querySelector('[data-readme]');
+    if (el) el.innerHTML = readmeHtml || `<p class="ios-empty">${esc(t('settings.readmeOffline'))}</p>`;
+  });
 }

@@ -1,12 +1,12 @@
-// Team 8 · Step Challenge — service worker.
+// Nokia - Step Challenge 2026 - Team 8 — service worker.
 // Bump VERSION on every release so installed apps pick up the new files.
-const VERSION = 'v2.2.5';
+const VERSION = 'v2.3.0';
 const SHELL = `t8-shell-${VERSION}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/views.js', './js/api.js', './js/config.js', './js/metrics.js', './js/charts.js', './js/ui.js', './js/ocr.js',
   './js/i18n.js', './js/strings.js', './js/avatars.js', './js/ledger.js', './js/device.js', './js/worldmap.js',
-  './js/settings.js', './js/stories.js', './js/storykit.js', './js/composer.js',
+  './js/settings.js', './js/markdown.js', './js/stories.js', './js/storykit.js', './js/composer.js', './README.md',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png',
   './assets/reminder.ics',
 ];
@@ -46,6 +46,20 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET' || url.origin !== self.location.origin) return; // relay, GitHub & CDNs go straight to the network
   // Ledger snapshot and spreadsheet change every few minutes: never serve them from the cache.
   if (url.pathname.includes('/data/') || url.pathname.endsWith('.xlsx')) return;
+
+  // README.md is the in-app "Source code" page: always the latest version, the cached copy offline.
+  if (url.pathname.endsWith('/README.md')) {
+    event.respondWith((async () => {
+      try {
+        const res = await fetch(req);
+        if (res.ok) (await caches.open(SHELL)).put('./README.md', res.clone());
+        return res;
+      } catch {
+        return (await caches.match('./README.md')) || Response.error();
+      }
+    })());
+    return;
+  }
 
   // Pages: network first (fresh deploys), cached shell when offline.
   if (req.mode === 'navigate') {

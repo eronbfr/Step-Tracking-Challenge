@@ -1,4 +1,4 @@
-// Team 8 · Step Challenge — app configuration (shared by the app and the GitHub Action in backend/).
+// Nokia - Step Challenge 2026 - Team 8 — app configuration (shared by the app and the GitHub Action in backend/).
 //
 // Backend = this GitHub repository:
 //   • the app publishes signed messages to a public relay topic (ntfy.sh) and every open app sees them live;
@@ -24,8 +24,10 @@ export const CONFIG = {
   // Optional: iCloud link of a shared "Team 8 Sync" iPhone Shortcut (see docs/IOS_SHORTCUT.md).
   IOS_SHORTCUT_URL: '',
 
+  // Brand for titles and texts. The home-screen label is the manifest's short_name ("Nokia Team 8").
+  BRAND: 'Nokia - Step Challenge 2026 - Team 8',
   APP_URL: 'https://eronbfr.github.io/Step-Tracking-Challenge/',
-  VERSION: '2.2.5',
+  VERSION: '2.3.0',
 
   CHALLENGE: { team: 'Team 8', name: 'Step Challenge', start: '2026-10-20', end: '2026-11-15', dailyGoal: 10000 },
 

@@ -2,7 +2,7 @@
   "name": "team8-step-challenge",
   "private": true,
   "type": "module",
-  "description": "Team 8 Step Challenge PWA — no build step; the backend is the GitHub repository (see docs/SETUP.md).",
+  "description": "Nokia - Step Challenge 2026 - Team 8 PWA — no build step; the backend is the GitHub repository (see docs/SETUP.md).",
   "scripts": {
     "test": "node --test backend/ledger.test.mjs",
     "fold": "node backend/fold.mjs",

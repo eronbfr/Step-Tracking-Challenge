@@ -1,4 +1,4 @@
-// Team 8 · Step Challenge — app shell: state, routing, data refresh and user flows.
+// Nokia - Step Challenge 2026 - Team 8 — app shell: state, routing, data refresh and user flows.
 import { CONFIG } from './config.js';
 import * as api from './api.js';
 import * as M from './metrics.js';
@@ -7,7 +7,7 @@ import { t, tn, lang, setLang, langChosen, locale } from './i18n.js';
 import { AVATARS, avatarImg, avatarLabel } from './avatars.js';
 import { codeOf } from './ledger.js';
 import { setMapMode, focusCountry, placeOf, placeName } from './worldmap.js';
-import { viewSettings, SUBPAGES } from './settings.js';
+import { viewSettings, SUBPAGES, parentOf, fillReadme } from './settings.js';
 import * as ST from './stories.js';
 import { $, $$, esc, fmt, dec, compact, dateLabel, ago, avatar, avColor, icon, toast, openSheet, closeSheet, sheetBody, countUp, confetti, copyText } from './ui.js';
 
@@ -48,6 +48,7 @@ function render() {
   const view = { team: V.viewTeam, ranking: V.viewRanking, me: V.viewMe, settings: st => viewSettings(st, st.sub) }[state.route];
   viewEl.innerHTML = view(state);
   V.drawPage(state, viewEl, mount);
+  if (state.route === 'settings' && state.sub === 'readme') fillReadme(viewEl);
   if (state.animate) { countUp(viewEl); state.animate = false; }
   renderChrome();
   ST.renderRail();
@@ -168,9 +169,10 @@ function routeFromHash() {
   return ROUTES.includes(r) ? { route: r, sub: r === 'settings' && SUBPAGES.includes(sub) ? sub : '' } : { route: 'team', sub: '' };
 }
 addEventListener('hashchange', () => {
-  const was = state.route === 'settings' ? (state.sub ? 2 : 1) : 0;
+  const depth = () => (state.route !== 'settings' ? 0 : !state.sub ? 1 : parentOf(state.sub) ? 3 : 2);
+  const was = depth();
   Object.assign(state, routeFromHash());
-  const now = state.route === 'settings' ? (state.sub ? 2 : 1) : 0;
+  const now = depth();
   // Settings pages slide like iOS: deeper → in from the right, back → in from the left
   viewEl.classList.remove('push', 'pop');
   if (was && now && was !== now) { void viewEl.offsetWidth; viewEl.classList.add(now > was ? 'push' : 'pop'); }
@@ -258,7 +260,7 @@ const actions = {
   'sync-new': () => { if (confirm(t('sync.newLinkConfirm'))) createSyncLink(true); },
   'share-app': async () => {
     const ctx = state.model.ctx;
-    const data = { title: 'Team 8 Step Challenge', text: t('share.text', { start: dateLabel(ctx.start, 'short'), end: dateLabel(ctx.end, 'short') }), url: CONFIG.APP_URL };
+    const data = { title: CONFIG.BRAND, text: t('share.text', { start: dateLabel(ctx.start, 'short'), end: dateLabel(ctx.end, 'short') }), url: CONFIG.APP_URL };
     if (navigator.share) { try { await navigator.share(data); } catch { /* cancelled */ } return; }
     const ok = await copyText(`${data.text} ${data.url}`);
     toast(ok ? t('toast.inviteCopied') : CONFIG.APP_URL);
@@ -649,7 +651,7 @@ function welcomeHtml() {
     <div class="welcome" data-sheet="welcome">
       <div class="welcome-lang">${V.langOptions('lang-row')}</div>
       <div class="welcome-art" aria-hidden="true"><img src="icons/icon.svg" alt="" width="88" height="88"></div>
-      <h2>Team 8 Step Challenge</h2>
+      <h2>${CONFIG.BRAND}</h2>
       <p class="welcome-dates">${t('welcome.dates', { start: dateLabel(ctx.start, 'short'), end: dateLabel(ctx.end, 'short'), N: ctx.N })}</p>
       <p class="welcome-flags">${t('welcome.flags', { M: state.model.team.M })}</p>
       <ul class="welcome-list">
@@ -748,7 +750,7 @@ function gestures() {
     y0 = null;
     if (edge) {
       if (viewEl.firstElementChild) viewEl.firstElementChild.style.transform = '';
-      if (dx > 90) location.hash = '#/settings';
+      if (dx > 90) location.hash = `#/settings${parentOf(state.sub) ? `/${parentOf(state.sub)}` : ''}`;
       return;
     }
     document.body.classList.remove('pulling');

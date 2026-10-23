@@ -22,7 +22,7 @@ def first_name_id(name):
 
 
 def message(first):
-    return (f"Hi {first}! 👟 The Team 8 Step Challenge starts today (Oct 20 – Nov 15, 10K steps a day).\n\n"
+    return (f"Hi {first}! 👟 The Nokia - Step Challenge 2026 - Team 8 starts today (Oct 20 – Nov 15, 10K steps a day).\n\n"
             f"📲 Install our app: {APP_URL}\n"
             "1️⃣ Pick your name and create a 4-digit PIN\n"
             "2️⃣ Turn on Auto-sync (⚡ tab) so your steps update by themselves\n\n"
@@ -48,14 +48,14 @@ def main():
         f'<a class="card" href="{html.escape(u)}" target="_blank" rel="noopener"><b>{html.escape(n)}</b><span>Send WhatsApp invite →</span></a>'
         for n, _, u in people)
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><title>Team 8 invites</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Nokia - Step Challenge 2026 - Team 8 — invites</title>
 <style>
 body{{font:15px/1.4 system-ui,sans-serif;background:#f3f5fa;color:#0e1222;margin:0;padding:24px 16px}}
 main{{max-width:520px;margin:auto;display:grid;gap:10px}} h1{{margin:0 0 4px}} p{{color:#4a5068;margin:0 0 12px}}
 .card{{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;
 background:#fff;text-decoration:none;color:inherit;box-shadow:0 4px 16px rgba(16,24,48,.08)}}
 .card span{{color:#128c7e;font-weight:700;white-space:nowrap}}
-</style></head><body><main><h1>👟 Team 8 invites</h1>
+</style></head><body><main><h1>👟 Nokia - Step Challenge 2026 - Team 8 — invites</h1>
 <p>One tap opens WhatsApp with a personal message. This file has phone numbers — keep it private.</p>
 {cards}</main></body></html>"""
     out = os.path.join(ROOT, 'invites.html')
