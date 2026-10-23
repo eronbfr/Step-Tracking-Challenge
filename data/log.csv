@@ -53,3 +53,5 @@ time,member,name,event,date,steps,previous,source
 2026-10-23T08:06:26.000Z,eron,Eron Netto,steps,2026-10-23,387,,app
 2026-10-23T09:09:43.000Z,eron,Eron Netto,synckey,,,,
 2026-10-23T13:29:42.000Z,eron,Eron Netto,steps,2026-10-23,831,387,app
+2026-10-23T15:07:26.000Z,luis,Luís Rodney,steps,2026-10-23,0,,shortcut
+2026-10-23T18:21:22.000Z,eron,Eron Netto,steps,2026-10-23,2650,831,app
