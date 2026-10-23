@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-23T19:06:29.664Z",
+  "updatedAt": "2026-10-23T19:56:38.442Z",
   "cursor": {
-    "time": 1792779682,
+    "time": 1792785058,
     "seen": {
       "kI0kWCR1mlRm": 1792742770,
       "vgzVsUWsO8HE": 1792742786,
@@ -18,7 +18,12 @@
       "TC9RswGBKp2P": 1792746685,
       "FN8GxN5sDNou": 1792762182,
       "xr5iYhQFdEQc": 1792768046,
-      "VAT1nwgDMMRA": 1792779682
+      "VAT1nwgDMMRA": 1792779682,
+      "RelzIVmMeVgO": 1792784678,
+      "58tJ7secrxeL": 1792784981,
+      "iorju8oeoizO": 1792785027,
+      "sBT3kZetwEQt": 1792785045,
+      "ExKJ5dtplpPw": 1792785058
     }
   },
   "members": [
@@ -45,7 +50,8 @@
       "joinedAt": "2026-10-21T03:05:30.000Z",
       "lastSyncAt": "2026-10-21T04:34:33.000Z",
       "lastSource": "app",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     },
     {
       "id": "gonza",
@@ -82,7 +88,8 @@
       "joinedAt": "2026-10-21T12:25:53.000Z",
       "lastSyncAt": "2026-10-21T12:36:32.000Z",
       "lastSource": "app",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     },
     {
       "id": "sidnei",
@@ -100,7 +107,8 @@
       "joinedAt": "",
       "lastSyncAt": "",
       "lastSource": "",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     },
     {
       "id": "eron",
@@ -125,7 +133,8 @@
       "joinedAt": "2026-10-20T19:11:09.000Z",
       "lastSyncAt": "2026-10-23T18:21:22.000Z",
       "lastSource": "app",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     },
     {
       "id": "danielle",
@@ -150,7 +159,8 @@
       "joinedAt": "2026-10-21T13:11:56.000Z",
       "lastSyncAt": "",
       "lastSource": "",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     },
     {
       "id": "luis",
@@ -170,12 +180,13 @@
       "requests": [],
       "syncHash": "003b90d95a49bf45842b1ea6a6903a9acebfe5fcfb2ab085aaca2be6bdc43798",
       "syncTs": 1792626555411,
-      "daily": [null, 0, 0, 0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [0, 1792626667000, 1792682740000, 1792768046000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [4933, 7567, 4189, 3685, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792785057984, 1792785045758, 1792785026916, 1792784981000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T10:42:39.000Z",
-      "lastSyncAt": "2026-10-23T15:07:26.000Z",
-      "lastSource": "shortcut",
-      "autoSyncs": 7
+      "lastSyncAt": "2026-10-23T19:50:58.000Z",
+      "lastSource": "app",
+      "autoSyncs": 8,
+      "syncIssue": null
     },
     {
       "id": "helbert",
@@ -200,7 +211,8 @@
       "joinedAt": "2026-10-20T21:20:08.000Z",
       "lastSyncAt": "",
       "lastSource": "",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     },
     {
       "id": "armando",
@@ -225,7 +237,8 @@
       "joinedAt": "2026-10-21T23:04:04.000Z",
       "lastSyncAt": "2026-10-23T01:18:21.000Z",
       "lastSource": "app",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     },
     {
       "id": "minerva",
@@ -250,7 +263,8 @@
       "joinedAt": "2026-10-21T23:11:16.000Z",
       "lastSyncAt": "2026-10-22T15:53:11.000Z",
       "lastSource": "app",
-      "autoSyncs": 0
+      "autoSyncs": 0,
+      "syncIssue": null
     }
   ],
   "stories": [
