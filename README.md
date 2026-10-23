@@ -66,12 +66,13 @@ Details in [docs/METRICS.md](docs/METRICS.md).
 
 | Phone | How | Effort |
 |---|---|---|
-| **iPhone** | An Apple **Shortcuts** automation reads Apple Health and opens your personal sync link at 12:00, 18:00 and 23:30 | Set up once (~2 min), then fully automatic |
+| **iPhone** | An Apple **Shortcuts** automation reads Apple Health and opens your personal sync link whenever you close an app you use daily (the iPhone is unlocked then, so Health is readable) | Set up once (~2 min), then fully automatic |
 | **Android** | **Share a screenshot** of any health app (Samsung Health, Google Fit, Fitbit, Garmin…) to *Team 8 Steps*. The app reads the number with on-device OCR | 2 taps |
-| Android power users | Tasker / MacroDroid / HTTP Shortcuts call the same sync link | Set up once |
+| Android power users | Tasker + the Tasker Health Connect plugin reads steps from Health Connect and calls the same sync link | Set up once (~10 min) |
 | Everyone | Quick manual entry (+500/+1K chips), backfill past days, works offline (queued), daily 9 PM calendar reminder | Seconds |
 
-Automatic syncs never lower a day's value, so running them several times a day is safe. See [docs/IOS_SHORTCUT.md](docs/IOS_SHORTCUT.md).
+Automatic syncs never lower a day's value, so running them several times a day is safe. A sync of 0 (Health unreadable)
+or without a number is ignored and flagged on the member's Auto-sync page. See [docs/IOS_SHORTCUT.md](docs/IOS_SHORTCUT.md).
 
 ## For the organizer
 

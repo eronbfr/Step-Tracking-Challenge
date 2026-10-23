@@ -20,10 +20,20 @@ syncs only ever **raise** a day's value, so running the Shortcut several times a
 3. **Round Number** — *Ones Place*
 4. **Text** — paste the personal link, then insert the *Rounded Number* variable at the very end
 5. **Get Contents of URL** — URL = *Text*
-6. *(optional)* **Show Notification** — “✅ Team 8 synced”
+6. **Show Notification** — “✅ Team 8:” followed by the *Rounded Number* variable, so a 0 is visible right away
 
 Name it **Team 8 Sync**, run it once (allow Health access), then:
-**Automation → + → Time of Day → 12:00 · Daily → Run Immediately → Team 8 Sync**. Repeat for 18:00 and 23:30.
+**Automation → + → App → WhatsApp, Instagram, Teams… (apps opened every day) → Is Closed → Run Immediately → Team 8 Sync**.
+
+Why not *Time of Day*? iOS encrypts Health data while the iPhone is locked: a 12:00 automation on a locked phone
+reads nothing and sends **0**. Closing an app means the phone is unlocked, so the read always works.
+
+### It sends 0 steps
+
+- Health app → profile picture → **Apps → Shortcuts** → turn on **Steps** (a denied permission reads as 0, silently).
+- Use the *App → Is Closed* trigger above, not a time of day.
+- The ledger ignores a Shortcut sync of 0 (and a link opened without a number): the day is never overwritten, and
+  the member's app shows a warning on ⚙️ Settings → Auto-sync until the next good sync.
 
 ## Option B — share one Shortcut with everybody (recommended for the organizer)
 
@@ -52,6 +62,15 @@ created it; creating one on another device replaces it.
 
 ## Android power users
 
-Tasker, MacroDroid or HTTP Shortcuts can call the same link (`…%208432`, optional `%202026-10-21` after the steps).
+Android gives web apps no access to step data, so the link alone does nothing: an automation app must open it with
+today's steps at the end (`…%208432`, optional `%202026-10-21` after the steps). The in-app guide uses:
+
+1. Samsung Health (or Google Fit / Fitbit) → Settings → **Health Connect** → allow Steps.
+2. **Tasker** + the free [Tasker Health Connect](https://github.com/RafhaanShah/TaskerHealthConnect) plugin
+   (open it once, allow Steps).
+3. Task: plugin aggregate read of `StepsRecord.COUNT_TOTAL` from today 00:00 to now (the total comes back as
+   `longValues.Steps_count_total`) → **HTTP Request** GET `<link><total>`.
+4. Profile: Time 08:00–23:59, every 2 h.
+
 For everyone else the app's **screenshot import** (share a screenshot of any health app to *Team 8 Steps*)
 is the fastest route.

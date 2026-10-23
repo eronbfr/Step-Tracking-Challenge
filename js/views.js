@@ -386,6 +386,7 @@ export function viewSync(st) {
   const plat = st.platform;
   const link = st.me ? storedSyncLink(st.me.id) : '';
   const autoOn = me && me.autoSyncs > 0;
+  const issue = me && me.syncIssue;
   const busy = st.syncBusy ? 'disabled' : '';
   const copyBtn = !st.me ? `<button class="btn sm" data-action="signin">${t('sync.signinLink')}</button>`
     : link ? `<button class="btn sm" data-action="copy-sync">${icon('copy', 16)} ${t('sync.copy')}</button>`
@@ -407,25 +408,36 @@ export function viewSync(st) {
         <li><b>${t('ios.copyLink')}</b>${linkBox}</li>
         <li><b>${t('ios.create')}</b>${t('ios.createText')}
           <div class="flow">
-            ${flowStep('❤️', 'f1')}${flowStep('∑', 'f2')}${flowStep('#', 'f3')}${flowStep('📝', 'f4')}${flowStep('🌐', 'f5')}${flowStep('🔔', 'f6', true)}
+            ${flowStep('❤️', 'f1')}${flowStep('∑', 'f2')}${flowStep('#', 'f3')}${flowStep('📝', 'f4')}${flowStep('🌐', 'f5')}${flowStep('🔔', 'f6')}
           </div>
           <p class="muted sm flow-tip">${t('ios.search')}</p></li>
         <li><b>${t('ios.name')}</b>${t('ios.runOnceText')}</li>
       </ol>`}
     <div class="callout"><b>${t('ios.auto')}</b>
       <ol><li>${t('ios.auto1')}</li><li>${t('ios.auto2')}</li><li>${t('ios.auto3')}</li></ol>
-      <p class="muted sm">${t('ios.safe')}</p></div>`;
+      <p class="muted sm">${t('ios.safe')}</p></div>
+    <details class="callout warn" ${issue && issue.code === 'zero' ? 'open' : ''}><summary><b>${t('ios.zeroT')}</b></summary>
+      <ol><li>${t('ios.zero1')}</li><li>${t('ios.zero2')}</li><li>${t('ios.zero3')}</li></ol></details>`;
 
+  // Android gives web apps no access to step data: a screenshot share is the 2-tap route, Tasker the fully automatic one.
   const android = `
+    <p class="muted sm and-why">${t('and.why')}</p>
+    <h3 class="guide-h">${t('and.easyT')}</h3>
     <ol class="steps">
       <li><b>${t('and.install')}</b>${t('and.installText')}</li>
       <li><b>${t('and.shot')}</b>${t('and.shotText')}</li>
       <li><b>${t('and.share')}</b>${t('and.shareText')}</li>
     </ol>
     <button class="btn" data-action="ocr">${icon('camera', 18)} ${t('and.importNow')}</button>
-    <details class="callout"><summary><b>${t('and.power')}</b></summary>
+    <details class="callout" ${link || issue ? 'open' : ''}><summary><b>${t('and.power')}</b></summary>
       <p>${t('and.powerText')}</p>
-      ${linkBox}
+      <ol class="steps compact and-auto">
+        <li><b>${t('and.a1')}</b>${linkBox}</li>
+        <li>${t('and.a2')}</li>
+        <li>${t('and.a3')}</li>
+        <li>${t('and.a4')}</li>
+        <li>${t('and.a5')}</li>
+      </ol>
       <p class="muted sm">${t('and.example')}</p></details>`;
 
   return `
@@ -437,6 +449,8 @@ export function viewSync(st) {
       : `<b>${t('sync.offTitle')}</b><p>${t('sync.offText')}</p>`}</div>
     ${!st.me ? `<button class="btn sm" data-action="signin">${t('common.signin')}</button>` : ''}
   </section>
+  ${issue ? `<section class="card sync-status warn" role="alert"><span class="sync-emoji">⚠️</span>
+    <div><b>${t(`sync.${issue.code}Title`, { ago: ago(issue.at) })}</b><p>${t(`sync.${issue.code}Text`)}</p></div></section>` : ''}
 
   ${section(t('sync.phone'), '', `${seg('platform', [['ios', '📱 iPhone'], ['android', '🤖 Android']], plat, t('sync.phoneAria'))}<div class="guide">${plat === 'ios' ? ios : android}</div>`)}`;
 }

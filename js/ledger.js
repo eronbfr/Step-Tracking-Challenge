@@ -87,6 +87,7 @@ function blankMember(r, N) {
     avatar: '', avatarTs: 0, keys: [], requests: [], syncHash: '', syncTs: 0,
     daily: Array(N).fill(null), stamps: Array(N).fill(0),
     joinedAt: '', lastSyncAt: '', lastSource: '', autoSyncs: 0,
+    syncIssue: null, // { at, code: 'zero' | 'empty' }: the last automatic sync arrived without a usable step count
   };
 }
 
@@ -129,6 +130,7 @@ export function toView(state) {
     members: state.members.map(m => ({
       id: m.id, name: m.name, country: m.country, avatar: isAvatar(m.avatar) ? m.avatar : '',
       joined: m.keys.length > 0, joinedAt: m.joinedAt, lastSyncAt: m.lastSyncAt, lastSource: m.lastSource, autoSyncs: m.autoSyncs,
+      syncIssue: m.syncIssue ? { ...m.syncIssue } : null,
       daily: m.daily.slice(), syncHash: m.syncHash,
       keys: m.keys.map(({ kid, l, at }) => ({ kid, l, at })), requests: m.requests.map(({ kid, l, at }) => ({ kid, l, at })),
     })),
@@ -328,7 +330,17 @@ async function applyShortcut(state, ev, text) {
   if (!m) return res(false, 'unknownMember', { t: 'sync' });
   const base = { t: 'sync', m: m.id };
   if (!m.syncHash || !key || await sha256Hex(key) !== m.syncHash) return res(false, 'badSyncKey', base);
-  return setSteps(state, m, ev, { date, steps: parseSteps(raw), ts: ev.time * 1000, mode: 'max', source: 'shortcut' }, base);
+  const steps = parseSteps(raw);
+  // 0 = Health gave nothing (iPhone locked, or no Health access); nothing = the link was opened without the steps.
+  // Neither is a real reading: keep the day untouched and flag it so the member's app explains what to fix.
+  if (!steps) {
+    const at = isoAt(ev.time);
+    if (!m.syncIssue || at >= m.syncIssue.at) m.syncIssue = { at, code: steps === 0 ? 'zero' : 'empty' };
+    return res(true, 'noSteps', base);
+  }
+  const r = setSteps(state, m, ev, { date, steps, ts: ev.time * 1000, mode: 'max', source: 'shortcut' }, base);
+  if (r.ok && m.syncIssue && isoAt(ev.time) >= m.syncIssue.at) m.syncIssue = null;
+  return r;
 }
 
 function setSteps(state, m, ev, { date, steps, ts, mode, source }, base) {

@@ -48,7 +48,7 @@ function root(st) {
     <section class="ios-sec">${profileCard}</section>
     ${st.approvals.length ? group(row({ ic: 'shield', color: C.red, label: t('req.title'), action: 'approvals', badge: st.approvals.length })) : ''}
     ${group(
-      row({ ic: 'bolt', color: C.green, label: t('settings.sync'), value: !me ? '' : t(auto ? 'settings.on' : 'settings.off'), href: '#/settings/sync' })
+      row({ ic: 'bolt', color: C.green, label: t('settings.sync'), value: !me ? '' : me.syncIssue ? '⚠️' : t(auto ? 'settings.on' : 'settings.off'), href: '#/settings/sync' })
       + row({ ic: 'refresh', color: C.blue, label: t('settings.refresh'), value: st.loading ? `<span class="ios-spin"></span>` : st.data && st.data.updatedAt ? esc(ago(st.data.updatedAt)) : '', action: 'refresh', chevron: false })
       + row({ ic: 'bell', color: C.red, label: t('settings.reminder'), href: '#/settings/reminder' })
       + (isStandalone() ? '' : row({ ic: 'install', color: C.indigo, label: t('settings.install'), action: 'install' })))}

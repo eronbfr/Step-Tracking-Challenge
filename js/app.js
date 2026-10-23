@@ -737,7 +737,7 @@ function gestures() {
     if (y0 == null) return;
     const dx = e.touches[0].clientX - x0;
     dy = e.touches[0].clientY - y0;
-    if (edge) { viewEl.style.transform = dx > 0 ? `translateX(${dx * 0.6}px)` : ''; return; }
+    if (edge) { const pg = viewEl.firstElementChild; if (pg) pg.style.transform = dx > 0 ? `translateX(${dx * 0.6}px)` : ''; return; } // the page, not #view, so #view's clip holds
     if (dy <= 0 || scrollY > 2) { ptr.style.removeProperty('--pull'); document.body.classList.remove('pulling'); return; }
     document.body.classList.add('pulling');
     ptr.style.setProperty('--pull', String(Math.min(1.25, dy / 110)));
@@ -747,7 +747,7 @@ function gestures() {
     const dx = (e.changedTouches[0] || {}).clientX - x0;
     y0 = null;
     if (edge) {
-      viewEl.style.transform = '';
+      if (viewEl.firstElementChild) viewEl.firstElementChild.style.transform = '';
       if (dx > 90) location.hash = '#/settings';
       return;
     }

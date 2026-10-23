@@ -82,6 +82,18 @@ test('manual edits are last-write-wins by timestamp; auto-sync only raises', asy
   assert.equal((await run(s, ev(`sync eron ${key} 11000 2026-10-20`, at(21) + 240))).code, 'steps');
   assert.equal(eron().daily[i - 1], 11000);
 
+  // 0 (Health unreadable: iPhone locked / no access) or no number at all never becomes a day's value
+  const j = i + 1;
+  assert.equal((await run(s, ev(`sync eron ${key} 0 2026-10-22`, at(21) + 300))).code, 'noSteps');
+  assert.equal(eron().daily[j], null);
+  assert.deepEqual(eron().syncIssue, { at: new Date((at(21) + 300) * 1000).toISOString(), code: 'zero' });
+  assert.equal((await run(s, ev(`sync eron ${key} `, at(21) + 360))).code, 'noSteps');
+  assert.equal(eron().syncIssue.code, 'empty');
+  assert.equal(eron().autoSyncs, 3);
+  assert.equal((await run(s, ev(`sync eron ${key} 3000 2026-10-22`, at(21) + 420))).code, 'steps');
+  assert.equal(eron().syncIssue, null);
+  assert.equal(L.toView(s).members.find(m => m.id === 'eron').syncIssue, null);
+
   // A later manual correction can lower the value again
   await run(s, ev(await a.msg('log', 'eron', { d: '2026-10-21', s: 10000 }, at(21) * 1000 + 600000), at(21) + 600));
   assert.equal(eron().daily[i], 10000);
