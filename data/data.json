@@ -8,15 +8,14 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-25T06:17:40.571Z",
+  "updatedAt": "2026-10-25T15:02:41.896Z",
   "cursor": {
-    "time": 1792893655,
+    "time": 1792930556,
     "seen": {
-      "0Ke2r3KIlzVy": 1792860362,
-      "7YUJva89Dmmo": 1792860370,
-      "nYb7TG6TmmRH": 1792860381,
       "FreILjXt6S5A": 1792887093,
-      "vXFutnqto6PJ": 1792893655
+      "vXFutnqto6PJ": 1792893655,
+      "vaMgz5uZtEWv": 1792930555,
+      "iVwhOfSaQhQT": 1792930556
     }
   },
   "members": [
@@ -277,6 +276,26 @@
       "mn": [],
       "bg": "#6e685b",
       "src": "",
+      "views": {},
+      "reacts": [],
+      "replies": []
+    },
+    {
+      "id": "-56MM48Wc74S",
+      "m": "eron",
+      "at": 1792930556,
+      "k": "image",
+      "mt": "image/jpeg",
+      "p": ["https://ntfy.sh/file/vaMgz5uZtEWv.jpg"],
+      "sz": 403172,
+      "sha": "29c0f4c2a6d200b39cb50d7d3da5f87c6286a03bf15f15e465025c01c19740f4",
+      "w": 1080,
+      "h": 1920,
+      "du": 0,
+      "x": "💪 TEAM 8",
+      "mn": [],
+      "bg": "#564f45",
+      "src": "-56MM48Wc74S.jpg",
       "views": {},
       "reacts": [],
       "replies": []
