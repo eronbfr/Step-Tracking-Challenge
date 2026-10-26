@@ -8,13 +8,14 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-25T18:20:41.869Z",
+  "updatedAt": "2026-10-26T01:02:28.213Z",
   "cursor": {
-    "time": 1792944775,
+    "time": 1792973277,
     "seen": {
       "vaMgz5uZtEWv": 1792930555,
       "iVwhOfSaQhQT": 1792930556,
-      "AYWSKquI53Sj": 1792944775
+      "AYWSKquI53Sj": 1792944775,
+      "xy1B09TfByMU": 1792973277
     }
   },
   "members": [
@@ -171,12 +172,12 @@
       "requests": [],
       "syncHash": "003b90d95a49bf45842b1ea6a6903a9acebfe5fcfb2ab085aaca2be6bdc43798",
       "syncTs": 1792626555411,
-      "daily": [4933, 7567, 4189, 3685, 7493, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792785057984, 1792785045758, 1792785026916, 1792784981000, 1792887093000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [4933, 7567, 4189, 3685, 7493, 13001, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792785057984, 1792785045758, 1792785026916, 1792784981000, 1792887093000, 1792973277000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T10:42:39.000Z",
-      "lastSyncAt": "2026-10-25T00:11:33.000Z",
+      "lastSyncAt": "2026-10-26T00:07:57.000Z",
       "lastSource": "shortcut",
-      "autoSyncs": 9,
+      "autoSyncs": 10,
       "syncIssue": null
     },
     {
