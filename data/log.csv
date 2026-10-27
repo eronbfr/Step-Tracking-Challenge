@@ -74,3 +74,6 @@ time,member,name,event,date,steps,previous,source
 2026-10-26T03:51:39.000Z,eron,Eron Netto,steps,2026-10-25,20274,3510,app
 2026-10-26T03:51:47.000Z,eron,Eron Netto,steps,2026-10-26,351,,app
 2026-10-26T14:42:55.000Z,eron,Eron Netto,steps,2026-10-26,911,351,app
+2026-10-27T00:02:49.000Z,luis,Luís Rodney,steps,2026-10-26,8300,,shortcut
+2026-10-27T00:07:51.000Z,eron,Eron Netto,steps,2026-10-26,1157,911,app
+2026-10-27T00:10:08.000Z,eron,Eron Netto,story,,,,
