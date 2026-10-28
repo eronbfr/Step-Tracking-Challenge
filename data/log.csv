@@ -92,3 +92,5 @@ time,member,name,event,date,steps,previous,source
 2026-10-28T05:23:00.000Z,minerva,Minerva Perez,steps,2026-10-25,10320,,app
 2026-10-28T06:26:50.000Z,eron,Eron Netto,steps,2026-10-27,9670,1401,app
 2026-10-28T06:27:01.000Z,eron,Eron Netto,steps,2026-10-28,271,,app
+2026-10-28T10:22:51.000Z,eron,Eron Netto,story,,,,
+2026-10-28T17:45:48.000Z,eron,Eron Netto,steps,2026-10-28,371,271,app
