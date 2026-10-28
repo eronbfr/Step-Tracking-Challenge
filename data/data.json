@@ -8,21 +8,14 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-28T19:15:43.463Z",
+  "updatedAt": "2026-10-28T21:28:41.773Z",
   "cursor": {
-    "time": 1793209548,
+    "time": 1793222672,
     "seen": {
-      "NRdZG7UbM7qp": 1793164336,
-      "fZQPAKHgwSms": 1793164405,
-      "zaW7Y6AwtmCz": 1793164521,
-      "kyyIJS3bg5lU": 1793164841,
-      "Gi6NJuVEUHAT": 1793164905,
-      "Wjs7EExh0akg": 1793164980,
-      "ofaqjC1xrXEK": 1793168810,
-      "zev81PnFGLYR": 1793168821,
       "JeH0It2FiNIU": 1793182971,
       "9CuNG2uqJUPB": 1793182971,
-      "yjqa1xHZ155S": 1793209548
+      "yjqa1xHZ155S": 1793209548,
+      "EHbCgNAsKsFx": 1793222672
     }
   },
   "members": [
@@ -280,26 +273,6 @@
       "h": 1920,
       "du": 0,
       "x": "📅 Dia 7/27 · Bora caminhar!! 👣👣 · 💪 TEAM 8",
-      "mn": [],
-      "bg": "#1650d0",
-      "src": "",
-      "views": {},
-      "reacts": [],
-      "replies": []
-    },
-    {
-      "id": "0eLTArLjeZaw",
-      "m": "eron",
-      "at": 1793182971,
-      "k": "image",
-      "mt": "image/jpeg",
-      "p": ["https://ntfy.sh/file/JeH0It2FiNIU.jpg"],
-      "sz": 87456,
-      "sha": "86b04563a1082c4251542d5f16ace646b3fe34e9cf6e6131121f35cc577ca711",
-      "w": 1080,
-      "h": 1920,
-      "du": 0,
-      "x": "Bom dia!! ☕️☕️ · 💪 TEAM 8 · 07:22 · 🚶‍♂️",
       "mn": [],
       "bg": "#1650d0",
       "src": "",
