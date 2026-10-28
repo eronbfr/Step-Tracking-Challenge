@@ -8,17 +8,18 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-27T18:18:03.370Z",
+  "updatedAt": "2026-10-28T07:03:59.906Z",
   "cursor": {
-    "time": 1793114867,
+    "time": 1793168821,
     "seen": {
-      "FrFKYXIOeCSl": 1793096588,
-      "N5FDcqaPzvAm": 1793096595,
-      "xRmTOPVY4tXL": 1793112091,
-      "jUv5dNXjSpft": 1793112245,
-      "jgjBog3wJay0": 1793112279,
-      "WxT0LGwEruf3": 1793112313,
-      "xajGOl4MEMtP": 1793114867
+      "NRdZG7UbM7qp": 1793164336,
+      "fZQPAKHgwSms": 1793164405,
+      "zaW7Y6AwtmCz": 1793164521,
+      "kyyIJS3bg5lU": 1793164841,
+      "Gi6NJuVEUHAT": 1793164905,
+      "Wjs7EExh0akg": 1793164980,
+      "ofaqjC1xrXEK": 1793168810,
+      "zev81PnFGLYR": 1793168821
     }
   },
   "members": [
@@ -123,10 +124,10 @@
       "requests": [],
       "syncHash": "89a9a24490ad24c12be99d39a044fe665822507bcae3293a933a9964462b701f",
       "syncTs": 1792746583184,
-      "daily": [9060, 18461, 9720, 8981, 8060, 20274, 15809, 1401, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792580502406, 1792665084946, 1792742770256, 1792810297915, 1792893655316, 1792986699650, 1793096588674, 1793114867347, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [9060, 18461, 9720, 8981, 8060, 20274, 15809, 9670, 271, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792580502406, 1792665084946, 1792742770256, 1792810297915, 1792893655316, 1792986699650, 1793096588674, 1793168810507, 1793168821512, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-20T19:11:09.000Z",
-      "lastSyncAt": "2026-10-27T15:27:47.000Z",
+      "lastSyncAt": "2026-10-28T06:27:01.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null
@@ -253,10 +254,10 @@
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [12641, 10808, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792624412448, 1792684391481, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [12641, 10808, 13681, 11109, 10595, 10320, 10300, 12221, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792624412448, 1792684391481, 1793164336398, 1793164405757, 1793164521174, 1793164979310, 1793164841949, 1793164905798, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T23:11:16.000Z",
-      "lastSyncAt": "2026-10-22T15:53:11.000Z",
+      "lastSyncAt": "2026-10-28T05:23:00.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null
@@ -278,7 +279,7 @@
       "x": "📅 Dia 7/27 · Bora caminhar!! 👣👣 · 💪 TEAM 8",
       "mn": [],
       "bg": "#1650d0",
-      "src": "GAEM3C2h26ee.jpg",
+      "src": "",
       "views": {},
       "reacts": [],
       "replies": []

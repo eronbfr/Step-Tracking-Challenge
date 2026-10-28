@@ -84,3 +84,11 @@ time,member,name,event,date,steps,previous,source
 2026-10-27T14:44:39.000Z,armando,Armando Alarcon,steps,2026-10-25,307,,app
 2026-10-27T14:45:13.000Z,armando,Armando Alarcon,steps,2026-10-26,4640,,app
 2026-10-27T15:27:47.000Z,eron,Eron Netto,steps,2026-10-27,1401,311,app
+2026-10-28T05:12:16.000Z,minerva,Minerva Perez,steps,2026-10-22,13681,,app
+2026-10-28T05:13:25.000Z,minerva,Minerva Perez,steps,2026-10-23,11109,,app
+2026-10-28T05:15:21.000Z,minerva,Minerva Perez,steps,2026-10-24,10595,,app
+2026-10-28T05:20:41.000Z,minerva,Minerva Perez,steps,2026-10-26,10300,,app
+2026-10-28T05:21:45.000Z,minerva,Minerva Perez,steps,2026-10-27,12221,,app
+2026-10-28T05:23:00.000Z,minerva,Minerva Perez,steps,2026-10-25,10320,,app
+2026-10-28T06:26:50.000Z,eron,Eron Netto,steps,2026-10-27,9670,1401,app
+2026-10-28T06:27:01.000Z,eron,Eron Netto,steps,2026-10-28,271,,app
