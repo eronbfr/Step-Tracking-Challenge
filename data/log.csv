@@ -107,3 +107,5 @@ time,member,name,event,date,steps,previous,source
 2026-10-30T00:00:15.000Z,luis,Luís Rodney,steps,2026-10-29,6655,30,shortcut
 2026-10-30T03:18:50.000Z,eron,Eron Netto,steps,2026-10-29,10401,2210,app
 2026-10-30T03:19:20.000Z,eron,Eron Netto,steps,2026-10-30,251,,app
+2026-10-30T17:13:12.000Z,helbert,Helbert Contreras,steps,2026-10-20,10040,,app
+2026-10-30T17:14:02.000Z,helbert,Helbert Contreras,steps,2026-10-21,6257,,app
