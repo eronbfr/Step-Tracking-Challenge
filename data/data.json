@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-30T18:23:35.227Z",
+  "updatedAt": "2026-10-30T21:20:48.268Z",
   "cursor": {
-    "time": 1793384300,
+    "time": 1793394966,
     "seen": {
       "GaeJWUXKTMeq": 1793380392,
       "eKN9AgljgUWy": 1793380442,
@@ -22,7 +22,9 @@
       "ingfTOOW2k9h": 1793380644,
       "waY7wfaNyPj4": 1793380683,
       "hpWtR970UDSp": 1793380743,
-      "xYYI5f5A4N5g": 1793384300
+      "xYYI5f5A4N5g": 1793384300,
+      "nhDyFwxzRgmy": 1793394965,
+      "twd4a6XzY987": 1793394966
     }
   },
   "members": [
@@ -283,6 +285,26 @@
       "mn": ["helbert", "luis", "danielle", "gonza", "rogelio", "sidnei", "armando", "minerva"],
       "bg": "#000000",
       "src": "",
+      "views": {},
+      "reacts": [],
+      "replies": []
+    },
+    {
+      "id": "_G1cfIa_zZbp",
+      "m": "eron",
+      "at": 1793394966,
+      "k": "image",
+      "mt": "image/jpeg",
+      "p": ["https://ntfy.sh/file/nhDyFwxzRgmy.jpg"],
+      "sz": 91674,
+      "sha": "168f31b8bfb7190c11b97135625c6baf5f4f4575ddb0201af143e72fab794823",
+      "w": 1080,
+      "h": 1920,
+      "du": 0,
+      "x": "Bom dia !! · 🏃‍♂️ · 🏃‍♂️ · 💪 TEAM 8",
+      "mn": [],
+      "bg": "#ec4899",
+      "src": "_G1cfIa_zZbp.jpg",
       "views": {},
       "reacts": [],
       "replies": []
