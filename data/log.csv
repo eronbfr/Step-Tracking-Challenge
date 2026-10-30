@@ -104,3 +104,4 @@ time,member,name,event,date,steps,previous,source
 2026-10-29T14:44:19.000Z,eron,Eron Netto,steps,2026-10-29,1011,266,app
 2026-10-29T14:50:59.000Z,minerva,Minerva Perez,steps,2026-10-28,10100,,app
 2026-10-29T16:26:29.000Z,eron,Eron Netto,steps,2026-10-29,2210,1011,app
+2026-10-30T00:00:15.000Z,luis,Luís Rodney,steps,2026-10-29,6655,30,shortcut
