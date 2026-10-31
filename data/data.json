@@ -8,16 +8,27 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-31T19:54:56.412Z",
+  "updatedAt": "2026-10-31T20:01:56.121Z",
   "cursor": {
-    "time": 1793476465,
+    "time": 1793476798,
     "seen": {
       "WFeMAZlBeoRX": 1793462313,
       "ynuwSw90pGlw": 1793468541,
       "H3Fn4lasVE5r": 1793470171,
       "aCXbQx8L8lZj": 1793470176,
       "acANCrU4JoHg": 1793471598,
-      "yu4BGuMNxHzu": 1793476465
+      "yu4BGuMNxHzu": 1793476465,
+      "WrYSwRPQqNlv": 1793476496,
+      "50xwNof4xBo1": 1793476508,
+      "n9kxgNj8tKVm": 1793476536,
+      "BNium6PEYYby": 1793476545,
+      "OfR7owI1Ppks": 1793476594,
+      "KobiUhKEXBNj": 1793476623,
+      "bwJqAaSTfnI6": 1793476646,
+      "nMW8j8Zlfbfw": 1793476666,
+      "avclYV3agYGy": 1793476715,
+      "GkGdHmyiK4UP": 1793476729,
+      "K7AihXLuFvBY": 1793476798
     }
   },
   "members": [
@@ -84,10 +95,10 @@
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [474, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1793476465618, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [474, 57, 753, 1198, 10580, 6348, 112, 1139, 729, 138, 495, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1793476465618, 1793476496222, 1793476508324, 1793476536239, 1793476594302, 1793476623063, 1793476646626, 1793476665935, 1793476715290, 1793476729873, 1793476798297, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-31T15:58:33.000Z",
-      "lastSyncAt": "2026-10-31T19:54:25.000Z",
+      "lastSyncAt": "2026-10-31T19:59:58.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null
@@ -266,7 +277,9 @@
       "mn": [],
       "bg": "#ec4899",
       "src": "_G1cfIa_zZbp.jpg",
-      "views": {},
+      "views": {
+        "sidnei": 1793476545
+      },
       "reacts": [],
       "replies": []
     }
