@@ -144,3 +144,9 @@ time,member,name,event,date,steps,previous,source
 2026-10-31T22:24:53.000Z,gonza,Gonza Souza,steps,2026-10-22,7723,,app
 2026-10-31T22:25:13.000Z,gonza,Gonza Souza,steps,2026-10-21,8825,,app
 2026-10-31T22:25:59.000Z,gonza,Gonza Souza,steps,2026-10-26,3134,,app
+2026-10-31T22:26:19.000Z,gonza,Gonza Souza,steps,2026-10-27,10763,,app
+2026-10-31T22:26:43.000Z,gonza,Gonza Souza,steps,2026-10-28,9751,,app
+2026-10-31T22:27:34.000Z,gonza,Gonza Souza,steps,2026-10-29,9571,,app
+2026-10-31T22:27:51.000Z,gonza,Gonza Souza,steps,2026-10-30,5251,,app
+2026-10-31T22:28:29.000Z,gonza,Gonza Souza,steps,2026-10-30,8886,5251,app
+2026-10-31T22:29:05.000Z,gonza,Gonza Souza,steps,2026-10-29,5251,9571,app
