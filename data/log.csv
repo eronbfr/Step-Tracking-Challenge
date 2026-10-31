@@ -123,3 +123,6 @@ time,member,name,event,date,steps,previous,source
 2026-10-31T01:37:24.000Z,eron,Eron Netto,steps,2026-10-30,9861,2510,app
 2026-10-31T15:58:33.000Z,sidnei,Sidnei Marcos Guerbali,joined,,,,
 2026-10-31T17:42:21.000Z,eron,Eron Netto,steps,2026-10-31,10067,,app
+2026-10-31T18:09:31.000Z,gonza,Gonza Souza,requested,,,,
+2026-10-31T18:09:36.000Z,gonza,Gonza Souza,denied,,,,
+2026-10-31T18:33:18.000Z,gonza,Gonza Souza,reset,,,,

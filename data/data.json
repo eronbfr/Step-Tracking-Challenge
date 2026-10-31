@@ -8,12 +8,15 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-31T17:42:42.243Z",
+  "updatedAt": "2026-10-31T18:35:34.574Z",
   "cursor": {
-    "time": 1793468541,
+    "time": 1793471598,
     "seen": {
       "WFeMAZlBeoRX": 1793462313,
-      "ynuwSw90pGlw": 1793468541
+      "ynuwSw90pGlw": 1793468541,
+      "H3Fn4lasVE5r": 1793470171,
+      "aCXbQx8L8lZj": 1793470176,
+      "acANCrU4JoHg": 1793471598
     }
   },
   "members": [
@@ -50,29 +53,10 @@
       "tz": "America/Mendoza",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [
-        {
-          "kid": "8fa42b0654f3850a",
-          "pub": "BFPPyhAORUwmpq-wABgx8XDllBc_ZheU1FloJBzJ5cC7RHWeTxkbl-_N51zHXQA5rd-DTeaQeusj9lnqGnBgHQQ",
-          "l": "iPhone · Safari",
-          "at": "2026-10-21T12:25:53.000Z"
-        },
-        {
-          "kid": "50c4a55f47c4e766",
-          "pub": "BBWxUTnzzsjvdzvQi3qsttkua7x1fn79GgesoA-4GkThPyMrIoiNxMKPWqxeXG0dUQmRVlYv_89BwhPVgedTGKk",
-          "l": "iPhone · Safari",
-          "at": "2026-10-22T11:21:02.000Z"
-        },
-        {
-          "kid": "a008415e47196227",
-          "pub": "BMYmYZV8vFl3M28e511Qt3flv6lgJEBpAs-6RrntoWJofvtbvx2CJGYzt3tAl-ua2j7_QLiWlKTOFJq5vPrQpag",
-          "l": "iPhone · Safari",
-          "at": "2026-10-22T17:37:14.000Z"
-        }
-      ],
+      "keys": [],
       "requests": [],
-      "syncHash": "09742e2e5764b1b515392b3dd412606228983b698060c75a7a5bb39de98c0f25",
-      "syncTs": 1792585694378,
+      "syncHash": "",
+      "syncTs": 1793471598806,
       "daily": [10383, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [1792586192910, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T12:25:53.000Z",
