@@ -8,26 +8,11 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-31T01:38:51.941Z",
+  "updatedAt": "2026-10-31T16:07:36.626Z",
   "cursor": {
-    "time": 1793410644,
+    "time": 1793462313,
     "seen": {
-      "GaeJWUXKTMeq": 1793380392,
-      "eKN9AgljgUWy": 1793380442,
-      "W7zL3pd81m9g": 1793380484,
-      "4B9zKQWCEuYv": 1793380514,
-      "l8EK5iEmKkxZ": 1793380549,
-      "q2t0RpxmJoua": 1793380582,
-      "z8zkumTgtZxf": 1793380608,
-      "ingfTOOW2k9h": 1793380644,
-      "waY7wfaNyPj4": 1793380683,
-      "hpWtR970UDSp": 1793380743,
-      "xYYI5f5A4N5g": 1793384300,
-      "nhDyFwxzRgmy": 1793394965,
-      "twd4a6XzY987": 1793394966,
-      "tDh9cwZrVWso": 1793404813,
-      "hDG6QIxT1T2e": 1793404820,
-      "DbyCzuiWXdt9": 1793410644
+      "WFeMAZlBeoRX": 1793462313
     }
   },
   "members": [
@@ -102,13 +87,20 @@
       "tz": "America/Sao_Paulo",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [],
+      "keys": [
+        {
+          "kid": "545e6896c5062a03",
+          "pub": "BJnTJVh_WtQMHR-gC30X-82r2FOqPRe8ipiqCj7D_NI9XmPGMd5HZYlLV_sT1jeTAmACmy4qahKAQgaKieWNhGQ",
+          "l": "iPhone · Safari",
+          "at": "2026-10-31T15:58:33.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
       "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      "joinedAt": "",
+      "joinedAt": "2026-10-31T15:58:33.000Z",
       "lastSyncAt": "",
       "lastSource": "",
       "autoSyncs": 0,
