@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-30T21:20:48.268Z",
+  "updatedAt": "2026-10-31T00:15:22.318Z",
   "cursor": {
-    "time": 1793394966,
+    "time": 1793404820,
     "seen": {
       "GaeJWUXKTMeq": 1793380392,
       "eKN9AgljgUWy": 1793380442,
@@ -24,7 +24,9 @@
       "hpWtR970UDSp": 1793380743,
       "xYYI5f5A4N5g": 1793384300,
       "nhDyFwxzRgmy": 1793394965,
-      "twd4a6XzY987": 1793394966
+      "twd4a6XzY987": 1793394966,
+      "tDh9cwZrVWso": 1793404813,
+      "hDG6QIxT1T2e": 1793404820
     }
   },
   "members": [
@@ -181,12 +183,12 @@
       "requests": [],
       "syncHash": "003b90d95a49bf45842b1ea6a6903a9acebfe5fcfb2ab085aaca2be6bdc43798",
       "syncTs": 1792626555411,
-      "daily": [4933, 7567, 4189, 3685, 7493, 13001, 8300, null, 4018, 6655, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792785057984, 1792785045758, 1792785026916, 1792784981000, 1792887093000, 1792973277000, 1793059369000, 0, 1793232012000, 1793318415000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [4933, 7567, 4189, 3685, 7493, 13001, 8300, null, 4018, 6655, 14622, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792785057984, 1792785045758, 1792785026916, 1792784981000, 1792887093000, 1792973277000, 1793059369000, 0, 1793232012000, 1793318415000, 1793404813000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T10:42:39.000Z",
-      "lastSyncAt": "2026-10-30T00:00:15.000Z",
+      "lastSyncAt": "2026-10-31T00:00:20.000Z",
       "lastSource": "shortcut",
-      "autoSyncs": 14,
+      "autoSyncs": 16,
       "syncIssue": null
     },
     {
@@ -269,26 +271,6 @@
     }
   ],
   "stories": [
-    {
-      "id": "BHtWTzwCFyrN",
-      "m": "eron",
-      "at": 1793231204,
-      "k": "video",
-      "mt": "video/mp4",
-      "p": ["https://ntfy.sh/file/DbHfqf17bIQt.mp4", "https://ntfy.sh/file/UK4EgDgz9Aoe.bin", "https://ntfy.sh/file/7KyaW5cVaipp.bin", "https://ntfy.sh/file/UTJRN0PpBMjk.bin"],
-      "sz": 6257773,
-      "sha": "72b0659afe26cd2828e4188a28d98c5c2d1379066804b654d0d3732f93516c8d",
-      "w": 720,
-      "h": 1280,
-      "du": 13.3,
-      "x": "💪 TEAM 8 · 20:45 · @HELBERT · @LUÍS · @DANIELLE · @GONZA · @ROGELIO · @SIDNEI · @ARMANDO · @MINERVA",
-      "mn": ["helbert", "luis", "danielle", "gonza", "rogelio", "sidnei", "armando", "minerva"],
-      "bg": "#000000",
-      "src": "",
-      "views": {},
-      "reacts": [],
-      "replies": []
-    },
     {
       "id": "_G1cfIa_zZbp",
       "m": "eron",
