@@ -8,9 +8,9 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-10-31T20:01:56.121Z",
+  "updatedAt": "2026-10-31T22:26:07.640Z",
   "cursor": {
-    "time": 1793476798,
+    "time": 1793485559,
     "seen": {
       "WFeMAZlBeoRX": 1793462313,
       "ynuwSw90pGlw": 1793468541,
@@ -28,7 +28,14 @@
       "nMW8j8Zlfbfw": 1793476666,
       "avclYV3agYGy": 1793476715,
       "GkGdHmyiK4UP": 1793476729,
-      "K7AihXLuFvBY": 1793476798
+      "K7AihXLuFvBY": 1793476798,
+      "ztlIrpJCP7gW": 1793485322,
+      "YIrLrwTi6wEk": 1793485432,
+      "T5E4FgAnHXBx": 1793485451,
+      "Y9ufvmRVpkHt": 1793485469,
+      "zTa4frHSPOhr": 1793485493,
+      "bnm6QGFkEmjm": 1793485513,
+      "oCUuDvLTsgjD": 1793485559
     }
   },
   "members": [
@@ -62,17 +69,24 @@
       "id": "gonza",
       "name": "Gonza Souza",
       "country": "UY",
-      "tz": "America/Mendoza",
+      "tz": "America/Montevideo",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [],
+      "keys": [
+        {
+          "kid": "3497018e0976c48d",
+          "pub": "BNG0JHkcfjNLGWd9el9DLHuoSeC3dsuxMM6A5Ju7tsFzdRxTZAtjW4rrYvV4pBOXQuCaHiba7JCnwOCSi_J3nG0",
+          "l": "iPhone · Safari",
+          "at": "2026-10-31T22:22:02.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 1793471598806,
-      "daily": [10383, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792586192910, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [10383, 8825, 7723, 14621, 8149, 8648, 3134, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792586192910, 1793485512754, 1793485493003, 1793485469523, 1793485451155, 1793485431828, 1793485559515, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T12:25:53.000Z",
-      "lastSyncAt": "2026-10-21T12:36:32.000Z",
+      "lastSyncAt": "2026-10-31T22:25:59.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null
