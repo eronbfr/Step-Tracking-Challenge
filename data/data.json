@@ -8,13 +8,17 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-11-02T00:45:44.983Z",
+  "updatedAt": "2026-11-02T01:27:05.511Z",
   "cursor": {
-    "time": 1793579308,
+    "time": 1793582819,
     "seen": {
       "n2glZJegVS1k": 1793554971,
       "PcrweOWnjEJn": 1793576432,
-      "UGfNEJ7rqsM3": 1793579308
+      "UGfNEJ7rqsM3": 1793579308,
+      "iY0izyRNi1Ww": 1793582761,
+      "gXGUBRSZxmcS": 1793582794,
+      "Bp5zSK5NJZCl": 1793582818,
+      "CH0ziIcirHqs": 1793582819
     }
   },
   "members": [
@@ -218,10 +222,10 @@
       "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [5345, 4842, 9097, 4947, 3787, 307, 4640, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792623930255, 1792644371152, 1792718301101, 1793112091179, 1793112244432, 1793112279074, 1793112312399, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [5345, 4842, 9097, 4947, 3787, 307, 4640, 7392, 9120, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792623930255, 1792644371152, 1792718301101, 1793112091179, 1793112244432, 1793112279074, 1793112312399, 1793582761835, 1793582794290, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T23:04:04.000Z",
-      "lastSyncAt": "2026-10-27T14:45:13.000Z",
+      "lastSyncAt": "2026-11-02T01:26:34.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null
@@ -253,5 +257,26 @@
       "syncIssue": null
     }
   ],
-  "stories": []
+  "stories": [
+    {
+      "id": "grPDP_DW5vvo",
+      "m": "eron",
+      "at": 1793582819,
+      "k": "image",
+      "mt": "image/jpeg",
+      "p": ["https://ntfy.sh/file/Bp5zSK5NJZCl.jpg"],
+      "sz": 29326,
+      "sha": "ec93e182c37fd7fb037aa6a26d0f294843699133e546f3f8e01862e3cd8523d6",
+      "w": 1080,
+      "h": 1920,
+      "du": 0,
+      "x": "😴",
+      "mn": [],
+      "bg": "#111827",
+      "src": "grPDP_DW5vvo.jpg",
+      "views": {},
+      "reacts": [],
+      "replies": []
+    }
+  ]
 }
