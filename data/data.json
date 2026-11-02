@@ -8,16 +8,16 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-11-02T16:49:58.858Z",
+  "updatedAt": "2026-11-02T19:42:45.555Z",
   "cursor": {
-    "time": 1793637995,
+    "time": 1793648554,
     "seen": {
-      "KXEyqPEa77o2": 1793592162,
-      "x4WXfhlZdzlj": 1793592168,
-      "p1junIaPl5D5": 1793592264,
-      "uwn1XIIDoVRG": 1793592308,
-      "ZcokVXC8onp8": 1793592332,
-      "tSVAyy8cG88Y": 1793637995
+      "tSVAyy8cG88Y": 1793637995,
+      "r2ZprGHhxLS8": 1793647251,
+      "p9EUVos5Oz5t": 1793647354,
+      "NqacAe68IRhF": 1793648423,
+      "CTaHlWfsrLvO": 1793648464,
+      "ABaDcbDuAJoy": 1793648554
     }
   },
   "members": [
@@ -54,14 +54,21 @@
       "tz": "America/Montevideo",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [],
+      "keys": [
+        {
+          "kid": "5abd1b244db7ccbd",
+          "pub": "BD50sh1hD24W3j9mZYoqJ5E07Z-g1VtfU-A-TUAU9XlRUIElnSdTGhJvMjmFNn1tFOtQuE111MQYWp_aE-Fcn7o",
+          "l": "iPhone · Safari",
+          "at": "2026-11-02T19:40:23.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 1793637995142,
-      "daily": [10383, 8825, 7723, 14621, 8149, 8648, 3134, 10763, 9751, 5251, 8886, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792586192910, 1793485512754, 1793485493003, 1793485469523, 1793485451155, 1793485431828, 1793485559515, 1793485578999, 1793485603401, 1793485744841, 1793485708623, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [10383, 8825, 7723, 14621, 8149, 8648, 3134, 10763, 9751, 5251, 8886, 7856, 19039, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792586192910, 1793485512754, 1793485493003, 1793485469523, 1793485451155, 1793485431828, 1793485559515, 1793485578999, 1793485603401, 1793485744841, 1793485708623, 1793648554156, 1793648463862, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T12:25:53.000Z",
-      "lastSyncAt": "2026-10-31T22:29:05.000Z",
+      "lastSyncAt": "2026-11-02T19:42:34.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null
