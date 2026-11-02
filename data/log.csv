@@ -163,3 +163,6 @@ time,member,name,event,date,steps,previous,source
 2026-11-02T01:28:14.000Z,armando,Armando Alarcon,steps,2026-10-31,8204,,app
 2026-11-02T01:28:56.000Z,armando,Armando Alarcon,steps,2026-11-01,4063,,app
 2026-11-02T01:41:32.000Z,eron,Eron Netto,steps,2026-11-01,19431,12510,app
+2026-11-02T04:02:42.000Z,eron,Eron Netto,steps,2026-11-01,19554,19431,app
+2026-11-02T04:02:48.000Z,eron,Eron Netto,steps,2026-11-02,331,,app
+2026-11-02T04:04:24.000Z,helbert,Helbert Contreras,steps,2026-10-30,2585,,app
