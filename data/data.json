@@ -8,16 +8,20 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-11-03T13:29:55.429Z",
+  "updatedAt": "2026-11-03T13:37:56.184Z",
   "cursor": {
-    "time": 1793712439,
+    "time": 1793713057,
     "seen": {
       "bfZLJEIhX4tw": 1793675895,
       "SCO5Xg5WyFKd": 1793675931,
       "NHl0Gsivlx1w": 1793675941,
       "IybL9gdLfw1s": 1793706916,
       "1FYpidJdnbdy": 1793706935,
-      "uKgdpfCYNsSp": 1793712439
+      "uKgdpfCYNsSp": 1793712439,
+      "34zrTr9nYkn6": 1793712766,
+      "gEFO2jjgGhIv": 1793712994,
+      "0UbcitHjI7ei": 1793713017,
+      "U6DfigElmf1c": 1793713057
     }
   },
   "members": [
@@ -88,20 +92,13 @@
           "at": "2026-10-31T15:58:33.000Z"
         }
       ],
-      "requests": [
-        {
-          "kid": "3d0c4bebfeac59fa",
-          "pub": "BFNgdw5qgEOkUAjnUUPBNX3vPyy47dV3Cr86inIjI0dwZRx2WOxyCGaRUcwcZXp21St_NtneSEmcP66kcyQ1FUw",
-          "l": "iPhone · Safari",
-          "at": "2026-11-03T13:27:19.000Z"
-        }
-      ],
+      "requests": [],
       "syncHash": "",
       "syncTs": 0,
-      "daily": [474, 57, 753, 1198, 10580, 6348, 112, 1139, 729, 138, 495, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1793476465618, 1793476496222, 1793476508324, 1793476536239, 1793476594302, 1793476623063, 1793476646626, 1793476665935, 1793476715290, 1793476729873, 1793476798297, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [474, 57, 753, 1198, 10580, 6348, 112, 1139, 729, 138, 495, 3536, 4946, null, 8297, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1793476465618, 1793476496222, 1793476508324, 1793476536239, 1793476594302, 1793476623063, 1793476646626, 1793476665935, 1793476715290, 1793476729873, 1793476798297, 1793712994090, 1793713017735, 0, 1793713057397, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-31T15:58:33.000Z",
-      "lastSyncAt": "2026-10-31T19:59:58.000Z",
+      "lastSyncAt": "2026-11-03T13:37:37.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null

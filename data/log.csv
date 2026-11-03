@@ -182,3 +182,7 @@ time,member,name,event,date,steps,previous,source
 2026-11-03T11:55:16.000Z,gonza,Gonza Souza,joined,,,,
 2026-11-03T11:55:35.000Z,gonza,Gonza Souza,steps,2026-11-02,16755,,app
 2026-11-03T13:27:19.000Z,sidnei,Sidnei Marcos Guerbali,requested,,,,
+2026-11-03T13:32:46.000Z,sidnei,Sidnei Marcos Guerbali,denied,,,,
+2026-11-03T13:36:34.000Z,sidnei,Sidnei Marcos Guerbali,steps,2026-10-31,3536,,app
+2026-11-03T13:36:57.000Z,sidnei,Sidnei Marcos Guerbali,steps,2026-11-01,4946,,app
+2026-11-03T13:37:37.000Z,sidnei,Sidnei Marcos Guerbali,steps,2026-11-03,8297,,app
