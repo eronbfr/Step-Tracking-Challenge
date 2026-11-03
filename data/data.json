@@ -8,21 +8,16 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-11-03T03:25:04.850Z",
+  "updatedAt": "2026-11-03T12:01:53.880Z",
   "cursor": {
-    "time": 1793675941,
+    "time": 1793706935,
     "seen": {
-      "tSVAyy8cG88Y": 1793637995,
-      "r2ZprGHhxLS8": 1793647251,
-      "p9EUVos5Oz5t": 1793647354,
-      "NqacAe68IRhF": 1793648423,
-      "CTaHlWfsrLvO": 1793648464,
-      "ABaDcbDuAJoy": 1793648554,
-      "45bnfdZWmHRL": 1793651964,
       "INOEoXaGQUCq": 1793664670,
       "bfZLJEIhX4tw": 1793675895,
       "SCO5Xg5WyFKd": 1793675931,
-      "NHl0Gsivlx1w": 1793675941
+      "NHl0Gsivlx1w": 1793675941,
+      "IybL9gdLfw1s": 1793706916,
+      "1FYpidJdnbdy": 1793706935
     }
   },
   "members": [
@@ -59,14 +54,21 @@
       "tz": "America/Montevideo",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [],
+      "keys": [
+        {
+          "kid": "de79d416ce252c2e",
+          "pub": "BF4ZhveFyx93CjWXhyypJYUg6Te_cmPY0O8y8UjSbOutRmROhEmBQH7uvx08MilKsuUGHlNp01LjLcsDaZhCNO0",
+          "l": "iPhone · Safari",
+          "at": "2026-11-03T11:55:16.000Z"
+        }
+      ],
       "requests": [],
       "syncHash": "",
       "syncTs": 1793675895800,
-      "daily": [10383, 8825, 7723, 14621, 8149, 8648, 3134, 10763, 9751, 5251, 8886, 7856, 19039, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-      "stamps": [1792586192910, 1793485512754, 1793485493003, 1793485469523, 1793485451155, 1793485431828, 1793485559515, 1793485578999, 1793485603401, 1793485744841, 1793485708623, 1793648554156, 1793648463862, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "daily": [10383, 8825, 7723, 14621, 8149, 8648, 3134, 10763, 9751, 5251, 8886, 7856, 19039, 16755, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      "stamps": [1792586192910, 1793485512754, 1793485493003, 1793485469523, 1793485451155, 1793485431828, 1793485559515, 1793485578999, 1793485603401, 1793485744841, 1793485708623, 1793648554156, 1793648463862, 1793706935826, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T12:25:53.000Z",
-      "lastSyncAt": "2026-11-02T19:42:34.000Z",
+      "lastSyncAt": "2026-11-03T11:55:35.000Z",
       "lastSource": "app",
       "autoSyncs": 0,
       "syncIssue": null
