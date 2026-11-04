@@ -8,11 +8,10 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-11-04T12:30:47.071Z",
+  "updatedAt": "2026-11-04T17:07:31.931Z",
   "cursor": {
-    "time": 1793794994,
+    "time": 1793812019,
     "seen": {
-      "2FT0RfRmrRtl": 1793750644,
       "508wa8P4EHLB": 1793794830,
       "91isLpXbFlGr": 1793794837,
       "ALecvxsnhjwA": 1793794875,
@@ -22,7 +21,8 @@
       "vZGBUHJJn9Dp": 1793794939,
       "Pum45qZyWyPr": 1793794939,
       "ebDBuWEY61um": 1793794994,
-      "W6LfNaCLes8A": 1793794994
+      "W6LfNaCLes8A": 1793794994,
+      "v11E3WkGh3b4": 1793812019
     }
   },
   "members": [
@@ -250,7 +250,9 @@
       "mn": [],
       "bg": "#1650d0",
       "src": "YulAmk-IYTBM.jpg",
-      "views": {},
+      "views": {
+        "minerva": 1793812019
+      },
       "reacts": [],
       "replies": []
     },
@@ -270,7 +272,9 @@
       "mn": [],
       "bg": "#ff7a18",
       "src": "i_2KvYz6nM_4.jpg",
-      "views": {},
+      "views": {
+        "minerva": 1793812019
+      },
       "reacts": [],
       "replies": []
     }
