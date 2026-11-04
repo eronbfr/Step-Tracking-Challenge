@@ -8,13 +8,21 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-11-04T12:20:40.324Z",
+  "updatedAt": "2026-11-04T12:30:47.071Z",
   "cursor": {
-    "time": 1793794837,
+    "time": 1793794994,
     "seen": {
       "2FT0RfRmrRtl": 1793750644,
       "508wa8P4EHLB": 1793794830,
-      "91isLpXbFlGr": 1793794837
+      "91isLpXbFlGr": 1793794837,
+      "ALecvxsnhjwA": 1793794875,
+      "9IXZMK4oAa1V": 1793794878,
+      "3lEooP8MDECC": 1793794882,
+      "YnpbAVRKLKXc": 1793794884,
+      "vZGBUHJJn9Dp": 1793794939,
+      "Pum45qZyWyPr": 1793794939,
+      "ebDBuWEY61um": 1793794994,
+      "W6LfNaCLes8A": 1793794994
     }
   },
   "members": [
@@ -25,17 +33,10 @@
       "tz": "America/Mexico_City",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [
-        {
-          "kid": "6c0f268db3477fd5",
-          "pub": "BBNabXZoTG39fIpd8wBZfsJEcCrnyL3RoIFrqT6ks5Qi4z2tAyj4piQCubJyeZK0q5fAOiPW88pM4JUQ6U4vRGA",
-          "l": "Android · Chrome (app)",
-          "at": "2026-10-21T03:05:30.000Z"
-        }
-      ],
+      "keys": [],
       "requests": [],
       "syncHash": "",
-      "syncTs": 0,
+      "syncTs": 1793794875401,
       "daily": [6310, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [1792557272229, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T03:05:30.000Z",
@@ -51,17 +52,10 @@
       "tz": "America/Montevideo",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [
-        {
-          "kid": "de79d416ce252c2e",
-          "pub": "BF4ZhveFyx93CjWXhyypJYUg6Te_cmPY0O8y8UjSbOutRmROhEmBQH7uvx08MilKsuUGHlNp01LjLcsDaZhCNO0",
-          "l": "iPhone · Safari",
-          "at": "2026-11-03T11:55:16.000Z"
-        }
-      ],
+      "keys": [],
       "requests": [],
       "syncHash": "",
-      "syncTs": 1793675895800,
+      "syncTs": 1793794878925,
       "daily": [10383, 8825, 7723, 14621, 8149, 8648, 3134, 10763, 9751, 5251, 8886, 7856, 19039, 16755, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [1792586192910, 1793485512754, 1793485493003, 1793485469523, 1793485451155, 1793485431828, 1793485559515, 1793485578999, 1793485603401, 1793485744841, 1793485708623, 1793648554156, 1793648463862, 1793706935826, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T12:25:53.000Z",
@@ -77,17 +71,10 @@
       "tz": "America/Sao_Paulo",
       "avatar": "",
       "avatarTs": 0,
-      "keys": [
-        {
-          "kid": "545e6896c5062a03",
-          "pub": "BJnTJVh_WtQMHR-gC30X-82r2FOqPRe8ipiqCj7D_NI9XmPGMd5HZYlLV_sT1jeTAmACmy4qahKAQgaKieWNhGQ",
-          "l": "iPhone · Safari",
-          "at": "2026-10-31T15:58:33.000Z"
-        }
-      ],
+      "keys": [],
       "requests": [],
       "syncHash": "",
-      "syncTs": 0,
+      "syncTs": 1793794882607,
       "daily": [474, 57, 753, 1198, 10580, 6348, 112, 1139, 729, 138, 495, 3536, 4946, 8297, 0, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [1793476465618, 1793476496222, 1793476508324, 1793476536239, 1793476594302, 1793476623063, 1793476646626, 1793476665935, 1793476715290, 1793476729873, 1793476798297, 1793712994090, 1793713017735, 1793713437912, 1793713085020, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-31T15:58:33.000Z",
@@ -129,17 +116,10 @@
       "tz": "America/Fortaleza",
       "avatar": "f8",
       "avatarTs": 1792588348113,
-      "keys": [
-        {
-          "kid": "a84c05cab18ef81f",
-          "pub": "BN9jTeAvK8pmFIgYJCOypu12CDDzYXzdz_bND4Li2soUydZuoOz41KRCRnf--Xo5h7LWBRGNU8U4hiB6aaXPSEk",
-          "l": "Android · Chrome (app)",
-          "at": "2026-10-21T13:11:56.000Z"
-        }
-      ],
+      "keys": [],
       "requests": [],
       "syncHash": "",
-      "syncTs": 0,
+      "syncTs": 1793794884678,
       "daily": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       "stamps": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "joinedAt": "2026-10-21T13:11:56.000Z",
@@ -253,5 +233,46 @@
       "syncIssue": null
     }
   ],
-  "stories": []
+  "stories": [
+    {
+      "id": "YulAmk-IYTBM",
+      "m": "eron",
+      "at": 1793794939,
+      "k": "image",
+      "mt": "image/jpeg",
+      "p": ["https://ntfy.sh/file/vZGBUHJJn9Dp.jpg"],
+      "sz": 62821,
+      "sha": "7f6ec2494a23ef8cf16b09bf6cd4a3677cc2eb18095637c991fab016e72a8759",
+      "w": 1080,
+      "h": 1920,
+      "du": 0,
+      "x": "Bom dia! · 💪 TEAM 8 · 🌧️",
+      "mn": [],
+      "bg": "#1650d0",
+      "src": "YulAmk-IYTBM.jpg",
+      "views": {},
+      "reacts": [],
+      "replies": []
+    },
+    {
+      "id": "i_2KvYz6nM_4",
+      "m": "eron",
+      "at": 1793794994,
+      "k": "image",
+      "mt": "image/jpeg",
+      "p": ["https://ntfy.sh/file/ebDBuWEY61um.jpg"],
+      "sz": 44677,
+      "sha": "c0174ce646e50f930856925bb9b72b739b7f6be0712b0ba0346be8c6eadcf42a",
+      "w": 1080,
+      "h": 1920,
+      "du": 0,
+      "x": "💪 TEAM 8",
+      "mn": [],
+      "bg": "#ff7a18",
+      "src": "i_2KvYz6nM_4.jpg",
+      "views": {},
+      "reacts": [],
+      "replies": []
+    }
+  ]
 }
