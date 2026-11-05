@@ -207,3 +207,5 @@ time,member,name,event,date,steps,previous,source
 2026-11-04T17:12:50.000Z,minerva,Minerva Perez,steps,2026-11-03,11763,,app
 2026-11-04T18:04:13.000Z,eron,Eron Netto,steps,2026-11-04,3410,341,app
 2026-11-05T00:01:11.000Z,luis,Luís Rodney,steps,2026-11-04,8594,,shortcut
+2026-11-05T03:37:37.000Z,eron,Eron Netto,steps,2026-11-04,17405,3410,app
+2026-11-05T03:37:46.000Z,eron,Eron Netto,steps,2026-11-05,341,,app
