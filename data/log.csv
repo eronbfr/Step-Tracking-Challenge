@@ -219,3 +219,6 @@ time,member,name,event,date,steps,previous,source
 2026-11-06T01:45:02.000Z,armando,Armando Alarcon,steps,2026-11-03,4615,,app
 2026-11-06T01:45:31.000Z,armando,Armando Alarcon,steps,2026-11-04,3189,,app
 2026-11-06T01:47:59.000Z,armando,Armando Alarcon,steps,2026-11-05,6959,,app
+2026-11-06T11:20:20.000Z,gonza,Gonza Souza,reset,,,,
+2026-11-06T11:22:55.000Z,eron,Eron Netto,story,,,,
+2026-11-06T11:23:07.000Z,eron,Eron Netto,steps,2026-11-06,311,,app
