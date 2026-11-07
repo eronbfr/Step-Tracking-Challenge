@@ -227,3 +227,6 @@ time,member,name,event,date,steps,previous,source
 2026-11-07T00:01:55.000Z,luis,Luís Rodney,steps,2026-11-06,10153,,shortcut
 2026-11-07T16:52:30.000Z,eron,Eron Netto,steps,2026-11-06,19585,1311,app
 2026-11-07T16:52:41.000Z,eron,Eron Netto,steps,2026-11-07,3501,,app
+2026-11-07T22:33:16.000Z,gonza,Gonza Souza,joined,,,,
+2026-11-07T22:33:47.000Z,gonza,Gonza Souza,steps,2026-11-05,3300,,app
+2026-11-07T22:34:25.000Z,gonza,Gonza Souza,steps,2026-11-06,8585,,app
