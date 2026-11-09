@@ -238,3 +238,7 @@ time,member,name,event,date,steps,previous,source
 2026-11-09T00:32:21.000Z,eron,Eron Netto,steps,2026-11-07,12460,5015,app
 2026-11-09T00:32:52.000Z,eron,Eron Netto,steps,2026-11-08,188,,app
 2026-11-09T00:34:06.000Z,eron,Eron Netto,story,,,,
+2026-11-09T03:50:27.000Z,gonza,Gonza Souza,joined,,,,
+2026-11-09T03:51:54.000Z,gonza,Gonza Souza,steps,2026-11-08,11227,,app
+2026-11-09T03:52:51.000Z,gonza,Gonza Souza,steps,2026-11-08,23803,11227,app
+2026-11-09T03:53:10.000Z,gonza,Gonza Souza,steps,2026-11-07,11227,,app
