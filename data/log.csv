@@ -254,3 +254,8 @@ time,member,name,event,date,steps,previous,source
 2026-11-11T00:35:50.000Z,eron,Eron Netto,steps,2026-11-09,12470,11580,app
 2026-11-11T00:36:01.000Z,eron,Eron Netto,steps,2026-11-10,11580,,app
 2026-11-11T00:36:39.000Z,eron,Eron Netto,story,,,,
+2026-11-11T23:51:45.000Z,minerva,Minerva Perez,steps,2026-11-04,12009,,app
+2026-11-11T23:52:11.000Z,minerva,Minerva Perez,steps,2026-11-05,13401,,app
+2026-11-11T23:52:37.000Z,minerva,Minerva Perez,steps,2026-11-06,12992,,app
+2026-11-11T23:53:01.000Z,minerva,Minerva Perez,steps,2026-11-07,11764,,app
+2026-11-11T23:53:42.000Z,minerva,Minerva Perez,steps,2026-11-08,11487,,app
