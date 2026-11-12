@@ -271,3 +271,6 @@ time,member,name,event,date,steps,previous,source
 2026-11-12T02:18:05.000Z,helbert,Helbert Contreras,steps,2026-11-07,10746,,app
 2026-11-12T02:18:49.000Z,helbert,Helbert Contreras,steps,2026-11-08,16948,,app
 2026-11-12T02:19:21.000Z,helbert,Helbert Contreras,steps,2026-11-09,8342,,app
+2026-11-12T03:58:33.000Z,eron,Eron Netto,steps,2026-11-11,15944,,app
+2026-11-12T03:58:45.000Z,eron,Eron Netto,steps,2026-11-12,311,,app
+2026-11-12T04:00:51.000Z,eron,Eron Netto,story,,,,
