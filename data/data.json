@@ -8,18 +8,18 @@
     "dailyGoal": 10000,
     "admins": ["eron"]
   },
-  "updatedAt": "2026-11-13T12:20:50.298Z",
+  "updatedAt": "2026-11-13T20:20:01.518Z",
   "cursor": {
-    "time": 1794572128,
+    "time": 1794601194,
     "seen": {
-      "105kSKgIJAxc": 1794528004,
-      "qYLKMKqrqZdt": 1794528009,
       "jYEra6Uiphc0": 1794572027,
       "PMinS4zJc0bi": 1794572028,
       "DPINnjvzS6mE": 1794572074,
       "l1F9yQ8JaMHO": 1794572084,
       "QDYuq4Pbo75S": 1794572128,
-      "gBCTLgMaTXwY": 1794572128
+      "gBCTLgMaTXwY": 1794572128,
+      "AJ4Rjlfs4vnw": 1794601193,
+      "vYWkBYOoH3IP": 1794601194
     }
   },
   "members": [
@@ -287,6 +287,26 @@
       "mn": [],
       "bg": "#111827",
       "src": "6BaIxBwuRJ16.jpg",
+      "views": {},
+      "reacts": [],
+      "replies": []
+    },
+    {
+      "id": "nVTg9o6PclW4",
+      "m": "eron",
+      "at": 1794601194,
+      "k": "image",
+      "mt": "image/jpeg",
+      "p": ["https://ntfy.sh/file/AJ4Rjlfs4vnw.jpg"],
+      "sz": 57433,
+      "sha": "6a6070522cd6ee9a52c1651d6e8f0d1d587535cb0dbf53fc3d80fdcb44e032c5",
+      "w": 1080,
+      "h": 1920,
+      "du": 0,
+      "x": "📅 Day 25/27 · 💪 TEAM 8 · 🚶‍♂️ · 🚶‍♀️",
+      "mn": [],
+      "bg": "#ff7a18",
+      "src": "nVTg9o6PclW4.jpg",
       "views": {},
       "reacts": [],
       "replies": []
