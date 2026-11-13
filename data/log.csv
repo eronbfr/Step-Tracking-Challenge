@@ -283,3 +283,7 @@ time,member,name,event,date,steps,previous,source
 2026-11-12T19:28:40.000Z,armando,Armando Alarcon,steps,2026-11-10,7314,,app
 2026-11-12T19:29:01.000Z,armando,Armando Alarcon,steps,2026-11-11,7901,,app
 2026-11-13T00:00:04.000Z,luis,Luís Rodney,steps,2026-11-12,9581,,shortcut
+2026-11-13T12:13:48.000Z,eron,Eron Netto,story,,,,
+2026-11-13T12:14:34.000Z,eron,Eron Netto,steps,2026-11-12,10670,311,app
+2026-11-13T12:14:44.000Z,eron,Eron Netto,steps,2026-11-13,1581,,app
+2026-11-13T12:15:28.000Z,eron,Eron Netto,story,,,,
